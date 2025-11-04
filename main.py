@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import products_router
+from app.routes import products_router, reviews_router
 
 app = FastAPI(
     title="Handicraft API",
@@ -24,6 +24,7 @@ async def root():
 
 # Include routers
 app.include_router(products_router)
+app.include_router(reviews_router)
 
 if __name__ == "__main__":
     import uvicorn

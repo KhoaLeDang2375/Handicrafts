@@ -53,3 +53,39 @@ class Review:
         WHERE variant_id = %s
         """
         return db.fetch_one(query, (variant_id,))
+
+    @staticmethod
+    def update(review_id, rating=None, content=None):
+        updates = []
+        params = []
+        if rating is not None:
+            updates.append("rating = %s")
+            params.append(rating)
+        if content is not None:
+            updates.append("content = %s")
+            params.append(content)
+        if not updates:
+            return False
+        # update date to now
+        updates.append("date = %s")
+        params.append(datetime.now())
+        params.append(review_id)
+        query = f"""
+        UPDATE reviews SET {', '.join(updates)} WHERE id = %s
+        """
+        return db.execute_query(query, tuple(params))
+
+    @staticmethod
+    def delete(review_id):
+        query = """
+        DELETE FROM reviews WHERE id = %s
+        """
+        return db.execute_query(query, (review_id,))
+
+    @staticmethod
+    def count_by_variant(variant_id):
+        query = """
+        SELECT COUNT(*) as total FROM reviews WHERE variant_id = %s
+        """
+        result = db.fetch_one(query, (variant_id,))
+        return result['total'] if result else 0

@@ -16,6 +16,14 @@ class ProductVariantBase(BaseModel):
     price: float
     amount: int
 
+class ProductVariantResponse(ProductVariantBase):
+    id: int
+    product_id: int
+
+class CategoryBase(BaseModel):
+    id: int
+    name: str
+
 class ProductCreate(BaseModel):
     name: str
     description: Optional[str] = None
@@ -25,49 +33,132 @@ class ProductCreate(BaseModel):
     variants: List[ProductVariantBase]
 
 class ProductResponse(BaseModel):
+    id: int
     name: str
     description: Optional[str] = None
+    category_id: int
     status: str
-    artisan_description: Optional[str] = None
-    category_name: Optional[str] = None
+    artisan_description: str
+    category: Optional[CategoryBase] = None
+    variants: Optional[List[ProductVariantResponse]] = None
 
-@router.get("/", response_model=List[ProductResponse])
+class ProductListItem(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    category_id: int
+    status: str
+    artisan_description: str
+    category_name: Optional[str] = None
+    variants: Optional[List[ProductVariantResponse]] = None
+
+class PaginatedProductList(BaseModel):
+    items: List[ProductListItem]
+    total: int
+    skip: int
+    limit: int
+
+@router.get("/", response_model=PaginatedProductList)
 async def get_products(
     category_id: Optional[int] = Query(None, description="Filter products by category"),
-    status: Optional[str] = Query(None, description="Filter products by status")
+    status: Optional[str] = Query(None, description="Filter products by status"),
+    include_variants: bool = Query(False, description="Include product variants in response"),
+    skip: int = Query(0, ge=0, description="Skip records"),
+    limit: int = Query(10, ge=1, le=100, description="Limit records per page")
 ):
-    """Lấy danh sách tất cả sản phẩm"""
+    """Lấy danh sách sản phẩm với các tùy chọn lọc và phân trang"""
     try:
+        if status and status.lower() not in ["in stock", "out of stock"]:
+            raise HTTPException(status_code=400, detail="Invalid status value")
+
+        # Get products based on category
         if category_id:
-            products = Product.get_by_category(category_id)
+            products = Product.get_by_category(category_id, skip, limit)
+            total = Product.count_by_category(category_id)
         else:
-            products = Product.get_all()
-        
+            products = Product.get_all(skip, limit)
+            total = Product.count_all()
+
+        # Filter by status if specified
         if status:
-            products = [p for p in products if p['status'] == status]
-            
-        return products
+            products = [p for p in products if p['status'].lower() == status.lower()]
+            if category_id:
+                total = len(products)  # Recount after filtering
+
+        # Include variants if requested
+        if include_variants:
+            for product in products:
+                variants = ProductVariant.get_by_product(product['id'])
+                product['variants'] = variants or []
+
+        return {
+            "items": products,
+            "total": total,
+            "skip": skip,
+            "limit": limit
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/category/{category_id}", response_model=PaginatedProductList)
+async def get_products_by_category(
+    category_id: int = Path(..., description="The ID of the category to filter by"),
+    include_variants: bool = Query(False, description="Include product variants in response"),
+    skip: int = Query(0, ge=0, description="Skip records"),
+    limit: int = Query(10, ge=1, le=100, description="Limit records per page")
+):
+    """Lấy danh sách sản phẩm theo category"""
+    try:
+        products = Product.get_by_category(category_id, skip, limit)
+        if not products:
+            return {
+                "items": [],
+                "total": 0,
+                "skip": skip,
+                "limit": limit
+            }
+
+        total = Product.count_by_category(category_id)
+
+        if include_variants:
+            for product in products:
+                variants = ProductVariant.get_by_product(product['id'])
+                product['variants'] = variants or []
+
+        return {
+            "items": products,
+            "total": total,
+            "skip": skip,
+            "limit": limit
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{product_id}", response_model=ProductResponse)
 async def get_product(
-    product_id: int = Path(..., description="The ID of the product to get")
+    product_id: int = Path(..., description="The ID of the product to get"),
+    include_variants: bool = Query(True, description="Include product variants in response")
 ):
-    """Lấy thông tin một sản phẩm cụ thể"""
+    """Lấy thông tin chi tiết một sản phẩm và các biến thể của nó"""
     try:
         product = Product.get_by_id(product_id)
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
+
+        # Lấy thông tin variants nếu được yêu cầu
+        if include_variants:
+            variants = ProductVariant.get_by_product(product_id)
+            product['variants'] = variants or []
+
         return product
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/", response_model=dict)
+@router.post("/", response_model=ProductResponse)
 async def create_product(product: ProductCreate):
-    """Tạo sản phẩm mới"""
+    """Tạo sản phẩm mới với các biến thể"""
     try:
-        # Create product
+        # Tạo sản phẩm
         new_product = Product(
             name=product.name,
             description=product.description,
@@ -77,7 +168,8 @@ async def create_product(product: ProductCreate):
         )
         product_id = new_product.save()
 
-        # Create variants
+        # Tạo các biến thể
+        variants = []
         for variant in product.variants:
             new_variant = ProductVariant(
                 product_id=product_id,
@@ -86,13 +178,14 @@ async def create_product(product: ProductCreate):
                 price=variant.price,
                 amount=variant.amount
             )
-            new_variant.save()
+            variant_id = new_variant.save()
+            variants.append({**variant.dict(), 'id': variant_id, 'product_id': product_id})
 
-        return {
-            "status": "success",
-            "message": "Product created successfully",
-            "product_id": product_id
-        }
+        # Lấy thông tin sản phẩm vừa tạo
+        created_product = Product.get_by_id(product_id)
+        created_product['variants'] = variants
+
+        return created_product
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -114,13 +207,21 @@ async def update_product_status(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/{product_id}/variants")
-async def get_product_variants(product_id: int):
-    """Lấy danh sách variant của sản phẩm"""
+@router.get("/{product_id}/variants", response_model=List[ProductVariantResponse])
+async def get_product_variants(
+    product_id: int = Path(..., description="The ID of the product to get variants for")
+):
+    """Lấy danh sách các biến thể của một sản phẩm"""
     try:
+        # Kiểm tra sản phẩm tồn tại
+        product = Product.get_by_id(product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+
         variants = ProductVariant.get_by_product(product_id)
         if not variants:
-            raise HTTPException(status_code=404, detail="No variants found for this product")
+            return []  # Trả về list rỗng thay vì báo lỗi
+            
         return variants
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
