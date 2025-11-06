@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query, Path
 from typing import List, Optional
-from pydantic import BaseModel
+from app.schemas import *
+import json
 from app.models.product import Product
 from app.models.product_variant import ProductVariant
 
@@ -9,54 +10,7 @@ router = APIRouter(
     tags=["products"]
 )
 
-# Pydantic models
-class ProductVariantBase(BaseModel):
-    color: str
-    size: int
-    price: float
-    amount: int
 
-class ProductVariantResponse(ProductVariantBase):
-    id: int
-    product_id: int
-
-class CategoryBase(BaseModel):
-    id: int
-    name: str
-
-class ProductCreate(BaseModel):
-    name: str
-    description: Optional[str] = None
-    category_id: int
-    status: str = "In stock"
-    artisan_description: str
-    variants: List[ProductVariantBase]
-
-class ProductResponse(BaseModel):
-    id: int
-    name: str
-    description: Optional[str] = None
-    category_id: int
-    status: str
-    artisan_description: str
-    category: Optional[CategoryBase] = None
-    variants: Optional[List[ProductVariantResponse]] = None
-
-class ProductListItem(BaseModel):
-    id: int
-    name: str
-    description: Optional[str] = None
-    category_id: int
-    status: str
-    artisan_description: str
-    category_name: Optional[str] = None
-    variants: Optional[List[ProductVariantResponse]] = None
-
-class PaginatedProductList(BaseModel):
-    items: List[ProductListItem]
-    total: int
-    skip: int
-    limit: int
 
 @router.get("/", response_model=PaginatedProductList)
 async def get_products(
@@ -150,6 +104,14 @@ async def get_product(
             variants = ProductVariant.get_by_product(product_id)
             product['variants'] = variants or []
 
+        # Parse category JSON returned by MySQL JSON_OBJECT (may come as string)
+        if 'category' in product and isinstance(product['category'], str):
+            try:
+                product['category'] = json.loads(product['category'])
+            except Exception:
+                # leave as-is if parsing fails
+                pass
+
         return product
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -218,11 +180,31 @@ async def get_product_variants(
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
 
-        variants = ProductVariant.get_by_product(product_id)
+        variants = ProductVariant.get_by_product(product_id, variant_id = None, get_one= False)
         if not variants:
             return []  # Trả về list rỗng thay vì báo lỗi
             
         return variants
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+# Lấy endpoint lấy một biến thể của sản phẩm
+@router.get("/{product_id}/variants/{variant_id}", response_model=ProductVariantResponse)
+async def get_product_variant_one(
+    product_id: int = Path(..., description="The ID of the product"),
+    variant_id: int = Path(..., description="The ID of the variant")
+):
+    try:
+        product = Product.get_by_id(product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+
+        variant = ProductVariant.get_by_product(product_id=product_id, variant_id=variant_id, get_one=True)
+        if not variant:
+            raise HTTPException(status_code=404, detail="Variant not found")
+
+        return variant
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

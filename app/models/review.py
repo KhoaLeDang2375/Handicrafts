@@ -1,5 +1,6 @@
 from app.database import db
 from datetime import datetime
+from typing import Optional
 
 class Review:
     def __init__(self, customer_id, variant_id, rating, content):
@@ -8,7 +9,27 @@ class Review:
         self.rating = rating
         self.content = content
         self.date = datetime.now()
-
+        
+    @staticmethod
+    def format_datetime(dt: Optional[datetime]) -> Optional[str]:
+        """Convert datetime to ISO format string or return None"""
+        return dt.isoformat() if dt else None
+    @staticmethod
+    def check_user_buy_item(customer_id: int, variant_id: int) -> bool:
+        # Original query for validation
+        query = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM orders o
+            INNER JOIN OrderDetail od ON o.id = od.order_id
+            WHERE 
+                o.customer_id = %s
+                AND od.variant_id = %s
+                AND o.status = 'received'
+        ) as has_bought
+        """
+        result = db.fetch_one(query, (customer_id, variant_id))
+        return bool(result['has_bought']) if result else False
     def save(self):
         query = """
         INSERT INTO reviews (customer_id, variant_id, rating, content, date)
@@ -32,7 +53,10 @@ class Review:
         JOIN products p ON pv.product_id = p.id
         WHERE r.id = %s
         """
-        return db.fetch_one(query, (review_id,))
+        result = db.fetch_one(query, (review_id,))
+        if result and 'date' in result and isinstance(result['date'], datetime):
+            result['date'] = result['date'].isoformat()
+        return result
 
     @staticmethod
     def get_by_product_variant(variant_id):
@@ -43,7 +67,11 @@ class Review:
         WHERE r.variant_id = %s
         ORDER BY r.date DESC
         """
-        return db.fetch_all(query, (variant_id,))
+        results = db.fetch_all(query, (variant_id,))
+        for r in results:
+            if 'date' in r and isinstance(r['date'], datetime):
+                r['date'] = r['date'].isoformat()
+        return results
 
     @staticmethod
     def get_average_rating(variant_id):
