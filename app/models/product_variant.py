@@ -32,13 +32,20 @@ class ProductVariant:
         return db.fetch_one(query, (variant_id,))
 
     @staticmethod
-    def get_by_product(product_id):
-        query = """
-        SELECT * FROM ProductVariant 
-        WHERE product_id = %s
-        """
-        return db.fetch_all(query, (product_id,))
-
+    def get_by_product(product_id, variant_id = None, get_one = False):
+        if get_one:
+             query = """
+                    SELECT * FROM ProductVariant 
+                    WHERE product_id = %s and id = %s
+                    LIMIT 1;
+                    """
+             return db.fetch_one(query,(product_id,variant_id))
+        else:
+            query = """
+            SELECT * FROM ProductVariant
+            WHERE product_id = %s
+            """
+            return db.fetch_all(query, (product_id,))
     def update_stock(self, variant_id, amount):
         query = """
         UPDATE ProductVariant 

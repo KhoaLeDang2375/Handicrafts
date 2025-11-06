@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, Path, Query
-from typing import List, Optional
-from pydantic import BaseModel, Field
+from app.schemas import *
 from app.models.review import Review
 from app.models.product import Product
 from app.models.product_variant import ProductVariant
@@ -9,29 +8,6 @@ router = APIRouter(
     tags=["reviews"]
 )
 
-# Pydantic schemas
-class ReviewCreate(BaseModel):
-    customer_id: int
-    rating: int = Field(..., ge=1, le=5)
-    content: Optional[str] = None
-
-class ReviewResponse(BaseModel):
-    id: int
-    customer_id: int
-    variant_id: int
-    rating: int
-    content: Optional[str] = None
-    date: Optional[str] = None
-
-class ReviewUpdate(BaseModel):
-    rating: Optional[int] = Field(None, ge=1, le=5)
-    content: Optional[str] = None
-
-class PaginatedReviewList(BaseModel):
-    items: List[ReviewResponse]
-    total: int
-    skip: int
-    limit: int
 
 
 @router.post("/variants/{variant_id}/reviews", response_model=ReviewResponse)
@@ -45,7 +21,13 @@ async def create_review_for_variant(
         variant = ProductVariant.get_by_id(variant_id)
         if not variant:
             raise HTTPException(status_code=404, detail="Variant not found")
-
+            
+        # Check if user has bought the item
+        if not Review.check_user_buy_item(review.customer_id, variant_id):
+            raise HTTPException(
+                status_code=403,
+                detail="You can only review items you have purchased and received"
+            )
         new_review = Review(
             customer_id=review.customer_id,
             variant_id=variant_id,
