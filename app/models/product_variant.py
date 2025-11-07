@@ -1,4 +1,4 @@
-from app.database import db
+from app.database.database import db
 
 class ProductVariant:
     def __init__(self, product_id, color, size, price, amount):

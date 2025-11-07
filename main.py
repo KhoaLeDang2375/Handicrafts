@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import products_router, signup_router,login_router
+
+from app.routes import products_router, signup_router,login_router, search_router
+# Import search service
+from app.search_service.search import sync_all_products_to_redis, VectorSearch
+from app.database.redis_client import redis_client
 
 app = FastAPI(
     title="Handicraft API",
@@ -24,7 +28,34 @@ async def root():
 
 # Include routers
 app.include_router(products_router)
+# Search router
+app.include_router(search_router)
 # app.include_router(reviews_router)
+
+
+@app.on_event("startup")
+def startup_event():
+    """Create a singleton VectorSearch at startup and sync Redis."""
+    try:
+        vs = VectorSearch()
+        app.state.vector_search = vs
+        # sync products into redis using the created instance
+        try:
+            sync_all_products_to_redis(vs)
+        except Exception as e:
+            print(f"[startup] sync_all_products_to_redis failed: {e}")
+    except Exception as e:
+        print(f"[startup] Failed to initialize VectorSearch: {e}")
+
+
+@app.on_event("shutdown")
+def shutdown_event():
+    # try to close redis connections gracefully
+    try:
+        if hasattr(app.state, "vector_search"):
+            app.state.vector_search.redis.close()
+    except Exception:
+        pass
 app.include_router(signup_router)
 app.include_router(login_router)
 if __name__ == "__main__":

@@ -32,7 +32,7 @@ class ProductResponse(BaseModel):
     name: str
     description: Optional[str] = None
     category_id: int
-    status: str
+    status: str = None
     artisan_description: str
     category: Optional[CategoryBase] = None
     variants: Optional[List[ProductVariantResponse]] = None
@@ -52,6 +52,17 @@ class PaginatedProductList(BaseModel):
     total: int
     skip: int
     limit: int
+
+
+class SearchResult(BaseModel):
+    product_id: int
+    name: str
+    description: Optional[str] = None
+    category_name: Optional[str] = None
+    score: float
+
+class SearchResults(BaseModel):
+    items: List[SearchResult]
 PHONE_REGEX = r'^0[0-9]{9}$'
 # Pydantic schemas user sign up
 class CustomerCreate(BaseModel):

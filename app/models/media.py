@@ -1,4 +1,4 @@
-from app.database import db
+from app.database.database import db
 
 class Media:
     def __init__(self, media_type, url, description, entity_id, entity_type, alt_text):

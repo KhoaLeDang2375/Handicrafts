@@ -1,4 +1,4 @@
-from app.database import db
+from app.database.database import db
 
 class Shipment:
     def __init__(self, order_id, carrier='GHTK', status='Pending'):

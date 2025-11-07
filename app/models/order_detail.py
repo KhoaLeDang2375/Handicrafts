@@ -1,4 +1,4 @@
-from app.database import db
+from app.database.database import db
 
 class OrderDetail:
     def __init__(self, order_id, product_id, quantity, price):

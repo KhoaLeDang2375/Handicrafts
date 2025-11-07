@@ -1,4 +1,4 @@
-from app.database import db
+from app.database.database import db
 from datetime import datetime
 
 class Product:
@@ -10,7 +10,7 @@ class Product:
         self.artisan_description =artisan_description
     def save(self):
         query = """
-        INSERT INTO products (name, description, category_id, status, artisan_description)
+        INSERT INTO Products (name, description, category_id, status, artisan_description)
         VALUES (%s, %s, %s, %s, %s)
         """
         return db.execute_query(query, (
@@ -33,8 +33,8 @@ class Product:
             p.artisan_description,
             c.name as category_name,
             c.id as category_id
-        FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
+        FROM Products p
+        LEFT JOIN Categories c ON p.category_id = c.id
         LIMIT %s OFFSET %s
         """
         return db.fetch_all(query, (limit, skip))
@@ -43,7 +43,7 @@ class Product:
     def count_all():
         query = """
         SELECT COUNT(*) as total
-        FROM products
+        FROM Products
         """
         result = db.fetch_one(query)
         return result['total'] if result else 0
@@ -64,8 +64,8 @@ class Product:
                 'id', c.id,
                 'name', c.name
             ) AS category
-        FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
+        FROM Products p
+        LEFT JOIN Categories c ON p.category_id = c.id
         WHERE p.id = %s;
         """
         return db.fetch_one(query, (product_id,))
@@ -82,8 +82,8 @@ class Product:
             p.artisan_description,
             c.name as category_name,
             c.id as category_id
-        FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
+        FROM Products p
+        LEFT JOIN Categories c ON p.category_id = c.id
         WHERE p.category_id = %s
         ORDER BY p.id
         LIMIT %s OFFSET %s
@@ -94,7 +94,7 @@ class Product:
     def count_by_category(category_id):
         query = """
         SELECT COUNT(*) as total
-        FROM products
+        FROM Products
         WHERE category_id = %s
         """
         result = db.fetch_one(query, (category_id,))

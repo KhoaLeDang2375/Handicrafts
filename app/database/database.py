@@ -80,7 +80,6 @@ class Database:
             self.disconnect()
 
 
-# Module-level instance for easy imports from other modules
-# Usage: from app.database import db
+
 db = Database()
 

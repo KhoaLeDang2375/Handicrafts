@@ -1,4 +1,4 @@
-from app.database import db
+from app.database.database import db
 
 class Cart:
     def __init__(self, user_id, productvariant_id, quantity):

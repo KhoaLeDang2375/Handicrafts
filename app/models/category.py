@@ -1,4 +1,4 @@
-from app.database import db
+from app.database.database import db
 
 class Category: 
     def __init__(self, name):
