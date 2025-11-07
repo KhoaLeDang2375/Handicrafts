@@ -20,7 +20,7 @@ class Review:
         query = """
         SELECT EXISTS (
             SELECT 1
-            FROM orders o
+            FROM Orders o
             INNER JOIN OrderDetail od ON o.id = od.order_id
             WHERE 
                 o.customer_id = %s
@@ -32,7 +32,7 @@ class Review:
         return bool(result['has_bought']) if result else False
     def save(self):
         query = """
-        INSERT INTO reviews (customer_id, variant_id, rating, content, date)
+        INSERT INTO Reviews (customer_id, variant_id, rating, content, date)
         VALUES (%s, %s, %s, %s, %s)
         """
         return db.execute_query(query, (
@@ -47,10 +47,10 @@ class Review:
     def get_by_id(review_id):
         query = """
         SELECT r.*, c.name as customer_name, p.name as product_name
-        FROM reviews r
-        JOIN customers c ON r.customer_id = c.id
+        FROM Reviews r
+        JOIN Customers c ON r.customer_id = c.id
         JOIN ProductVariant pv ON r.variant_id = pv.id
-        JOIN products p ON pv.product_id = p.id
+        JOIN Products p ON pv.product_id = p.id
         WHERE r.id = %s
         """
         result = db.fetch_one(query, (review_id,))
@@ -62,8 +62,8 @@ class Review:
     def get_by_product_variant(variant_id):
         query = """
         SELECT r.*, c.name as customer_name
-        FROM reviews r
-        JOIN customers c ON r.customer_id = c.id
+        FROM Reviews r
+        JOIN Customers c ON r.customer_id = c.id
         WHERE r.variant_id = %s
         ORDER BY r.date DESC
         """
@@ -77,7 +77,7 @@ class Review:
     def get_average_rating(variant_id):
         query = """
         SELECT AVG(rating) as average_rating
-        FROM reviews
+        FROM Reviews
         WHERE variant_id = %s
         """
         return db.fetch_one(query, (variant_id,))
@@ -99,21 +99,21 @@ class Review:
         params.append(datetime.now())
         params.append(review_id)
         query = f"""
-        UPDATE reviews SET {', '.join(updates)} WHERE id = %s
+        UPDATE Reviews SET {', '.join(updates)} WHERE id = %s
         """
         return db.execute_query(query, tuple(params))
 
     @staticmethod
     def delete(review_id):
         query = """
-        DELETE FROM reviews WHERE id = %s
+        DELETE FROM Reviews WHERE id = %s
         """
         return db.execute_query(query, (review_id,))
 
     @staticmethod
     def count_by_variant(variant_id):
         query = """
-        SELECT COUNT(*) as total FROM reviews WHERE variant_id = %s
+        SELECT COUNT(*) as total FROM Reviews WHERE variant_id = %s
         """
         result = db.fetch_one(query, (variant_id,))
         return result['total'] if result else 0
