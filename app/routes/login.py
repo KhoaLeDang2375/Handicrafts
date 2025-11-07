@@ -37,7 +37,7 @@ async def login_for_access_token(login_request: LoginRequest):
 
     access_token = create_access_token(
         data = {
-            "sub": user.get('id'),   
+            "sub": str(user.get('id')),   # Convert id to string
             "role": login_request.role,
             "name": user.get('name')  # nếu cần
 }

@@ -48,3 +48,29 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     # pwd_context.verify() sẽ tự động lấy salt từ hashed_password, 
     # băm plain_password và so sánh hai chuỗi băm.
     return pwd_context.verify(plain_password, hashed_password)
+
+def verify_access_token(token: str):
+    """
+    Xác thực JWT Access Token.
+    
+    Tham số:
+    - token: JWT token cần xác thực
+    
+    Trả về: Payload của token nếu xác thực thành công
+    
+    Raises:
+    - JWTError: Nếu token không hợp lệ hoặc đã hết hạn
+    """
+    try:
+        # Giải mã token
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        
+        # Kiểm tra thời gian hết hạn
+        if datetime.fromtimestamp(payload.get("exp"), tz=timezone.utc) < datetime.now(timezone.utc):
+            raise JWSError("Token has expired")
+            
+        return payload
+        
+    except JWSError as e:
+        # Xử lý các lỗi như token không hợp lệ, đã hết hạn, v.v.
+        raise e

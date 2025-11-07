@@ -26,7 +26,7 @@ class ProductVariant:
         query = """
         SELECT v.*, p.name as product_name 
         FROM ProductVariant v
-        JOIN products p ON v.product_id = p.id
+        JOIN Products p ON v.product_id = p.id
         WHERE v.id = %s
         """
         return db.fetch_one(query, (variant_id,))

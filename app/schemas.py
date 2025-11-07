@@ -84,7 +84,7 @@ class Token(BaseModel):
     token_type: str
 # Pydantic schemas review
 class ReviewCreate(BaseModel):
-    customer_id: int
+    access_token: str
     rating: int = Field(..., ge=1, le=5)
     content: Optional[str] = None
 
@@ -105,8 +105,12 @@ class ReviewResponse(BaseModel):
         }
 
 class ReviewUpdate(BaseModel):
+    access_token: str
     rating: Optional[int] = Field(None, ge=1, le=5)
     content: Optional[str] = None
+
+class ReviewDelete(BaseModel):
+    access_token: str
 
 class PaginatedReviewList(BaseModel):
     items: List[ReviewResponse]
