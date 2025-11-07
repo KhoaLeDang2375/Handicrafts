@@ -25,3 +25,7 @@ class Customer:
     def get_by_email(email):
         query = "SELECT * FROM Customers WHERE email = %s"
         return db.fetch_one(query, (email,))
+    @staticmethod
+    def get_by_username(username):
+        query = "SELECT * FROM Customers WHERE user_name = %s"
+        return db.fetch_one(query, (username,))

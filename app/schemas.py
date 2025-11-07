@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr, ValidationError
 from typing import List, Optional
+from enum import Enum
 import re
 from datetime import datetime
 
@@ -52,7 +53,7 @@ class PaginatedProductList(BaseModel):
     skip: int
     limit: int
 PHONE_REGEX = r'^0[0-9]{9}$'
-# Pydantic schemas user
+# Pydantic schemas user sign up
 class CustomerCreate(BaseModel):
     name: str 
     email: EmailStr
@@ -68,6 +69,19 @@ class CustomerCreateResponse(BaseModel):
     message: str
     email: EmailStr
     fullname: str
+
+class RoleEnum(str, Enum):
+    customer = 'customer'
+    employee = 'employee'
+
+# Pydantic schemas user login 
+class LoginRequest(BaseModel):
+    username: Optional[str] = None
+    password: str
+    role: RoleEnum = Field(..., description="Customer hoặc Employee")
+class Token(BaseModel):
+    access_token: str
+    token_type: str
 # Pydantic schemas review
 class ReviewCreate(BaseModel):
     customer_id: int
