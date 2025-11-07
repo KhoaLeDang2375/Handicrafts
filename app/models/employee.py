@@ -32,11 +32,6 @@ class Employee:
         query = """SELECT * FROM Employee WHERE user_name = %s"""
         return db.fetch_one(query, (username,))
 
-    def verify_password(self, password):
-        employee = self.get_by_username(self.user_name)
-        if employee:
-            return check_password_hash(employee['password'], password)
-        return False
 
     @staticmethod
     def get_all():
