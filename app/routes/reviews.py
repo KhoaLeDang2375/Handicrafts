@@ -3,7 +3,8 @@ from app.schemas import *
 from app.models.review import Review
 from app.models.product import Product
 from app.models.product_variant import ProductVariant
-
+from app.security import verify_access_token
+from jose import JWTError
 router = APIRouter(
     tags=["reviews"]
 )
@@ -17,19 +18,22 @@ async def create_review_for_variant(
 ):
     """Create a review for a specific product variant"""
     try:
+        payload = verify_access_token(review.access_token)
+        # Lấy thông tin customer và chuyển về số
+        customer_id = int(payload.get("sub"))
         # Ensure variant exists
         variant = ProductVariant.get_by_id(variant_id)
         if not variant:
             raise HTTPException(status_code=404, detail="Variant not found")
             
         # Check if user has bought the item
-        if not Review.check_user_buy_item(review.customer_id, variant_id):
+        if not Review.check_user_buy_item(customer_id, variant_id):
             raise HTTPException(
                 status_code=403,
                 detail="You can only review items you have purchased and received"
             )
         new_review = Review(
-            customer_id=review.customer_id,
+            customer_id=customer_id,
             variant_id=variant_id,
             rating=review.rating,
             content=review.content
@@ -45,8 +49,12 @@ async def create_review_for_variant(
             raise HTTPException(status_code=500, detail="Review created but cannot be retrieved")
 
         return created
-    except HTTPException:
-        raise
+    except JWTError as e:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Could not validate credentials: {str(e)}",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -127,16 +135,35 @@ async def get_review(review_id: int = Path(..., description="Review id")):
 async def update_review(review_id: int = Path(..., description="Review id"), data: ReviewUpdate = None):
     """Update rating or content of a review"""
     try:
+        # Xác thực token
+        payload = verify_access_token(data.access_token)
+        customer_id = int(payload.get("sub"))
+
+        # Kiểm tra review tồn tại
         existing = Review.get_by_id(review_id)
         if not existing:
             raise HTTPException(status_code=404, detail="Review not found")
 
+        # Kiểm tra quyền sở hữu review
+        if existing.get('customer_id') != customer_id:
+            raise HTTPException(
+                status_code=403,
+                detail="You can only update your own reviews"
+            )
+
+        # Cập nhật review
         success = Review.update(review_id, rating=data.rating, content=data.content)
         if not success:
             raise HTTPException(status_code=500, detail="Failed to update review")
 
         updated = Review.get_by_id(review_id)
         return updated
+    except JWTError as e:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Could not validate credentials: {str(e)}",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     except HTTPException:
         raise
     except Exception as e:
@@ -144,18 +171,40 @@ async def update_review(review_id: int = Path(..., description="Review id"), dat
 
 
 @router.delete("/reviews/{review_id}")
-async def delete_review(review_id: int = Path(..., description="Review id")):
+async def delete_review(
+    review_id: int = Path(..., description="Review id"),
+    data: ReviewDelete = None
+):
     """Delete a review"""
     try:
+        # Xác thực token
+        payload = verify_access_token(data.access_token)
+        customer_id = int(payload.get("sub"))
+
+        # Kiểm tra review tồn tại
         existing = Review.get_by_id(review_id)
         if not existing:
             raise HTTPException(status_code=404, detail="Review not found")
 
+        # Kiểm tra quyền sở hữu review
+        if existing.get('customer_id') != customer_id:
+            raise HTTPException(
+                status_code=403,
+                detail="You can only delete your own reviews"
+            )
+
+        # Xóa review
         success = Review.delete(review_id)
         if not success:
             raise HTTPException(status_code=500, detail="Failed to delete review")
 
         return {"message": "Review deleted"}
+    except JWTError as e:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Could not validate credentials: {str(e)}",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     except HTTPException:
         raise
     except Exception as e:
