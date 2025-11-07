@@ -111,7 +111,29 @@ class ReviewUpdate(BaseModel):
 
 class ReviewDelete(BaseModel):
     access_token: str
+# Pydantic schemas blog
+class BlogBase(BaseModel):
+    title: str
+    content: str
+class BlogResponse(BlogBase):
+    id: int
+    author_id: int
+    create_time: Optional[datetime] = None
 
+    model_config = {
+        "json_encoders": {datetime: str},
+        "arbitrary_types_allowed": True,
+        "json_schema_extra": {
+            "example": {
+                "id": 1,
+                "author_id": 1,
+                "title": "Sample Blog",
+                "content": "Sample content",
+                "create_time": "2024-10-15T10:15:00"
+            }
+        }
+    }
+    
 class PaginatedReviewList(BaseModel):
     items: List[ReviewResponse]
     total: int
