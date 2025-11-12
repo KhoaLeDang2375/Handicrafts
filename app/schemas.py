@@ -197,6 +197,13 @@ class OrderCheckoutOne(BaseModel):
     item: CartItemBase
     payment_method: str = "COD"
     shipment : str = "GHTK"
+class OrderStatusUpdateRequest(BaseModel):
+    access_token: str
+    new_status: str = 'Waiting for delivery'
+class OrderStatusUpdateResponse(BaseModel):
+    order_id: int
+    new_status: str
+    message: str = "Order status updated successfully"
 # Chúng ta lấy user_id từ access token
 class OrderCheckoutResponse(BaseModel):
     message: str

@@ -40,7 +40,7 @@ async def buy_now(order_data: OrderCheckoutOne):
     try:
         db.begin_transaction()
 
-        new_order = Order(user_id=customer_id, total_amount=0.0, status="processing")
+        new_order = Order(user_id=customer_id, amount=0.0, status="processing")
         new_order.save()
 
         item = order_data.item
@@ -60,7 +60,7 @@ async def buy_now(order_data: OrderCheckoutOne):
         order_detail.save()
 
         # Cập nhật tổng tiền
-        update_query = """UPDATE Orders SET total_amount = %s WHERE id = %s"""
+        update_query = """UPDATE Orders SET amount = %s WHERE id = %s"""
         db.execute_query(update_query, (item_total, new_order.id))
 
         db.commit_transaction()
@@ -103,17 +103,17 @@ async def checkout(order_data: OrderCheckout):
     try:
         db.begin_transaction()
 
-        new_order = Order(user_id=customer_id, total_amount=0.0, status="processing")
+        new_order = Order(user_id=customer_id, amount=0.0, status="processing")
         new_order.save()
 
-        total_amount = 0.0
+        amount = 0.0
         for item in order_data.cart_items:
             variant = ProductVariant.get_by_id(item.productvariant_id)
             if variant is None:
                 raise HTTPException(status_code=404, detail="Product variant not found")
             price = variant['price'] if isinstance(variant, dict) else variant.price
             item_total = price * item.product_quantity
-            total_amount += item_total
+            amount += item_total
 
             order_detail = OrderDetail(
                 order_id=new_order.id,
@@ -136,8 +136,8 @@ async def checkout(order_data: OrderCheckout):
         )
         shipment.save()
         # Cập nhật tổng tiền
-        update_query = """UPDATE orders SET total_amount = %s WHERE id = %s"""
-        db.execute_query(update_query, (total_amount, new_order.id))
+        update_query = """UPDATE Orders SET amount = %s WHERE id = %s"""
+        db.execute_query(update_query, (amount, new_order.id))
 
         db.commit_transaction()
 
@@ -195,3 +195,41 @@ def get_my_orders(check_data: OrderCheckRequest):
         ))
     return response
 # Router để update các đơn hàng (dành cho các đơn hàng đang processing)
+@router.put("/update-status/{order_id}", response_model=OrderStatusUpdateResponse)
+def update_order_status(
+    order_id: int = Path(..., description="ID của đơn hàng cần cập nhật"),
+    status_update: OrderStatusUpdateRequest = ...
+):
+    # Xác thực token và kiểm tra vai trò nhân viên
+    try:
+        payload = verify_access_token(status_update.access_token)
+        employee_id = payload.get("sub")
+        if employee_id is None:
+            raise HTTPException(status_code=401, detail="Invalid token payload")
+        if payload.get("role") != "employee":
+            raise HTTPException(status_code=401, detail="Unauthorized role")
+    except Exception as e:
+        raise HTTPException(status_code=401, detail="Invalid or expired token") from e
+
+    employee = Employee.get_by_id(employee_id)
+    if employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    # Lấy đơn hàng cần cập nhật
+    order = Order.get_by_id(order_id)
+    if order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    # Cập nhật trạng thái đơn hàng
+    try:
+        order_model = Order()
+        order_model.update_status(order_id, status_update.new_status)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update order status: {e}")
+
+    response = OrderStatusUpdateResponse(
+        order_id=order_id,
+        new_status=status_update.new_status,
+        message="Order status updated successfully"
+    )
+    return response

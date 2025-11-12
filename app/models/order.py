@@ -2,9 +2,9 @@ from app.database import db
 from datetime import datetime
 
 class Order:
-    def __init__(self, user_id, total_amount, status='pending'):
+    def __init__(self, user_id, amount, status='pending'):
         self.user_id = user_id
-        self.total_amount = total_amount
+        self.total_amount = amount
         self.status = status
         self.created_at = datetime.now()
 
@@ -33,9 +33,16 @@ class Order:
         return db.fetch_one(query, (order_id,))
 
     @staticmethod
-    def get_user_orders(user_id):
+    def get_user_orders(user_id, limit=None, offset=None):
         query = """SELECT * FROM Orders WHERE user_id = %s ORDER BY created_at DESC"""
-        return db.fetch_all(query, (user_id,))
+        params = [user_id]
+        if limit is not None:
+            query += " LIMIT %s"
+            params.append(limit)
+        if offset is not None:
+            query += " OFFSET %s"
+            params.append(offset)
+        return db.fetch_all(query, tuple(params))
 
     def update_status(self, order_id, new_status):
         query = """
