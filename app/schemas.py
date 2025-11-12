@@ -3,7 +3,8 @@ from typing import List, Optional
 from enum import Enum
 import re
 from datetime import datetime
-
+from pydantic import BaseModel, Field, constr, confloat, conint
+from typing import Optional
 # Pydantic models product
 class ProductVariantBase(BaseModel):
     color: str
@@ -20,6 +21,7 @@ class CategoryBase(BaseModel):
     name: str
 
 class ProductCreate(BaseModel):
+    access_token: str
     name: str
     description: Optional[str] = None
     category_id: int
@@ -52,6 +54,39 @@ class PaginatedProductList(BaseModel):
     total: int
     skip: int
     limit: int
+class UpdateBase(BaseModel):
+    """
+    Schema tổng quát cho các yêu cầu cập nhật (update) có xác thực.
+    Dùng cho cả Product, ProductVariant, v.v.
+    """
+    access_token: str = Field(
+        ..., 
+        description="JWT access token để xác thực người thực hiện hành động"
+    )
+    #  Các trường chung có thể xuất hiện trong bất kỳ loại cập nhật nào
+
+    name: Optional[str] = Field(
+        None, description="Tên sản phẩm hoặc biến thể"
+    )
+    description: Optional[str] = Field(
+        None, description="Mô tả sản phẩm"
+    )
+    artisan_description: Optional[str] = Field(
+        None, description="Thông tin nghệ nhân hoặc mô tả thủ công"
+    )
+    status: Optional[int] = Field(
+        None, ge=0, le=1, description="Trạng thái: 1 = hoạt động, 0 = ẩn"
+    )
+    category_id: Optional[int] = Field(None, description="Mã danh mục sản phẩm")
+    color: Optional[str] = Field(None, description="Màu biến thể")
+    size: Optional[str] = Field(None, description="Kích thước biến thể")
+    price: Optional[float] = Field(None, description="Giá bán")
+    amount: Optional[int] = Field(None, description="Số lượng tồn kho")
+# Product variant update response schemas
+class ProductVariantUpdateResponse(BaseModel):
+    id:int
+    product_id: int
+    message: str = 'Product variant updated successfully'
 PHONE_REGEX = r'^0[0-9]{9}$'
 # Pydantic schemas user sign up
 class CustomerCreate(BaseModel):
@@ -139,3 +174,49 @@ class PaginatedReviewList(BaseModel):
     total: int
     skip: int
     limit: int
+# Pydantic schemas for Cart
+class CartItemBase(BaseModel):
+    product_id: int
+    productvariant_id: int
+    product_quantity: int
+class CartItemResponse(CartItemBase):
+    id: int
+    user_id: int
+    total_price: float
+    color: Optional[str] = None
+    size: Optional[int] = None
+    price: Optional[float] = None
+    product_name: Optional[str] = None
+# Pydantic schemas for Order Checkout
+class OrderCheckout(BaseModel):
+    access_token: str
+    cart_items: List[CartItemBase]
+    payment_method: str = "COD"
+    shipment : str = "GHTK"
+class OrderCheckoutOne(BaseModel):
+    access_token: str
+    item: CartItemBase
+    payment_method: str = "COD"
+    shipment : str = "GHTK"
+# Chúng ta lấy user_id từ access token
+class OrderCheckoutResponse(BaseModel):
+    message: str
+    order_id: int
+# Pydantic schemas for Order Check
+class OrderDetailResponse(BaseModel):
+    id: int
+    order_id: int
+    productvariant_id: int
+    product_name: Optional[str] = None
+    color: Optional[str] = None
+    size: Optional[int] = None
+    quantity: int
+    price: float
+class OrderCheckRequest(BaseModel):
+    access_token: str
+    status: str = None
+class OrderCheckResponse(BaseModel):
+    order_id: int
+    items: list[OrderDetailResponse]
+    price: float
+    status: str = None
