@@ -14,7 +14,7 @@ router = APIRouter(
 async def get_products(
     category_id: Optional[int] = Query(None, description="Filter products by category"),
     status: Optional[str] = Query(None, description="Filter products by status"),
-    include_variants: bool = Query(False, description="Include product variants in response"),
+    include_variants: bool = Query(True, description="Include product variants in response"),
     skip: int = Query(0, ge=0, description="Skip records"),
     limit: int = Query(10, ge=1, le=100, description="Limit records per page")
 ):

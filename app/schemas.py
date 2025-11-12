@@ -154,7 +154,6 @@ class BlogResponse(BlogBase):
     id: int
     author_id: int
     create_time: Optional[datetime] = None
-
     model_config = {
         "json_encoders": {datetime: str},
         "arbitrary_types_allowed": True,

@@ -32,11 +32,13 @@ async def get_blogs(
         raise HTTPException(status_code=500, detail=str(e))
 @router.get("/blogs/author/{author_id}", response_model=list[BlogResponse])
 async def get_blogs_by_author(
-    author_id: int = Path(..., description="Author id to filter blogs")
+    author_id: int = Path(..., description="Author id to filter blogs"),
+    skip: int = Query(0, ge=0, description="Number of blogs to skip"),
+    limit: int = Query(10, ge=1, le=100, description="Maximum number of blogs to return")
 ):
     """Retrieve blog posts by a specific author"""
     try:
-        blogs = Blog.get_by_author(author_id)
+        blogs = Blog.get_by_author(author_id, skip=skip, limit=limit)
         return blogs
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -77,6 +79,26 @@ async def update_blog(
         blog_model.update_content(blog_id, blog.content)
         updated_blog = Blog.get_by_id(blog_id)
         return updated_blog
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid access token")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+# Delete blog post
+@router.delete("/blogs/{blog_id}")
+async def delete_blog(
+    blog_id: int = Path(..., description="Blog id to delete"),
+    access_token: str = Query(..., description="Access token of the employee deleting the blog")
+):
+    """Delete a blog post"""
+    try:
+        payload = verify_access_token(access_token)
+        if payload['role'] != 'employee':
+            raise HTTPException(status_code=403, detail="Only employees can delete blogs")
+        existing_blog = Blog.get_by_id(blog_id)
+        if not existing_blog:
+            raise HTTPException(status_code=404, detail="Blog not found")
+        Blog.delete(blog_id)
+        return {"detail": "Blog deleted successfully"}
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid access token")
     except Exception as e:
