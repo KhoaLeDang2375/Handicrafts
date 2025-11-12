@@ -25,6 +25,12 @@ async def login_for_access_token(login_request: LoginRequest):
             password_ok = verify_password(login_request.password, hashed_password) if hashed_password else False
     elif login_request.role == 'employee':
         user = Employee.get_by_username(login_request.username)
+        # Thêm kiểm tra status
+        if user.get('status') != 'active':
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Tài khoản nhân viên chưa được kích hoạt."
+            )
         if user:
             hashed_password = user.get('password')
             # employees were hashed using werkzeug.generate_password_hash in Employee.save
