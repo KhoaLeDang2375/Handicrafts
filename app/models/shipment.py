@@ -22,7 +22,7 @@ class Shipment:
         query = """
         SELECT s.*, o.date as order_date 
         FROM Shipment s
-        JOIN orders o ON s.order_id = o.id
+        JOIN Orders o ON s.order_id = o.id
         WHERE s.id = %s
         """
         return db.fetch_one(query, (shipment_id,))
@@ -45,7 +45,7 @@ class Shipment:
         query = """
         SELECT s.*, o.date as order_date 
         FROM Shipment s
-        JOIN orders o ON s.order_id = o.id
+        JOIN Orders o ON s.order_id = o.id
         WHERE s.status = %s
         """
         return db.fetch_all(query, (status,))

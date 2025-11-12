@@ -17,7 +17,7 @@ def hash_password(password: str) -> str:
     truncated_password = password[:72]
     # để tạo ra một chuỗi băm (hash) an toàn.
     return pwd_context.hash(truncated_password)
-SECRET_KEY = os.getenv('SERCET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # Token hết hạn sau 30 phút
 def create_access_token(data: dict, expires_delta: timedelta | None = None):

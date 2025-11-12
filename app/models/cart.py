@@ -42,7 +42,7 @@ class Cart:
                p.name as product_name
         FROM Cart c
         JOIN ProductVariant pv ON c.productvariant_id = pv.id
-        JOIN products p ON pv.product_id = p.id
+        JOIN Products p ON pv.product_id = p.id
         WHERE c.user_id = %s
         """
         return db.fetch_all(query, (user_id,))
