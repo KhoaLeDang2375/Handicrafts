@@ -1,0 +1,101 @@
+.navbar {
+  width: 100%;
+  background: #fff;
+  border-bottom: 1px solid $color-border;
+  // padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 1000; // Đảm bảo nó luôn nằm trên cùng
+  background-color: #fff;
+}
+
+.navbar__container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+}
+
+.navbar__logo,
+.navbar__actions {
+  // Đặt một chiều rộng cơ sở
+  flex-basis: 400px;
+
+  // Không cho phép co lại hoặc phình ra
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+.navbar__logo img {
+  height: 60px;
+}
+
+.navbar__links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+
+  flex-grow: 1; // lấp đầy khoảng trống ở giữa
+  justify-content: center;
+
+  a {
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+    color: $color-text;
+    font-weight: 500;
+    font-size: 15px;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #DB9F6C;
+    }
+
+    &.active {
+      color: #DB9F6C;
+      font-weight: 700;
+    }
+  }
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+
+  justify-content: flex-end;
+}
+
+.navbar__search {
+  position: relative;
+  
+  input {
+    border: none;
+    border-bottom: 1px solid $color-border;
+    padding: 0.5rem 0.5rem 0.5rem 0;
+    font-size: 0.9rem;
+    outline: none;
+
+    &:focus {
+      border-bottom-color: $color-text;
+    }
+  }
+
+  .search-icon {
+    border: none;
+    background: none;
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $color-text-light;
+  }
+}
+
+
+

@@ -1,0 +1,26 @@
+// src/components/layout/Footer.scss
+
+.site-footer {
+  // Lấy màu nâu từ ảnh
+  background-color: #795535; 
+  color: #faf8f5; 
+  padding: 1.5rem 0;
+  
+  .footer-container {
+
+    max-width: 1440px;
+    width: 90%;
+    margin: 0 auto;
+
+    text-align: center;
+    font-size: 1rem;
+    line-height: 1.6;
+    
+    p {
+      margin: 0;
+      &:first-child {
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+}

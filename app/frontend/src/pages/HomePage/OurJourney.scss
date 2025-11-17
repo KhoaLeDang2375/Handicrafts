@@ -1,0 +1,177 @@
+// src/pages/HomePage/OurJourney.scss
+
+// Màu nền
+$bg-nau: #F8F4F0; 
+
+// Container chuẩn
+.our-journey__container {
+  max-width: 1440px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+// PHẦN 1: BỘ CHIA (LOGO + LINE)
+.journey-separator {
+  // 1. Dùng nền KEM (giống hệt section FeaturedProducts)
+  background-color: $bg-primary; 
+  position: relative;
+  z-index: 2; // Nằm trên Nền Nâu
+
+  .our-journey__container {
+    // 2. Đường line chính là border-bottom của container
+    border-bottom: 1px solid $color-primary; // Màu cam
+    position: relative; // Làm mốc cho logo-mask
+  }
+}
+
+.logo-mask {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto;
+  position: relative;
+
+  background-color: $bg-primary; 
+  padding: 0;
+  
+  // Kéo logo xuống (50% chiều cao của nó) để nó "ngồi" trên line và lấn xuống nền nâu
+  transform: translateY(50%); 
+}
+
+.journey-logo {
+  margin: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+// NỀN NÂU
+.journey-part--bottom {
+  background-color: $bg-nau;
+  position: relative;
+  z-index: 1; // Nằm dưới Bộ chia
+  
+  // PHẢI CÓ PADDING-TOP để "chừa chỗ" cho logo (60px) lấn xuống
+  padding-top: 5rem; // (30px cho nửa logo + 2rem khoảng cách)
+  padding-bottom: 5rem;
+}
+
+.our-journey__header {
+  text-align: center;
+  margin-bottom: 4rem;
+
+  .our-journey__logo {
+    height: 60px; // Đặt chiều cao logo
+    width: auto;
+    margin-bottom: 1.5rem;
+  }
+  .title {
+    margin-bottom: 1rem;
+  }
+  .subtitle {
+    font-size: 1rem;
+    color: $color-text-brown;
+    margin: 0 auto;
+  }
+}
+
+// 2. Style phần Timeline
+.timeline {
+  position: relative;
+  // Làm timeline hẹp hơn container chính
+  max-width: 800px; 
+  margin: 0 auto;
+
+  // --- TẠO ĐƯỜNG KẺ DỌC ---
+  &::after {
+    content: '';
+    position: absolute;
+    width: 2px; // Độ dày của đường kẻ
+    background-color: #e0e0e0; // Màu đường kẻ
+    top: 0;
+    bottom: 0;
+    left: 50%; // Đặt đường kẻ ở chính giữa
+    transform: translateX(-50%);
+  }
+}
+
+// Mỗi mục trong timeline
+.timeline-item {
+  padding: 2rem 0;
+  position: relative;
+  width: 50%; // Mỗi mục chiếm 50% chiều rộng
+}
+
+// Hộp chứa nội dung (năm, tiêu đề, mô tả)
+.timeline-content {
+  padding: 0 2.5rem; // Khoảng cách tới đường kẻ giữa
+  position: relative;
+
+  // --- TẠO DẤU CHẤM TRÒN ---
+  &::after {
+    content: '';
+    position: absolute;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background-color: $bg-nau; // Nền trắng
+    border: 3px solid $color-primary; // Viền màu cam/vàng
+    top: 10px; // Căn chỉnh dấu chấm
+    z-index: 1; // Nằm trên đường kẻ
+  }
+}
+
+.timeline-year {
+  display: inline-block;
+  background-color: #ece6de; // Nền xám cho hộp năm
+  padding: 0.25rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.timeline-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-description {
+  font-size: 0.95rem;
+  color: $color-text-light;
+}
+
+
+// --- 3. LOGIC XEN KẼ (TRÁI/PHẢI) ---
+
+// Các mục LẺ (1, 3, 5) -> Nằm bên TRÁI
+.timeline-item:nth-child(odd) {
+  left: 0; // Tự động căn trái
+  
+  .timeline-content {
+    text-align: right; // Chữ căn phải
+    
+    // Dấu chấm nằm bên PHẢI
+    &::after { 
+      right: 0; // (8px = nửa chiều rộng 16px)
+      transform: translateX(50%);
+    }
+  }
+}
+
+// Các mục CHẴN (2, 4) -> Nằm bên PHẢI
+.timeline-item:nth-child(even) {
+  left: 50%; // Đẩy mục sang phải 50%
+  
+  .timeline-content {
+    text-align: left; // Chữ căn trái
+    
+    // Dấu chấm nằm bên TRÁI
+    &::after { 
+      left: 0; 
+      transform: translateX(-50%);
+    }
+  }
+}

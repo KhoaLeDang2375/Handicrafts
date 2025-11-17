@@ -1,0 +1,20 @@
+$color-primary: #DB9F6C;     // Màu cam đất cho nút
+$color-text: #282828;
+$color-text-light: #777;
+$color-border: #eee;
+
+$bg-primary: #FAF8F5;
+$bg-brown: #b98c67;
+$btn-secondary-bg: #DB9F6C;   // Màu nút "Về chúng tôi"
+$text-light: #fdfdfd;
+$text-dark: #333;
+$color-text-subtitle: #2E1E11;
+
+$color-text-brown: #7F5B3C;
+
+@mixin btn-hover-effect {
+  &:hover {
+    background-color: #000;
+    color: #fff;
+  }
+}

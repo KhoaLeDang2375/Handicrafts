@@ -1,0 +1,19 @@
+// src/pages/HomePage/HomePage.scss
+
+.hero-swiper {
+  $navbar-height: 100px;
+  height: calc(100vh - $navbar-height);
+
+  /* Style các dấu chấm (pagination) */
+  .swiper-pagination-bullet {
+    width: 12px;
+    height: 12px;
+    background: #fff; 
+    opacity: 0.7;
+  }
+
+  .swiper-pagination-bullet-active {
+    background: $color-primary; // Màu chấm "active" 
+    opacity: 1;
+  }
+}
