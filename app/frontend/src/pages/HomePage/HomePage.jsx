@@ -1,5 +1,3 @@
-import Navbar from '../../components/layout/Navbar';
-
 // 1. Import Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules'; 
@@ -20,12 +18,10 @@ import FeaturedProducts from './FeaturedProducts';
 import OurJourney from './OurJourney';
 import Commitments from './Commitments';
 import SocialLink from '../../components/layout/SocialLink';
-import Footer from '../../components/layout/Footer';
 
 const HomePage = () => {
   return (
     <div className="homepage">
-      <Navbar />
 
       <Swiper
         modules={[Pagination, Autoplay]} // Kích hoạt mô-đun
@@ -56,7 +52,6 @@ const HomePage = () => {
 
       <SocialLink />
 
-      <Footer />
     </div>
   );
 };

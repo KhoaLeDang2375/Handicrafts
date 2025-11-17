@@ -7,7 +7,7 @@
   top: 0;
   left: 0;
   z-index: 1000; // Đảm bảo nó luôn nằm trên cùng
-  background-color: #fff;
+  background-color: $bg-primary;
 }
 
 .navbar__container {
@@ -44,7 +44,7 @@
   justify-content: center;
 
   a {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
     text-decoration: none;
     color: $color-text;
     font-weight: 500;

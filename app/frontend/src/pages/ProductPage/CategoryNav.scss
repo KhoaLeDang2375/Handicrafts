@@ -1,0 +1,60 @@
+// src/pages/ProductPage/CategoryNav.scss
+
+$navbar-height: 100px; 
+
+.category-nav {
+  // 1. Dính lại bên dưới Navbar
+  position: sticky;
+  top: 90px;
+  z-index: 990; // Nằm dưới Navbar (z-index: 1000)
+
+  // 2. Style cơ bản
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  width: 100%;
+  
+  // 3. Trạng thái MẶC ĐỊNH 
+  background-color: rgba(255, 255, 255, 1); // Nền trắng 100%
+  backdrop-filter: blur(0px); // Không mờ
+  
+  // Hiệu ứng chuyển mượt
+  transition: background-color 0.4s ease, backdrop-filter 0.4s ease;
+}
+
+// 4. Trạng thái KHI CUỘN (50% trong suốt + kính mờ)
+.category-nav.is-sticky {
+  // Nền trắng 50% trong suốt
+  background-color: rgba(255, 255, 255, 0.5); 
+  
+  // Thêm hiệu ứng mờ
+  backdrop-filter: blur(10px);
+
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+// Style cho các nút
+.category-btn {
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+  border-radius: 50px;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  // Nút được chọn
+  &.active {
+    background-color: $bg-dark-brown;
+    color: #fff;
+    border-color: $bg-dark-brown;
+  }
+
+  // Khi hover
+  &:not(.active):hover {
+    background-color: #f0f0f0;
+    border-color: #ccc;
+  }
+}

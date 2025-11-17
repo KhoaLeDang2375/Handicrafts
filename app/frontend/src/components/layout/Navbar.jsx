@@ -1,4 +1,5 @@
 // import React from 'react';
+import { NavLink } from 'react-router-dom';
 import './Navbar.scss';
 import Logo from '../../assets/images/Aura.png';
 
@@ -16,11 +17,11 @@ const Navbar = () => {
                 </div>
 
                 <ul className="navbar__links">
-                    <li><a href="#" className="active">TRANG CHỦ</a></li>
-                    <li><a href="#">SẢN PHẨM</a></li>
-                    <li><a href="#">VỀ CHÚNG TÔI</a></li>
-                    <li><a href="#">BLOG</a></li>
-                    <li><a href="#">LIÊN HỆ</a></li>
+                    <li><NavLink to="/">TRANG CHỦ</NavLink></li>
+                    <li><NavLink to="/san-pham">SẢN PHẨM</NavLink></li>
+                    <li><NavLink to="/ve-chung-toi">VỀ CHÚNG TÔI</NavLink></li>
+                    <li><NavLink to="/blog">BLOG</NavLink></li>
+                    <li><NavLink to="/lien-he">LIÊN HỆ</NavLink></li>
                 </ul>
 
                 <div className="navbar__actions">

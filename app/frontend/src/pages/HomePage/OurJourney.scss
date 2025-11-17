@@ -31,7 +31,7 @@ $bg-nau: #F8F4F0;
   position: relative;
 
   background-color: $bg-primary; 
-  padding: 0;
+  padding-top: 6px;
   
   // Kéo logo xuống (50% chiều cao của nó) để nó "ngồi" trên line và lấn xuống nền nâu
   transform: translateY(50%); 
