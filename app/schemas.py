@@ -89,6 +89,21 @@ class ProductVariantUpdateResponse(BaseModel):
     message: str = 'Product variant updated successfully'
 PHONE_REGEX = r'^0[0-9]{9}$'
 # Pydantic schemas user sign up
+class EmployeeCreate(BaseModel):
+    name: str 
+    email: EmailStr
+    job_title: str
+    username: str
+    password: str
+    phone_number: str = Field(
+        ..., # Bắt buộc phải có
+        pattern=PHONE_REGEX,
+        description="Số điện thoại phải là 10 chữ số, bắt đầu bằng 0."
+    )
+class EmployeeCreateResponse(BaseModel):
+    message: str
+    email: EmailStr
+    fullname: str   
 class CustomerCreate(BaseModel):
     name: str 
     email: EmailStr
