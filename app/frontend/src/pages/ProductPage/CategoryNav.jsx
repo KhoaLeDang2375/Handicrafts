@@ -1,34 +1,40 @@
+// src/pages/ProductPage/CategoryNav.jsx
 import { useState, useEffect } from 'react';
 import './CategoryNav.scss';
 
-const CategoryNav = () => {
-  // 1. Tạo state để theo dõi trạng thái "dính"
+// Danh sách phân loại (Value phải KHỚP với dữ liệu trong db.json của bạn)
+const CATEGORIES = [
+  { id: 'all', label: 'Tất cả sản phẩm' },
+  { id: 'Nội thất', label: 'Nội thất' },
+  { id: 'Túi xách', label: 'Túi xách' },
+  { id: 'Thảm', label: 'Thảm' },
+  { id: 'Trang trí', label: 'Trang trí nhà cửa' },
+];
+
+// Nhận props từ cha
+const CategoryNav = ({ activeCategory, onSelectCategory }) => {
   const [isSticky, setIsSticky] = useState(false);
 
-  // 2. Dùng useEffect để lắng nghe sự kiện cuộn (scroll)
   useEffect(() => {
-    const handleScroll = () => {
-      // Ngay khi người dùng cuộn trang (dù chỉ 1px) sẽ kích hoạt trạng thái "dính"
-      setIsSticky(window.scrollY > 0);
-    };
-
-    // Thêm listener khi component được mount
+    const handleScroll = () => setIsSticky(window.scrollY > 0);
     window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-    // Gỡ listener khi component bị unmount
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []); // [] đảm bảo effect này chỉ chạy 1 lần
-
-  // 3. Gán class 'is-sticky' nếu state là true
   return (
     <nav className={isSticky ? 'category-nav is-sticky' : 'category-nav'}>
-      <button className="category-btn active">Tất cả sản phẩm</button>
-      <button className="category-btn">Nội thất</button>
-      <button className="category-btn">Túi xách</button>
-      <button className="category-btn">Thảm</button>
-      <button className="category-btn">Trang trí nhà cửa</button>
+      {CATEGORIES.map((cat) => (
+        <button
+          key={cat.id}
+          // Nếu id của nút này trùng với activeCategory từ cha -> Thêm class active
+          className={`category-btn ${activeCategory === cat.id ? 'active' : ''}`}
+          
+          // Khi click -> Gọi hàm của cha để đổi state
+          onClick={() => onSelectCategory(cat.id)}
+        >
+          {cat.label}
+        </button>
+      ))}
     </nav>
   );
 };

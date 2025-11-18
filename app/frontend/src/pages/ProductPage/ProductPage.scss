@@ -1,0 +1,148 @@
+// src/pages/ProductPage/ProductPage.scss
+
+.product-page__container {
+  max-width: 1440px;
+  width: 90%;
+  margin: 0 auto;
+  padding: 3rem 0 5rem;
+}
+
+// 1. Header 
+.product-header {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: $text-dark;
+  }
+
+  &__count {
+    color: $color-text-brown;
+    font-size: 0.95rem;
+  }
+}
+
+// 2. Lưới sản phẩm
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 2rem; 
+
+  // Responsive: Tự động giảm cột khi màn hình nhỏ
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// 3. Card Sản phẩm
+.product-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+
+    //&:hover {
+    //transform: translateY(-5px);
+    //box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    //}
+
+  // Ảnh sản phẩm
+  &__image {
+    width: 100%;
+    aspect-ratio: 1 / 1; 
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    &:hover img {
+      transform: scale(1.05);
+    }
+  }
+
+  &__content {
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .product-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $text-dark;
+    margin-bottom: 0.5rem;
+  }
+
+  .product-desc {
+    font-size: 0.9rem;
+    color: $color-text-light;
+    margin-bottom: 1rem;
+
+    // Giới hạn 2 dòng mô tả
+    display: -webkit-box;     
+    -webkit-box-orient: vertical;   // Bắt buộc (xếp theo chiều dọc)
+    -webkit-line-clamp: 2;          // Số dòng muốn hiện
+    line-clamp: 2;                  // Thuộc tính chuẩn
+    overflow: hidden;
+  }
+
+  .product-price {
+    font-weight: 700;
+    color: $color-primary;
+    margin-bottom: 1.5rem;
+    margin-top: auto; // Đẩy giá xuống sát nút bấm
+  }
+
+  // Nút Thêm vào giỏ
+  .add-to-cart-btn {
+    position: relative;
+
+    width: 100%;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 50px; 
+    background-color: $color-primary; 
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    transition: background-color 0.3s ease;
+
+    svg {
+      position: absolute;
+      left: 2.5rem; 
+    
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: $color-text-light;
+}

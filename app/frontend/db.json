@@ -1,0 +1,404 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Ghế papasan mây tre",
+      "description": "Ghế bowl lớn bằng khung mây tre, đệm bông dày tạo cảm giác thư giãn.",
+      "price": 2200000,
+      "image": "https://images.unsplash.com/photo-1616486338812-3dadae4b4f9d?auto=format&fit=crop&w=500&q=60",
+      "category": "Nội thất"
+    },
+    {
+      "id": 2,
+      "name": "Bàn trà rattan đan tay",
+      "description": "Bàn thấp bằng rattan tự nhiên, mặt tròn, đan thủ công bền đẹp.",
+      "price": 1800000,
+      "image": "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?auto=format&fit=crop&w=500&q=60",
+      "category": "Nội thất"
+    },
+    {
+      "id": 3,
+      "name": "Tủ kệ mây tre nhỏ",
+      "description": "Kệ đựng sách hoặc đồ trang trí, khung gỗ + mây đan, phong cách boho.",
+      "price": 1350000,
+      "image": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=500&q=60",
+      "category": "Nội thất"
+    },
+    {
+      "id": 4,
+      "name": "Giường mây hai tầng",
+      "description": "Giường loft bằng khung mây tre, kết hợp gỗ, phù hợp phòng trẻ hoặc thư giãn.",
+      "price": 5200000,
+      "image": "https://images.unsplash.com/photo-1513506003011-3b03c86d414d?auto=format&fit=crop&w=500&q=60",
+      "category": "Nội thất"
+    },
+    {
+      "id": 5,
+      "name": "Ghế xích đu mây tre",
+      "description": "Xích đu boho làm bằng mây tre, thoáng khí, rất thích hợp ban công.",
+      "price": 2600000,
+      "image": "https://images.unsplash.com/photo-1616486338812-3dadae4b4f9d?auto=format&fit=crop&w=500&q=60",
+      "category": "Nội thất"
+    },
+    {
+      "id": 6,
+      "name": "Giỏ rattan đựng đồ lớn",
+      "description": "Giỏ lưu trữ lớn, làm từ rattan đan mắt lưới, có quai xách.",
+      "price": 450000,
+      "image": "https://images.unsplash.com/photo-1595877345609-8182c8445063?auto=format&fit=crop&w=500&q=60",
+      "category": "Nội thất"
+    },
+    {
+      "id": 7,
+      "name": "Túi xách rattan tròn vintage",
+      "description": "Túi mây tròn đan thủ công, quai da, thiết kế cổ điển.",
+      "price": 520000,
+      "image": "https://images.unsplash.com/photo-1590874102052-804128d9a235?auto=format&fit=crop&w=500&q=60",
+      "category": "Túi xách"
+    },
+    {
+      "id": 8,
+      "name": "Túi tote mây tre",
+      "description": "Túi tay rộng bằng mây tre, lót vải cotton, phong cách boho mộc mạc.",
+      "price": 480000,
+      "image": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=500&q=60",
+      "category": "Túi xách"
+    },
+    {
+      "id": 9,
+      "name": "Clutch rattan hình hộp",
+      "description": "Ví cầm tay đan rattan, hình hộp, nhỏ gọn và sang trọng.",
+      "price": 350000,
+      "image": "https://images.unsplash.com/photo-1590874102052-804128d9a235?auto=format&fit=crop&w=500&q=60",
+      "category": "Túi xách"
+    },
+    {
+      "id": 10,
+      "name": "Ba lô mây tre truyền thống",
+      "description": "Ba lô đan từ mây, dạng truyền thống với đai vai, nhẹ và bền.",
+      "price": 600000,
+      "image": "https://images.unsplash.com/photo-1595877345609-8182c8445063?auto=format&fit=crop&w=500&q=60",
+      "category": "Túi xách"
+    },
+    {
+      "id": 11,
+      "name": "Thảm lục bình hình tròn lớn",
+      "description": "Thảm đan từ sợi lục bình tự nhiên, đường kính 1m5, mang cảm giác thiên nhiên.",
+      "price": 750000,
+      "image": "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?auto=format&fit=crop&w=500&q=60",
+      "category": "Thảm"
+    },
+    {
+      "id": 12,
+      "name": "Thảm jute dệt thô",
+      "description": "Thảm làm bằng jute, dệt thô, phong cách rustic, phù hợp phòng khách.",
+      "price": 680000,
+      "image": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=500&q=60",
+      "category": "Thảm"
+    },
+    {
+      "id": 13,
+      "name": "Thảm cotton boho in họa tiết",
+      "description": "Thảm cotton mềm, họa tiết boho, vừa trang trí vừa êm chân.",
+      "price": 550000,
+      "image": "https://images.unsplash.com/photo-1616486338812-3dadae4b4f9d?auto=format&fit=crop&w=500&q=60",
+      "category": "Thảm"
+    },
+    {
+      "id": 14,
+      "name": "Thảm rattan dẹp",
+      "description": "Miếng thảm mỏng đan từ rattan, thích hợp làm tấm trang trí sàn nhẹ.",
+      "price": 420000,
+      "image": "https://images.unsplash.com/photo-1595877345609-8182c8445063?auto=format&fit=crop&w=500&q=60",
+      "category": "Thảm"
+    },
+    {
+      "id": 15,
+      "name": "Thảm đan dây bông tròn",
+      "description": "Thảm handmade bằng dây bông, tạo hình tròn, mang phong cách tối giản.",
+      "price": 630000,
+      "image": "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?auto=format&fit=crop&w=500&q=60",
+      "category": "Thảm"
+    },
+    {
+      "id": 16,
+      "name": "Đèn lồng mây tre thả trần",
+      "description": "Đèn lồng đan mây tre, ánh sáng ấm, tạo điểm nhấn trang trí tự nhiên.",
+      "price": 480000,
+      "image": "https://images.unsplash.com/photo-1513506003011-3b03c86d414d?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 17,
+      "name": "Khung treo tường rattan nghệ thuật",
+      "description": "Khung đan rattan hình tròn, trang trí tường theo phong cách boho.",
+      "price": 390000,
+      "image": "https://houseofekam.com/products/rattan-wall-hangings-set-of-12?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 18,
+      "name": "Giỏ rattan để cây",
+      "description": "Giỏ đan rattan, dùng để trồng cây hoặc làm giỏ trang trí nội thất.",
+      "price": 500000,
+      "image": "https://images.unsplash.com/photo-1595877345609-8182c8445063?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 19,
+      "name": "Bình hoa mây tre",
+      "description": "Bình trang trí đan bằng mây tre, thích hợp để hoa khô hoặc cây nhỏ.",
+      "price": 320000,
+      "image": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 20,
+      "name": "Tấm chắn nắng tre nghệ thuật",
+      "description": "Tấm chắn mành tre cuộn, dùng làm vách trang trí hoặc cửa sổ che nắng.",
+      "price": 410000,
+      "image": "https://images.unsplash.com/photo-1616486338812-3dadae4b4f9d?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 21,
+      "name": "Gương khung rattan boho",
+      "description": "Gương tròn khung đan rattan, tạo điểm nhấn tự nhiên cho phòng ngủ hay phòng khách.",
+      "price": 700000,
+      "image": "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 22,
+      "name": "Giỏ để đồ nhỏ rattan",
+      "description": "Giỏ đan nhỏ gọn, dùng để bút, điều khiển, vật dụng nhỏ trong nhà.",
+      "price": 200000,
+      "image": "https://images.unsplash.com/photo-1595877345609-8182c8445063?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 23,
+      "name": "Đèn bàn mây tre",
+      "description": "Đèn để bàn làm bằng mây tre đan, ánh sáng dịu nhẹ, phong cách tự nhiên.",
+      "price": 420000,
+      "image": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 24,
+      "name": "Tấm mây tre che nắng nhỏ",
+      "description": "Trang trí cửa sổ hoặc tường bằng tấm mây tre đan mỏng, tạo hiệu ứng ánh sáng đẹp.",
+      "price": 350000,
+      "image": "https://images.unsplash.com/photo-1616486338812-3dadae4b4f9d?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 25,
+      "name": "Khay mây đan để khăn giấy",
+      "description": "Khay đặt khăn giấy bằng mây tre, nhỏ gọn, rất tiện và thẩm mỹ.",
+      "price": 250000,
+      "image": "https://houseofekam.com/products/rattan-wall-hangings-set-of-12?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 26,
+      "name": "Gối tựa lưng mây tre",
+      "description": "Tựa lưng đan mây tre, dùng kèm ghế papasan hoặc ghế thư giãn.",
+      "price": 300000,
+      "image": "https://images.unsplash.com/photo-1595877345609-8182c8445063?auto=format&fit=crop&w=500&q=60",
+      "category": "Nội thất"
+    },
+    {
+      "id": 27,
+      "name": "Ghế ăn rattan cao",
+      "description": "Ghế ăn với khung rattan tự nhiên, đan chắc chắn, phù hợp phòng bếp hoặc sân ngoài.",
+      "price": 1600000,
+      "image": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=500&q=60",
+      "category": "Nội thất"
+    },
+    {
+      "id": 28,
+      "name": "Băng ghế mây tre ngoài trời",
+      "description": "Băng ghế dài đan từ mây tre, bền, thoáng khí, phù hợp sân vườn.",
+      "price": 3000000,
+      "image": "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?auto=format&fit=crop&w=500&q=60",
+      "category": "Nội thất"
+    },
+    {
+      "id": 29,
+      "name": "Túi rattan hộp hình trứng",
+      "description": "Túi rattan dạng quả trứng, quai da, lót vải nỉ, độc đáo và dễ thương.",
+      "price": 580000,
+      "image": "https://images.unsplash.com/photo-1590874102052-804128d9a235?auto=format&fit=crop&w=500&q=60",
+      "category": "Túi xách"
+    },
+    {
+      "id": 30,
+      "name": "Ví nhỏ rattan dây kéo",
+      "description": "Ví rattan mini, khóa kéo, dùng đựng thẻ hoặc tiền lẻ.",
+      "price": 290000,
+      "image": "https://images.unsplash.com/photo-1595877345609-8182c8445063?auto=format&fit=crop&w=500&q=60",
+      "category": "Túi xách"
+    },
+    {
+      "id": 31,
+      "name": "Thảm lục bình hình chữ nhật",
+      "description": "Thảm dệt từ lục bình, dáng chữ nhật, mang vẻ mộc mạc và tự nhiên.",
+      "price": 720000,
+      "image": "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?auto=format&fit=crop&w=500&q=60",
+      "category": "Thảm"
+    },
+    {
+      "id": 32,
+      "name": "Thảm bằng mây đan dày",
+      "description": "Miếng thảm dày đan từ mây, cảm giác êm và chắc chắn.",
+      "price": 800000,
+      "image": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=500&q=60",
+      "category": "Thảm"
+    },
+    {
+      "id": 33,
+      "name": "Thảm boho sợi lanh",
+      "description": "Thảm làm bằng sợi lanh tự nhiên, họa tiết boho nhẹ nhàng và thoáng khí.",
+      "price": 680000,
+      "image": "https://images.unsplash.com/photo-1616486338812-3dadae4b4f9d?auto=format&fit=crop&w=500&q=60",
+      "category": "Thảm"
+    },
+    {
+      "id": 34,
+      "name": "Thảm trải bàn mây tre",
+      "description": "Tấm thảm nhỏ đan bằng mây tre, dùng để trang trí bàn ăn hoặc bàn trang điểm.",
+      "price": 230000,
+      "image": "https://images.unsplash.com/photo-1595877345609-8182c8445063?auto=format&fit=crop&w=500&q=60",
+      "category": "Thảm"
+    },
+    {
+      "id": 35,
+      "name": "Đèn cây mây tre cao",
+      "description": "Đèn cây bằng mây tre đan, thân cao, ánh sáng ấm, rất phù hợp góc đọc sách.",
+      "price": 950000,
+      "image": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 36,
+      "name": "Tranh treo tường mây tre cách điệu",
+      "description": "Bức tranh decor làm từ mây tre đan, họa tiết trừu tượng boho.",
+      "price": 610000,
+      "image": "https://houseofekam.com/products/rattan-wall-hangings-set-of-12?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 37,
+      "name": "Giỏ đựng giấy báo rattan",
+      "description": "Giỏ cao đan rattan dùng để đựng báo, tạp chí hoặc làm giỏ rác nhẹ.",
+      "price": 380000,
+      "image": "https://images.unsplash.com/photo-1595877345609-8182c8445063?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 38,
+      "name": "Đèn treo rattan hình giọt nước",
+      "description": "Đèn thả trần khung rattan dạng giọt nước, ánh sáng nhẹ lan tỏa.",
+      "price": 540000,
+      "image": "https://images.unsplash.com/photo-1513506003011-3b03c86d414d?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 39,
+      "name": "Khung ảnh mây tre mini",
+      "description": "Khung ảnh nhỏ bằng mây tre đan tay, phong cách tự nhiên, nhẹ nhàng.",
+      "price": 260000,
+      "image": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 40,
+      "name": "Kệ trang trí mây tre treo tường",
+      "description": "Kệ gắn tường đan từ mây tre, có các ngăn nhỏ để đồ decor hoặc cây nhỏ.",
+      "price": 680000,
+      "image": "https://houseofekam.com/products/rattan-wall-hangings-set-of-12?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 41,
+      "name": "Góc thiền mây tre – thảm + gối",
+      "description": "Combo gối thiền và thảm mây tre để tạo góc thư giãn thiền định.",
+      "price": 880000,
+      "image": "https://images.unsplash.com/photo-1616486338812-3dadae4b4f9d?auto=format&fit=crop&w=500&q=60",
+      "category": "Nội thất"
+    },
+    {
+      "id": 42,
+      "name": "Ghế thư giãn mây tre bập bênh",
+      "description": "Ghế bập bênh khung mây tre, mang phong cách tự nhiên và nhẹ nhàng.",
+      "price": 2700000,
+      "image": "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?auto=format&fit=crop&w=500&q=60",
+      "category": "Nội thất"
+    },
+    {
+      "id": 43,
+      "name": "Túi basket rattan quai da",
+      "description": "Túi hình rổ bằng rattan, quai da bò, rất tiện khi dạo phố hoặc đi chợ.",
+      "price": 500000,
+      "image": "https://images.unsplash.com/photo-1590874102052-804128d9a235?auto=format&fit=crop&w=500&q=60",
+      "category": "Túi xách"
+    },
+    {
+      "id": 44,
+      "name": "Túi đeo chéo mây tre nhỏ",
+      "description": "Túi đeo chéo nhẹ nhàng bằng mây tre, size nhỏ, tiện dùng hàng ngày.",
+      "price": 330000,
+      "image": "https://images.unsplash.com/photo-1595877345609-8182c8445063?auto=format&fit=crop&w=500&q=60",
+      "category": "Túi xách"
+    },
+    {
+      "id": 45,
+      "name": "Thảm trải cửa mây tre tết",
+      "description": "Thảm nhỏ đặt trước cửa nhà, đan tết từ mây tre, vừa bền vừa trang trí.",
+      "price": 290000,
+      "image": "https://images.unsplash.com/photo-1616486338812-3dadae4b4f9d?auto=format&fit=crop&w=500&q=60",
+      "category": "Thảm"
+    },
+    {
+      "id": 46,
+      "name": "Thảm trải sàn mây tre thô",
+      "description": "Thảm chất liệu mây tre tự nhiên, dệt thô, cảm giác rất mộc mạc.",
+      "price": 820000,
+      "image": "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?auto=format&fit=crop&w=500&q=60",
+      "category": "Thảm"
+    },
+    {
+      "id": 47,
+      "name": "Đèn lồng mây tre hình cầu",
+      "description": "Đèn lồng hình cầu, đan bằng mây tre, lắp bóng LED nhỏ bên trong.",
+      "price": 470000,
+      "image": "https://images.unsplash.com/photo-1513506003011-3b03c86d414d?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 48,
+      "name": "Chậu rattan để cây treo",
+      "description": "Chậu đan rattan, có móc treo, thích hợp trồng cây nhỏ trong nhà.",
+      "price": 520000,
+      "image": "https://houseofekam.com/products/rattan-wall-hangings-set-of-12?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 49,
+      "name": "Tấm che mây tre decor trần nhà",
+      "description": "Tấm mây tre đan lớn để gắn lên trần nhà tạo hiệu ứng đổ bóng tự nhiên.",
+      "price": 1200000,
+      "image": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    },
+    {
+      "id": 50,
+      "name": "Giỏ rượu rattan",
+      "description": "Giỏ đựng chai rượu, đan từ rattan, quai xách tiện dụng và sang trọng.",
+      "price": 410000,
+      "image": "https://images.unsplash.com/photo-1595877345609-8182c8445063?auto=format&fit=crop&w=500&q=60",
+      "category": "Trang trí"
+    }
+  ]
+}

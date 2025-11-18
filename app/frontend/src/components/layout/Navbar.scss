@@ -1,12 +1,12 @@
 .navbar {
   width: 100%;
-  background: #fff;
+  background: $bg-primary;
   border-bottom: 1px solid $color-border;
   // padding: 1rem 0;
   position: sticky;
   top: 0;
   left: 0;
-  z-index: 1000; // Đảm bảo nó luôn nằm trên cùng
+  z-index: 1000;
   background-color: $bg-primary;
 }
 
@@ -14,7 +14,6 @@
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-
   display: flex;
   align-items: center;
 }
@@ -46,8 +45,8 @@
   a {
     font-family: 'Roboto', sans-serif;
     text-decoration: none;
-    color: $color-text;
-    font-weight: 500;
+    color: #3f3f3f;
+    font-weight: 600;
     font-size: 15px;
     transition: color 0.3s ease;
 
@@ -72,16 +71,20 @@
 
 .navbar__search {
   position: relative;
+  background: $bg-primary;
   
   input {
     border: none;
     border-bottom: 1px solid $color-border;
-    padding: 0.5rem 0.5rem 0.5rem 0;
+    padding: 0.5rem;
     font-size: 0.9rem;
     outline: none;
+    border-radius: 30px;
 
     &:focus {
-      border-bottom-color: $color-text;
+      border-bottom-color: #3f3f3f;
+      border-radius: 0;
+      transition: border-radius 0.3s ease, border-bottom-color 0.3s ease;
     }
   }
 
