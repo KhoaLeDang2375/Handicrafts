@@ -3,9 +3,20 @@
 import { useState, useEffect } from 'react';
 import CategoryNav from './CategoryNav';
 import './ProductPage.scss';
+import CustomerReviews from './CustomerReviews';
+
+// Danh sách phân loại (Value phải KHỚP với dữ liệu trong db.json)
+const CATEGORIES = [
+  { id: 'all', label: 'Tất cả sản phẩm' },
+  { id: 1, label: 'Nội thất' },
+  { id: 2, label: 'Túi xách' },
+  { id: 3, label: 'Thảm' },
+  { id: 4, label: 'Trang trí nhà cửa' },
+];
+
 
 // 1. KHAI BÁO URL API
-const API_URL = 'http://localhost:8000/products'; 
+const BASE_URL = 'http://localhost:8000'; 
 
 const ProductPage = () => {
   // State lưu trữ danh sách sản phẩm
@@ -22,24 +33,31 @@ const ProductPage = () => {
 
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Gọi API
   useEffect(() => {
     const fetchProducts = async () => {
-      setIsLoading(true); // Bật loading mỗi khi đổi category
+      setIsLoading(true);
       try {
-        // 2. XÂY DỰNG URL DỰA TRÊN CATEGORY
-        // Nếu là 'all' thì lấy hết, ngược lại thì thêm ?category=...
-        // JSON Server hỗ trợ lọc bằng cách thêm ?tên_trường=giá_trị
-        let url = API_URL;
-        if (selectedCategory !== 'all') {
-           // Ví dụ: http://localhost:8000/products?category=Nội thất
-           url += `?category=${selectedCategory}`; 
+        let url = '';
+
+        if (selectedCategory === 'all') {
+           // 1. Gọi API lấy danh sách chung
+           // Endpoint: GET /products/
+           url = `${BASE_URL}/products`; 
+        } else {
+           // 2. Gọi API theo ID
+           // Endpoint: GET /products/category/{category_id}
+           url = `${BASE_URL}/products/category/${selectedCategory}`;
         }
 
         const response = await fetch(url);
-        if (!response.ok) throw new Error('Kết nối thất bại');
+        if (!response.ok) throw new Error('Lỗi kết nối Backend');
+        
         const data = await response.json();
-        setProducts(data);
+        
+        // LƯU Ý: Kiểm tra xem Backend trả về mảng luôn hay là object { data: [] }
+        // Nếu Swagger trả về trực tiếp list, thì dùng:
+        setProducts(data); 
+
       } catch (err) {
         setError(err.message);
       } finally {
@@ -48,16 +66,20 @@ const ProductPage = () => {
     };
 
     fetchProducts();
-    
-    // 3. Thêm selectedCategory vào dependency array
-    // Khi selectedCategory thay đổi, chạy lại useEffect
   }, [selectedCategory]);
+
+  // Tìm trong mảng CATEGORIES xem cái nào có id trùng với selectedCategory
+  const currentCategory = CATEGORIES.find(cat => cat.id === selectedCategory);
+  
+  // Lấy label ra, nếu không tìm thấy (ví dụ lúc mới tải) thì mặc định là 'Tất cả'
+  const pageTitle = currentCategory ? currentCategory.label : 'Tất cả sản phẩm';
 
   return (
     <div className="product-page">
     
       {/* 4. TRUYỀN PROPS XUỐNG CHO CON */}
       <CategoryNav 
+        categories={CATEGORIES}
         activeCategory={selectedCategory} 
         onSelectCategory={setSelectedCategory} 
       />
@@ -66,7 +88,7 @@ const ProductPage = () => {
 
         <header className="product-header">
           <h1 className="product-header__title">
-            {selectedCategory === 'all' ? 'Tất cả sản phẩm' : selectedCategory}
+            {pageTitle}
           </h1>
           
           <p className="product-header__count">
@@ -111,6 +133,9 @@ const ProductPage = () => {
         )}
       </div>
 
+      <div style={{ marginTop: '4rem' }}>
+        <CustomerReviews />
+      </div>
     </div>
   );
 };

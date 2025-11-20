@@ -1,0 +1,118 @@
+.customer-reviews {
+  background-color: #a88a6d;
+  padding: 4rem 0;
+  color: #fff;
+  
+  // Hiệu ứng chuyển đổi chiều cao mượt mà (Optional)
+  transition: all 0.3s ease-in-out;
+}
+
+.reviews-container {
+  max-width: 1440px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+// 1. Header (Tiêu đề + Nút bấm)
+.reviews-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  .title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $color-heading;
+  }
+
+  .toggle-btn {
+    background: none;
+    border: none;
+    color: #555; 
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    transition: color 0.3s;
+
+    &:hover {
+      color: #000;
+    }
+
+    .arrow {
+      font-weight: bold;
+    }
+  }
+}
+
+// 2. Grid Layout
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 2rem; 
+  margin-bottom: 3rem;
+
+  // Responsive cho mobile
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr; // Mobile hiện 1 cột
+  }
+}
+
+// 3. Card Style
+.review-card {
+  background-color: #fdfaf6;
+  padding: 2rem;
+  border-radius: 8px;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 280px; // Chiều cao tối thiểu cho đều
+
+  .product-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+
+  .review-content {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: $color-text;
+    margin-bottom: 2rem;
+    flex-grow: 1; // Đẩy phần user xuống đáy
+  }
+
+  .customer-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .customer-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+  }
+}
+
+// 4. Footer text bên dưới
+.reviews-footer-text {
+  text-align: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  font-size: 0.9rem;
+  font-style: italic;
+  opacity: 0.9;
+  line-height: 1.6;
+}
