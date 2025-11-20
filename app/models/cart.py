@@ -55,21 +55,39 @@ class Cart:
         """
         return db.fetch_one(query, (user_id, productvariant_id))
 
-    def update_quantity(self, cart_id, quantity):
+    def update_quantity(self, variant_id, quantity):
         self.quantity = quantity
         self._calculate_total_price()
-        
         query = """
         UPDATE Cart 
         SET quantity = %s, total_price = %s 
-        WHERE id = %s
+        WHERE user_id = %s AND productvariant_id = %s
         """
-        return db.execute_query(query, (quantity, self.total_price, cart_id))
-
+        return db.execute_query(query, (
+            self.quantity,
+            self.total_price,
+            self.user_id,
+            variant_id
+        ))
     @staticmethod
-    def remove_item(cart_id):
-        query = """DELETE FROM Cart WHERE id = %s"""
-        return db.execute_query(query, (cart_id,))
+    def update_item_quantity(user_id, variant_id, quantity):
+        query = """
+        UPDATE Cart 
+        SET quantity = %s, total_price = 
+            (SELECT price FROM ProductVariant WHERE id = %s) * %s
+        WHERE user_id = %s AND productvariant_id = %s
+        """
+        return db.execute_query(query, (
+            quantity,
+            variant_id,
+            quantity,
+            user_id,
+            variant_id
+        ))
+    @staticmethod
+    def remove_item(variant_id):
+        query = """DELETE FROM Cart WHERE productvariant_id = %s"""
+        return db.execute_query(query, (variant_id,))
 
     @staticmethod
     def clear_cart(user_id):

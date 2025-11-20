@@ -241,3 +241,32 @@ class OrderCheckResponse(BaseModel):
     items: list[OrderDetailResponse]
     price: float
     status: str = None
+# Pydantic schemas for Cart Response
+class CartResponse(BaseModel):
+    customer_id: int
+    items: List[CartItemResponse] = []
+    total_amount: float = 0.0
+# Pydantic schemas for adding item to Cart
+class CartItemAdd(BaseModel):
+    access_token: str
+    productvariant_id: int
+    product_quantity: int
+class CartItemAddResponse(BaseModel):
+    productvariant_id: int
+    quantity: int
+    total_price: float
+    message: str = "Item added to cart successfully"
+# Pydantic schemas for updating item in Cart
+class CartItemUpdate(BaseModel):
+    access_token: str
+    productvariant_id: int
+    new_quantity: int
+class CartItemUpdateResponse(BaseModel):
+    productvariant_id: int
+    quantity: int
+    total_price: float
+    message: str = "Cart item updated successfully"
+# Pydantic schemas for removing item from Cart
+class CartItemDeleteResponse(BaseModel):
+    productvariant_id: int
+    message: str = "Item removed from cart successfully"
