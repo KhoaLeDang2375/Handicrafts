@@ -51,7 +51,6 @@ const CustomerReviews = () => {
           ))}
         </div>
 
-        {/* Phần Footer Quotes (Như trong ảnh) */}
         <div className="reviews-footer-text">
           <p>Chúng tôi luôn trân trọng từng chia sẻ và cảm nhận của bạn — bởi chính những đánh giá chân thành ấy giúp chúng tôi hoàn thiện hơn mỗi ngày, để mang đến những trải nghiệm tốt hơn trong mỗi lần bạn quay lại.</p>
         </div>
