@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Path, Query
+from typing import List
 from app.schemas import *
 from app.models.review import Review
 from app.models.product import Product
@@ -9,8 +10,19 @@ router = APIRouter(
     tags=["reviews"]
 )
 
-
-
+@router.get('/reviews',response_model=List[ReviewResponse])
+async def get_all_reviews(
+        limit : int = 3,
+        offset: int = 0
+    ):
+    """Get all review"""
+    try:
+        reviews = Review.get_all_reviews(limit, offset)
+        if not reviews:
+            raise HTTPException(status_code = 404, detail = 'Not reviews')
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    return reviews
 @router.post("/variants/{variant_id}/reviews", response_model=ReviewResponse)
 async def create_review_for_variant(
     variant_id: int = Path(..., description="Variant id to review"),

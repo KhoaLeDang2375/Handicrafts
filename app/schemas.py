@@ -145,7 +145,7 @@ class ReviewResponse(BaseModel):
     variant_id: int
     rating: int
     content: Optional[str] = None
-    date: Optional[str] = None
+    date: Optional[datetime] = None
     customer_name: Optional[str] = None
     product_name: Optional[str] = None
 

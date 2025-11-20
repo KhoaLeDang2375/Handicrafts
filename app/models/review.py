@@ -42,7 +42,19 @@ class Review:
             self.content,
             self.date
         ))
-
+    @staticmethod
+    def get_all_reviews(limit = 3, offset = 0):
+        query = """        
+                SELECT r.*, c.name as customer_name, p.name as product_name
+                FROM Reviews r
+                JOIN Customers c ON r.customer_id = c.id
+                JOIN ProductVariant pv ON r.variant_id = pv.id
+                JOIN Products p ON pv.product_id = p.id
+                LIMIT %s
+                OFFSET %s;
+            """
+        result = db.fetch_all(query,(limit,offset,))
+        return result
     @staticmethod
     def get_by_id(review_id):
         query = """
@@ -53,7 +65,7 @@ class Review:
         JOIN Products p ON pv.product_id = p.id
         WHERE r.id = %s
         """
-        result = db.fetch_one(query, (review_id,))
+        result = db.fetch_all(query, (review_id,))
         if result and 'date' in result and isinstance(result['date'], datetime):
             result['date'] = result['date'].isoformat()
         return result
