@@ -4,7 +4,7 @@ import './ProductPage.scss';
 import CustomerReviews from './CustomerReviews';
 
 // 1. KHAI BÁO URL BACKEND
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = 'http://127.0.0.1:8000';
 
 const ProductPage = () => {
   // Danh sách sản phẩm gốc từ backend
@@ -26,7 +26,7 @@ const ProductPage = () => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
 
-  // 📌 GỌI API
+  // GỌI API
   useEffect(() => {
     const fetchProductsAndCategories = async () => {
       setIsLoading(true);
@@ -37,12 +37,12 @@ const ProductPage = () => {
         const data = await response.json();
         console.log('Data từ backend:', data);
 
-        // 🛠 FIX 1: Lấy đúng mảng items từ JSON structure của bạn
+        // FIX 1: Lấy đúng mảng items từ JSON structure của bạn
         const productList = data.items || [];
         
         setProducts(productList);
 
-        // 📌 Tạo danh mục độc nhất từ category_name
+        // Tạo danh mục độc nhất từ category_name
         const categorySet = new Set(productList.map((p) => p.category_name));
         const normalizedCategories = Array.from(categorySet).map((cat, index) => ({
           id: index + 1,
@@ -66,8 +66,8 @@ const ProductPage = () => {
     fetchProductsAndCategories();
   }, []);
 
-  // 📌 Lọc sản phẩm theo danh mục
-  // 📌 Lọc sản phẩm theo danh mục
+  // Lọc sản phẩm theo danh mục
+  // Lọc sản phẩm theo danh mục
   useEffect(() => {
     console.log('--- BẮT ĐẦU LỌC ---');
     console.log('Danh mục đang chọn (selectedCategory):', selectedCategory);
@@ -116,7 +116,7 @@ const ProductPage = () => {
           <div className="error">Lỗi: {error} (Hãy kiểm tra lại backend)</div>
         ) : (
           <div className="product-grid">
-            {/* 🛠 FIX 2: Xử lý trường hợp không có sản phẩm nào */}
+            {/* FIX 2: Xử lý trường hợp không có sản phẩm nào */}
             {filteredProducts.length === 0 && (
                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', color: '#666' }}>
                   Không tìm thấy sản phẩm nào trong danh mục này.
@@ -124,7 +124,7 @@ const ProductPage = () => {
             )}
 
             {filteredProducts.map((product) => {
-              // 🛠 FIX 3: Logic lấy GIÁ và ẢNH an toàn
+              // FIX 3: Logic lấy GIÁ và ẢNH an toàn
               
               // Lấy giá từ variant đầu tiên, nếu không có set bằng 0
               const displayPrice = product.variants?.length > 0 ? product.variants[0].price : 0;

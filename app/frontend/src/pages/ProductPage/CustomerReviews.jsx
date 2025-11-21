@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import './CustomerReviews.scss';
 
-// Link API giả lập
-const API_URL = 'http://localhost:8000/reviews';
+// Link API thực tế từ Backend FastAPI
+const API_URL = 'http://127.0.0.1:8000/reviews';
 
 const CustomerReviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -13,33 +13,46 @@ const CustomerReviews = () => {
     const fetchReviews = async () => {
       try {
         const res = await fetch(API_URL);
+        if (!res.ok) throw new Error('Kết nối thất bại');
         const data = await res.json();
         
         // Kiểm tra an toàn: chỉ set nếu data là mảng
-        if (Array.isArray(data)) {
-            setReviews(data);
-        } else {
-            setReviews([]); 
-        }
+        // Backend có thể trả về { items: [] } hoặc [] trực tiếp
+        const reviewList = Array.isArray(data) ? data : (data.items || []);
+        setReviews(reviewList);
+        
       } catch (err) {
         console.error("Lỗi tải đánh giá:", err);
-        setReviews([]);
+        setReviews([]); // Set rỗng để không crash web
       }
     };
 
     fetchReviews();
   }, []);
 
-  // Logic cắt mảng
+  // Logic cắt mảng: Mặc định hiện 3 cái, bấm xem thêm thì hiện hết
   const visibleReviews = isExpanded ? reviews : reviews.slice(0, 3);
+
+
+  console.log("Dữ liệu reviews hiện tại:", reviews);
+
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
 
-  // Hàm render sao đánh giá (Vd: rating = 5 -> ★★★★★)
+  // Hàm render sao đánh giá (Dựa vào field 'rating' hoặc 'ranting' trong DB)
   const renderStars = (rating) => {
-    return "★".repeat(rating || 5); // Mặc định 5 sao nếu thiếu data
+    // Chuyển đổi thành số nguyên, mặc định là 5 nếu dữ liệu lỗi
+    const numStars = parseInt(rating) || 5; 
+    return "★".repeat(numStars); 
+  };
+
+  // Hàm format ngày tháng (Dựa vào field 'date' trong DB)
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('vi-VN').format(date); // Ra dạng: 20/11/2025
   };
 
   return (
@@ -49,7 +62,8 @@ const CustomerReviews = () => {
         {/* Header */}
         <div className="reviews-header">
           <h2 className="title">Đánh giá từ khách hàng</h2>
-          
+        </div>  
+        <div className="header-action">
           {/* Chỉ hiện nút xem thêm nếu có nhiều hơn 3 đánh giá */}
           {reviews.length > 3 && (
             <button className="toggle-btn" onClick={toggleExpand}>
@@ -64,37 +78,50 @@ const CustomerReviews = () => {
           {visibleReviews.length > 0 ? (
             visibleReviews.map((review) => (
                 <div key={review.id} className="review-card">
-                  {/* 1. Sửa product_name */}
-                  <h3 className="product-name">{review.product_name}</h3>
+                  {/* 1. TÊN SẢN PHẨM 
+                     Nếu backend trả về product_name thì dùng, 
+                     nếu chỉ có variant_id thì hiển thị tạm ID 
+                  */}
+                  <h3 className="product-name">
+                    {review.product_name || `Sản phẩm #${review.variant_id}`}
+                  </h3>
                   
-                  {/* Thêm hiển thị sao đánh giá */}
-                  <div className="rating" style={{ color: '#ffc107', marginBottom: '5px' }}>
-                    {renderStars(review.rating)}
+                  {/* 2. SAO ĐÁNH GIÁ */}
+                  <div className="rating" style={{ color: '#ffc107', marginBottom: '10px', fontSize: '1.2rem' }}>
+                    {/* DB của bạn có thể tên là 'rating' hoặc 'ranting', check cả 2 */}
+                    {renderStars(review.rating || review.ranting)}
                   </div>
 
+                  {/* 3. NỘI DUNG ĐÁNH GIÁ */}
                   <p className="review-content">"{review.content}"</p>
                   
                   <div className="customer-info">
-                    {/* 2. Tự tạo Avatar từ tên vì API không có ảnh */}
+                    {/* 4. AVATAR TỰ ĐỘNG 
+                        Dùng tên khách hàng để tạo avatar. 
+                        Nếu không có tên, dùng customer_id để tạo.
+                    */}
                     <img 
-                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.customer_name)}&background=random&color=fff`} 
-                        alt={review.customer_name} 
+                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.customer_name || "User")}&background=random&color=fff`} 
+                        alt="avatar" 
                         className="avatar" 
                     />
                     
                     <div className="info-text">
-                        {/* 3. Sửa customer_name */}
-                        <span className="customer-name">{review.customer_name}</span>
-                        {/* 4. Thêm hiển thị ngày */}
-                        <span className="review-date" style={{ fontSize: '0.8rem', color: '#888', display: 'block' }}>
-                            {review.date}
+                        {/* 5. TÊN KHÁCH HÀNG */}
+                        <span className="customer-name">
+                            {review.customer_name || `Khách hàng ${review.customer_id}`}
+                        </span>
+                        
+                        {/* 6. NGÀY ĐÁNH GIÁ */}
+                        <span className="review-date" style={{ fontSize: '0.8rem', color: '#888', display: 'block', marginTop: '2px' }}>
+                            {formatDate(review.date)}
                         </span>
                     </div>
                   </div>
                 </div>
             ))
           ) : (
-            <p style={{ textAlign: 'center', width: '100%' }}>Chưa có đánh giá nào.</p>
+            <p style={{ textAlign: 'center', width: '100%', color: '#fff' }}>Chưa có đánh giá nào.</p>
           )}
         </div>
 

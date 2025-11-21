@@ -18,18 +18,24 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 
   .title {
     font-size: 1.5rem;
     font-weight: 700;
-    color: $color-heading;
+    color: #282828;
   }
+}
+.header-action {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 1rem;
 
   .toggle-btn {
     background: none;
     border: none;
-    color: #555; 
+    color: #3f3f3f; 
     font-size: 0.9rem;
     cursor: pointer;
     display: flex;

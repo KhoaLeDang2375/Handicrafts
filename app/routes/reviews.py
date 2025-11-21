@@ -12,7 +12,7 @@ router = APIRouter(
 
 @router.get('/reviews',response_model=List[ReviewResponse])
 async def get_all_reviews(
-        limit : int = 3,
+        limit : int = 100,
         offset: int = 0
     ):
     """Get all review"""
