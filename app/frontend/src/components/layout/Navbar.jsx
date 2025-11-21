@@ -1,5 +1,5 @@
 // import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import './Navbar.scss';
 import Logo from '../../assets/images/Aura.png';
 
@@ -34,7 +34,15 @@ const Navbar = () => {
                             </svg>
                         </button>
                     </div>
-                    <button className="btn btn--primary">Đăng nhập</button>
+
+                    <Link
+                        to="/login"
+                        className="btn btn--primary"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Đăng nhập
+                    </Link>
                 </div>
             </div>
         </nav>

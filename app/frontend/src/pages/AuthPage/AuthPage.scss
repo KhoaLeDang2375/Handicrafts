@@ -1,0 +1,434 @@
+.auth-page {
+  width: 100vw;
+  min-height: 100vh;
+  background: linear-gradient(135deg, $bg-gradient-start 0%, $bg-gradient-end 100%);
+
+  display: flex;
+  justify-content: center;
+  position: relative;
+
+  align-items: flex-start;
+  padding-top: 12vh;
+
+  padding: 2rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.auth-toggle-top {
+  position: absolute;
+  top: 2rem;
+  right: 3rem;
+  display: flex;
+  gap: 2rem;
+
+  button {
+    background: none;
+    border: none;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #5a4025; // Màu nâu đậm
+    opacity: 0.6;
+    transition: all 0.3s;
+
+    &.active {
+      opacity: 1;
+      text-decoration: underline;
+      transform: scale(1.05);
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.auth-container {
+  display: flex;
+  width: 100%;
+  max-width: 1440px;
+  align-items: center; // Căn giữa dọc
+  gap: 4rem;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    margin-top: 4rem;
+  }
+}
+
+/* --- CỘT TRÁI (ẢNH) --- */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.auth-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center; // Căn giữa nội dung bên trái
+  max-width: 700px;
+
+  .image-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; // Chia 2 cột
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    width: 100%;
+    max-width: 550px;
+
+    img {
+      min-width: 0;
+
+      width: 100%;
+      border-radius: 20px;
+      object-fit: cover;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      transition: all 0.4s ease;
+    }
+
+    // Ảnh Chính (Góc trên trái)
+    .img-main {
+      grid-column: 1 / 2;
+      height: 280px;
+    }
+
+    // Ảnh Phụ 
+    .img-sub {
+      grid-column: 2 / 3;
+      height: 200px;
+      align-self: center;
+    }
+
+    // Ảnh Thứ 3 (Chỉ hiện khi Đăng ký)
+    .img-extra {
+      max-width: 100%;
+
+      grid-column: 1 / -1; // Chiếm full chiều ngang của grid (cả 2 cột)
+      grid-row: 2;
+      height: 180px;
+      margin-top: 1rem;
+      // animation: fadeInScale 0.6s ease-out forwards;
+    }
+  }
+
+  .quote {
+    font-style: italic;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #4a3b2a;
+    padding-right: 2rem;
+
+    max-width: 500px; // Giới hạn độ rộng chữ cho đẹp
+    text-align: center;
+  }
+}
+
+/* --- CỘT PHẢI (WRAPPER) --- */
+.auth-right-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center; // Căn giữa Switch và Form
+  max-width: 600px; // Giới hạn chiều rộng cho cả cột
+  width: 100%;
+}
+
+/* --- STYLE THANH TRƯỢT --- */
+.auth-switch {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+
+  background-color: transparent;
+
+  padding: 5px;
+  margin-bottom: 1.5rem; // Khoảng cách với Form bên dưới
+  width: 100%;
+  max-width: 300px;
+
+  // Cục trượt
+  .switch-slider {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: calc(50% - 5px);
+    height: calc(100% - 10px);
+    background-color: #d49058; // Màu cam
+    border-radius: 50px;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    box-shadow: 0 4px 10px rgba(212, 144, 88, 0.3);
+
+    svg {
+      color: #fff;
+      transition: transform 0.4s ease;
+    }
+
+    &.left {
+      transform: translateX(0);
+
+      svg {
+        transform: rotate(180deg);
+      }
+    }
+
+    &.right {
+      transform: translateX(100%);
+
+      svg {
+        transform: rotate(0deg);
+      }
+    }
+  }
+
+  // Các nút bấm chữ
+  .switch-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 10px 0;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 2;
+    transition: color 0.3s ease;
+    outline: none;
+
+    color: #4a3b2a;
+
+    // Khi active (nằm trên cục cam) thì thành màu trắng
+    &.active {
+      color: #fff;
+    }
+  }
+}
+
+.auth-right {
+  flex: 1;
+  // Hiệu ứng kính mờ 
+  background-color: rgba(243, 219, 199, 0.65);
+  backdrop-filter: blur(12px);
+
+  padding: 2rem;
+  border-radius: 30px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+
+  .collapse-section {
+    overflow: hidden; // Ẩn nội dung khi chiều cao = 0
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); // Hiệu ứng trượt mượt mà
+
+    &.collapsed {
+      max-height: 0;
+      opacity: 0;
+      margin: 0;
+      transform: translateY(-10px); // Trượt nhẹ lên trên khi ẩn
+    }
+
+    &.expanded {
+      max-height: 500px; // Đủ lớn để chứa nội dung (đừng để quá lớn)
+      opacity: 1;
+      margin-bottom: 0; // Margin sẽ do form-group bên trong lo
+      transform: translateY(0);
+    }
+
+    // Riêng phần Social Login thì ngược lại (Login hiện, Register ẩn)
+    &.social-section.expanded {
+      max-height: 100px;
+      margin-top: 1rem;
+    }
+  }
+
+  h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    color: #333;
+    font-weight: 700;
+  }
+
+  .form-group {
+    margin-bottom: 1.2rem;
+
+    .label-row {
+      display: flex;
+      justify-content: space-between; // Đẩy sang 2 đầu
+      align-items: center;
+      margin-bottom: 0.5rem; // Khoảng cách với ô input bên dưới
+
+      label {
+        margin-bottom: 0; // Bỏ margin cũ của label đi vì đã có margin của row
+      }
+
+      .forgot-pass {
+        font-size: 0.85rem;
+        color: #d49058; // Màu cam
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+
+        &:hover {
+          color: darken(#d49058, 15%);
+          text-decoration: underline;
+        }
+      }
+    }
+
+    input {
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 12px;
+      background-color: rgba(210, 180, 156, 0.5);
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s;
+      color: #333;
+
+      &:focus {
+        background-color: rgba(210, 180, 156, 0.8);
+        box-shadow: 0 0 0 2px rgba(212, 144, 88, 0.3);
+      }
+    }
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 50px;
+    background-color: $btn-color;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: transform 0.2s, background-color 0.3s;
+    box-shadow: 0 5px 15px rgba(212, 144, 88, 0.4);
+
+    &:hover {
+      transform: translateY(-2px);
+      background-color: #cc7a38;
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+
+  .social-login {
+    margin-bottom: 1rem;
+    text-align: center;
+
+    span {
+      display: block;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .icons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .icon-btn {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: none;
+      background: #fff;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.2rem;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+
+      &.google {
+        color: #DB4437;
+      }
+
+      &.facebook {
+        color: #4267B2;
+      }
+    }
+  }
+
+  .form-options.remember-me {
+    margin-top: -0.5rem; // Kéo lên một chút cho gần ô mật khẩu
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: #444;
+
+    label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    input {
+      margin-right: 0.5rem;
+      accent-color: #d49058; // Màu cam cho checkbox
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+  }
+
+  .form-options.terms-checkbox {
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: #444;
+
+    label {
+      display: flex;
+      align-items: flex-start; // Căn lề trên nếu text dài xuống dòng
+      cursor: pointer;
+      line-height: 1.4;
+    }
+
+    input {
+      margin-right: 0.5rem;
+      margin-top: 3px; // Căn chỉnh checkbox khớp với dòng đầu tiên của text
+      accent-color: #d49058;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    // Style cho thẻ a (Link)
+    a {
+      color: #d49058; // Màu cam đất
+      font-weight: 700;
+      text-decoration: none;
+      transition: color 0.2s;
+      position: relative;
+
+      // Hiệu ứng gạch chân khi hover
+      &:hover {
+        color: darken(#d49058, 15%);
+        text-decoration: underline;
+      }
+    }
+  }
+}

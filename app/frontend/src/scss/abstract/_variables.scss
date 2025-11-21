@@ -17,6 +17,11 @@ $color-text-subtitle: #2E1E11;
 
 $color-text-brown: #7F5B3C;
 
+$bg-gradient-start: #d5a678;
+$bg-gradient-end: #fdfaf6;
+$input-bg: #e6cbb6;
+$btn-color: #d49058;
+
 @mixin btn-hover-effect {
   &:hover {
     background-color: #000;
