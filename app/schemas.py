@@ -270,3 +270,25 @@ class CartItemUpdateResponse(BaseModel):
 class CartItemDeleteResponse(BaseModel):
     productvariant_id: int
     message: str = "Item removed from cart successfully"
+# User profile schemas
+# Model base chứa các trường chung
+class UserRequest(BaseModel):
+    access_token: str
+class UserProfileResponse(BaseModel):
+    email: EmailStr
+    full_name: Optional[str] = None
+    address :  Optional[str] = None
+    avatar_url: Optional[str] = None
+    phone_number: Optional[str] = None
+    # Cấu hình này giúp Pydantic đọc dữ liệu từ ORM (SQLAlchemy/SQLModel)
+    class Config:
+        from_attributes = True
+class UserUpdateProfileRequest(BaseModel):
+    full_name: Optional[str] = Field(None, min_length=2, max_length=50)
+    address: Optional[str] = Field(None, max_length=200)
+    phone_number: Optional[str] = Field(None, pattern=r"(84|0[3|5|7|8|9])+([0-9]{8})\b") # Regex số ĐT VN
+    email: Optional[EmailStr] = None # Thường ít khi cho đổi email tùy tiện, nhưng cứ để đây nếu bạn cần
+# Response: Trả về thông báo và dữ liệu sau khi update
+class UserProfileUpdateResponse(BaseModel):
+    msg: str = "Updated Successfully!"
+    updated_fields: list[str] # Danh sách các trường đã được update'
