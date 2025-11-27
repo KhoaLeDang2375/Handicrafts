@@ -1,0 +1,141 @@
+// src/pages/ProductDetailPage/ProductTabs.scss
+
+$color-primary: #d4a373; // Màu cam đất chủ đạo
+$border-color: #e0e0e0;
+$text-dark: #333;
+$text-gray: #666;
+
+.product-tabs {
+  margin-top: 4rem; 
+  border: 1px solid $border-color;
+  border-radius: 20px;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+
+  // 1. Header Tab
+  .tabs-header {
+    display: flex;
+    border-bottom: 1px solid $border-color;
+    background-color: #f9f9f9;
+
+    .tab-btn {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      background: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: $text-gray;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent; // Viền ẩn
+
+      &:hover {
+        color: $color-primary;
+        background-color: #fff;
+      }
+
+      &.active {
+        color: $color-primary; // Chữ cam
+        background-color: #fff; // Nền trắng
+        border-bottom-color: $color-primary; // Viền dưới cam
+      }
+    }
+  }
+
+  // 2. Content
+  .tabs-content {
+    padding: 2.5rem;
+
+    .section-title {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: $text-dark;
+      font-weight: 600;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    // Style cho danh sách thông tin
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 2rem;
+
+      li {
+        margin-bottom: 0.8rem;
+        font-size: 1rem;
+        color: $text-dark;
+        display: flex;
+        align-items: center;
+
+        // Tạo dấu chấm tròn màu cam
+        &::before {
+          content: "•";
+          color: $color-primary;
+          font-weight: bold;
+          font-size: 1.5rem;
+          margin-right: 0.8rem;
+          line-height: 0; // Căn giữa dấu chấm
+        }
+
+        strong {
+          font-weight: 600;
+          margin-right: 0.5rem;
+          color: #555;
+        }
+      }
+    }
+
+    // Câu chuyện sản phẩm
+    .product-story {
+      border-top: 1px solid #eee;
+      padding-top: 2rem;
+      
+      p {
+        line-height: 1.8;
+        color: $text-gray;
+        text-align: justify;
+      }
+    }
+
+    // Danh sách đánh giá
+    .review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      .review-item {
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #eee;
+        &:last-child { border-bottom: none; }
+
+        .review-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 0.5rem;
+          
+          .author { font-weight: 700; color: $text-dark; }
+          .date { font-size: 0.85rem; color: #999; }
+        }
+
+        .rating-stars {
+          color: #ffc107;
+          font-size: 1rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .content {
+          color: $text-gray;
+          line-height: 1.5;
+        }
+      }
+    }
+    
+    .no-reviews {
+        text-align: center;
+        color: #999;
+        font-style: italic;
+    }
+  }
+}

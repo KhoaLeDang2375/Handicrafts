@@ -20,6 +20,9 @@ async def signup(customer: CustomerCreate):
             detail="Email đã được sử dụng"
         )
     try:
+        print(f"DEBUG - Password Length: {len(customer.password)}")
+        print(f"DEBUG - Password Content: {customer.password}")
+        print(f"DEBUG - Password Type: {type(customer.password)}")
         # Hash mật khẩu trước khi lưu
         customer_password_hashed = hash_password(customer.password)
         

@@ -8,6 +8,7 @@ import Footer from './components/layout/Footer';
 import HomePage from './pages/HomePage/HomePage';
 import ProductPage from './pages/ProductPage/ProductPage'; 
 import AuthPage from './pages/AuthPage/AuthPage';
+import ProductDetailPage from './pages/ProductDetailPage/ProductDetailPage';
 
 function App() {
   const location = useLocation();
@@ -16,8 +17,8 @@ function App() {
 
   return (
     <div className="App">
-      {/* Navbar sẽ luôn ở trên cùng */}
-      <Navbar />
+      {/* Chỉ hiện Navbar nếu KHÔNG PHẢI trang login */}
+      {!isLoginPage && <Navbar />}
 
       <main>
         <Routes>
@@ -28,10 +29,12 @@ function App() {
 
           <Route path="/login" element={<AuthPage />} />
 
+          <Route path="/san-pham/:id" element={<ProductDetailPage />} />
+
         </Routes>
       </main>
 
-      {/* 6. Chỉ hiện Footer nếu KHÔNG PHẢI trang login */}
+      {/* Chỉ hiện Footer nếu KHÔNG PHẢI trang login */}
       {!isLoginPage && <Footer />}
       
     </div>

@@ -282,7 +282,6 @@
         transition: color 0.2s;
 
         &:hover {
-          color: darken(#d49058, 15%);
           text-decoration: underline;
         }
       }
@@ -426,7 +425,6 @@
 
       // Hiệu ứng gạch chân khi hover
       &:hover {
-        color: darken(#d49058, 15%);
         text-decoration: underline;
       }
     }

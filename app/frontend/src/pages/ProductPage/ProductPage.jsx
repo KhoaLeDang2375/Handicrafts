@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import CategoryNav from './CategoryNav';
 import './ProductPage.scss';
 import CustomerReviews from './CustomerReviews';
@@ -137,7 +138,7 @@ const ProductPage = () => {
               const isOutOfStock = product.status && product.status.toLowerCase() === 'out of stock';
 
               return (
-                <div key={product.id} className="product-card">
+                <Link to={`/san-pham/${product.id}`} key={product.id} className="product-card">
                   <div className="product-card__image">
                     <img 
                       src={displayImage} 
@@ -178,7 +179,7 @@ const ProductPage = () => {
                       {isOutOfStock ? 'Tạm hết hàng' : 'Thêm vào giỏ'}
                     </button>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

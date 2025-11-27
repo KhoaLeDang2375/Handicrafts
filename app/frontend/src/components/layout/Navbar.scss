@@ -100,5 +100,75 @@
   }
 }
 
+.navbar__user-area {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem; // Khoảng cách giữa giỏ hàng và avatar
+}
+
+// Icon giỏ hàng
+.cart-icon {
+    width: 35px;  // Kích thước vòng tròn
+    height: 35px;
+    border-radius: 50%;
+    background-color: $color-primary; 
+    color: #fff; 
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
+    &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    svg {
+        width: 15px;
+        height: auto;
+    }
+
+    // (Tùy chọn) Style cho số lượng trên giỏ hàng
+    // .cart-badge {
+    //     position: absolute;
+    //     top: -8px;
+    //     right: -8px;
+    //     background-color: #d49058;
+    //     color: white;
+    //     font-size: 0.7rem;
+    //     font-weight: bold;
+    //     width: 18px;
+    //     height: 18px;
+    //     display: flex;
+    //     justify-content: center;
+    //     align-items: center;
+    //     border-radius: 50%;
+    // }
+}
+
+// Avatar người dùng
+.navbar__avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden; // Ẩn phần thừa
+    transition: all 0.3s ease;
+    cursor: pointer;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; // Đảm bảo ảnh phủ kín khung tròn
+    }
+
+    &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+}
+
 
 
