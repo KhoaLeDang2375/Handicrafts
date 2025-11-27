@@ -43,17 +43,40 @@ class Employee:
         query = """SELECT id, name, phone, job_title, user_name, email FROM Employee"""
         return db.fetch_all(query)
 
-    def update(self, employee_id, **kwargs):
-        fields = []
-        values = []
-        for key, value in kwargs.items():
-            fields.append(f"{key} = %s")
-            values.append(value)
-        values.append(employee_id)
-        
-        query = f"""
-        UPDATE Employee 
-        SET {', '.join(fields)}
-        WHERE id = %s
+# Trong file chứa class Customer
+    def update(self, user_id, update_data: dict):
         """
+        Hàm update động.
+        update_data: Dictionary chứa các trường cần sửa. VD: {'name': 'Mới', 'address': 'HN'}
+        """
+        if not update_data:
+            return False
+
+        # Mapping tên trường từ Pydantic (snake_case) sang tên cột trong DB
+        # Key: Pydantic field, Value: DB Column name
+        field_mapping = {
+            "full_name": "name",
+            "address": "address",
+            "phone_number": "phone",
+            "email": "email"
+        }
+
+        set_clauses = []
+        values = []
+
+        # Xây dựng câu SQL động
+        for key, value in update_data.items():
+            if key in field_mapping and value is not None:
+                col_name = field_mapping[key]
+                set_clauses.append(f"{col_name} = %s")
+                values.append(value)
+        
+        if not set_clauses:
+            return False # Không có trường nào hợp lệ để update
+
+        values.append(user_id) # Tham số cuối cùng cho WHERE id = %s
+
+        query = f"UPDATE Employee SET {', '.join(set_clauses)} WHERE id = %s"
+        
+        # db.execute_query trả về số dòng bị ảnh hưởng hoặc True/False tùy thư viện bạn dùng
         return db.execute_query(query, tuple(values))
