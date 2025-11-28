@@ -114,11 +114,15 @@ const AuthPage = () => {
       localStorage.setItem('authToken', data.access_token);
       localStorage.setItem('userRole', 'customer');
 
+      if (data.user_info) {
+          localStorage.setItem('currentUser', JSON.stringify(data.user_info));
+      }
+
       alert("Đăng nhập thành công!");
 
-      // 3. Chuyển hướng (Vì đang mở tab mới nên có thể đóng tab hoặc redirect)
+      // 3. Chuyển hướng 
       // window.close(); // Nếu muốn đóng tab
-      navigate('/');    // Nếu muốn về trang chủ
+      navigate('/');   
 
     } catch (error) {
       alert(error.message);
@@ -152,7 +156,7 @@ const AuthPage = () => {
 
         <div className="auth-right-wrapper">
 
-          {/* 2. auth-switch */}
+          {/* Auth-switch */}
           <div className="auth-switch">
             <div className={`switch-slider ${isLogin ? 'left' : 'right'}`}>
             </div>
@@ -171,7 +175,7 @@ const AuthPage = () => {
             </button>
           </div>
 
-          {/* 3. auth-right chứa Form */}
+          {/* Auth-right chứa Form */}
           <div className="auth-right">
             <div className="form-wrapper">
               <h2>{isLogin ? 'Đăng nhập' : 'Bắt đầu hành trình mới'}</h2>

@@ -129,9 +129,15 @@ class LoginRequest(BaseModel):
     username: Optional[str] = None
     password: str
     role: RoleEnum = Field(..., description="Customer hoặc Employee")
+
+class UserInfo(BaseModel):
+    name: str
+    email: str
+
 class Token(BaseModel):
     access_token: str
     token_type: str
+    user_info: Optional[UserInfo] = None
 # Pydantic schemas review
 class ReviewCreate(BaseModel):
     access_token: str

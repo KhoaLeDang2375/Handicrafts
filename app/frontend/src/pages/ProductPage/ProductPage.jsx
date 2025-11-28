@@ -4,6 +4,8 @@ import CategoryNav from './CategoryNav';
 import './ProductPage.scss';
 import CustomerReviews from './CustomerReviews';
 
+import { apiCall } from '../../services/api';
+
 // 1. KHAI BÁO URL BACKEND
 const BASE_URL = 'http://127.0.0.1:8000';
 
@@ -40,7 +42,7 @@ const ProductPage = () => {
 
         // FIX 1: Lấy đúng mảng items từ JSON structure của bạn
         const productList = data.items || [];
-        
+
         setProducts(productList);
 
         // Tạo danh mục độc nhất từ category_name
@@ -53,7 +55,7 @@ const ProductPage = () => {
 
         // Thêm "Tất cả sản phẩm" vào đầu
         setCategories([{ id: 'all', label: 'Tất cả sản phẩm', value: 'all' }, ...normalizedCategories]);
-        
+
         // Khởi tạo danh sách hiển thị
         setFilteredProducts(productList);
 
@@ -68,7 +70,6 @@ const ProductPage = () => {
   }, []);
 
   // Lọc sản phẩm theo danh mục
-  // Lọc sản phẩm theo danh mục
   useEffect(() => {
     console.log('--- BẮT ĐẦU LỌC ---');
     console.log('Danh mục đang chọn (selectedCategory):', selectedCategory);
@@ -79,14 +80,14 @@ const ProductPage = () => {
     } else {
       // Log thử xem so sánh có khớp không
       const result = products.filter((p) => {
-         const isMatch = p.category_id === selectedCategory;
-         // Nếu tên danh mục trong sản phẩm khác tên danh mục đang chọn -> in ra để biết
-         if (!isMatch && products.indexOf(p) === 0) { 
-             console.log(`So sánh mẫu: "${p.category_name}" (Sản phẩm) !== "${selectedCategory}" (Đang chọn)`);
-         }
-         return isMatch;
+        const isMatch = p.category_id === selectedCategory;
+        // Nếu tên danh mục trong sản phẩm khác tên danh mục đang chọn -> in ra để biết
+        if (!isMatch && products.indexOf(p) === 0) {
+          console.log(`So sánh mẫu: "${p.category_name}" (Sản phẩm) !== "${selectedCategory}" (Đang chọn)`);
+        }
+        return isMatch;
       });
-      
+
       console.log(`Kết quả lọc: tìm thấy ${result.length} sản phẩm`);
       setFilteredProducts(result);
     }
@@ -95,6 +96,53 @@ const ProductPage = () => {
   // Xác định tiêu đề trang
   const currentCategory = categories.find((cat) => cat.value === selectedCategory);
   const pageTitle = currentCategory ? currentCategory.label : 'Tất cả sản phẩm';
+
+  // --- HÀM XỬ LÝ THÊM VÀO GIỎ ---
+  const handleAddToCart = async (product) => {
+    // 1. Kiểm tra đăng nhập
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      alert("Vui lòng đăng nhập để mua hàng!");
+      // Hoặc chuyển hướng sang trang login: navigate('/login');
+      return;
+    }
+    console.log("Token đang dùng:", token);
+
+    // 2. Lấy ID của biến thể (Variant) đầu tiên
+    // Vì ở trang danh sách ta không chọn size/màu, nên mặc định lấy cái đầu tiên
+    const firstVariant = product.variants && product.variants.length > 0 ? product.variants[0] : null;
+
+    if (!firstVariant) {
+      alert("Sản phẩm này đang lỗi dữ liệu (chưa có biến thể).");
+      return;
+    }
+
+    // 3. Gọi API
+    try {
+      // Thay fetch bằng apiCall
+      const response = await apiCall('/my-cart/add-item', {
+        method: 'POST',
+        body: JSON.stringify({
+          productvariant_id: firstVariant.id,
+          product_quantity: 1,
+          access_token: localStorage.getItem('authToken') // Gửi trong body cho backend cũ
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Đã thêm vào giỏ hàng thành công!");
+      } else {
+        alert(`Lỗi: ${data.detail || 'Không thể thêm vào giỏ'}`);
+      }
+
+    } catch (error) {
+      // Nếu token hết hạn, apiCall đã tự chuyển trang Login rồi
+      console.error("Lỗi:", error);
+    }
+  };
+
 
   return (
     <div className="product-page">
@@ -119,20 +167,20 @@ const ProductPage = () => {
           <div className="product-grid">
             {/* FIX 2: Xử lý trường hợp không có sản phẩm nào */}
             {filteredProducts.length === 0 && (
-               <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', color: '#666' }}>
-                  Không tìm thấy sản phẩm nào trong danh mục này.
-               </div>
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', color: '#666' }}>
+                Không tìm thấy sản phẩm nào trong danh mục này.
+              </div>
             )}
 
             {filteredProducts.map((product) => {
               // FIX 3: Logic lấy GIÁ và ẢNH an toàn
-              
+
               // Lấy giá từ variant đầu tiên, nếu không có set bằng 0
               const displayPrice = product.variants?.length > 0 ? product.variants[0].price : 0;
-              
+
               // JSON chưa có 'image', dùng ảnh placeholder. 
               // Nếu sau này backend thêm trường image_url thì sửa dòng này thành: product.image_url || ...
-              const displayImage = product.image || 'https://placehold.co/400x400?text=SanPham+Demo'; 
+              const displayImage = product.image || 'https://placehold.co/400x400?text=SanPham+Demo';
 
               // Kiểm tra trạng thái còn hàng
               const isOutOfStock = product.status && product.status.toLowerCase() === 'out of stock';
@@ -140,11 +188,11 @@ const ProductPage = () => {
               return (
                 <Link to={`/san-pham/${product.id}`} key={product.id} className="product-card">
                   <div className="product-card__image">
-                    <img 
-                      src={displayImage} 
+                    <img
+                      src={displayImage}
                       alt={product.name}
                       // Nếu ảnh lỗi thì load ảnh dự phòng
-                      onError={(e) => {e.target.src = 'https://placehold.co/400x400?text=No+Image'}} 
+                      onError={(e) => { e.target.src = 'https://placehold.co/400x400?text=No+Image' }}
                     />
                     {/* Badge trạng thái */}
                     {isOutOfStock && <span className="status-badge out-of-stock">Hết hàng</span>}
@@ -152,20 +200,25 @@ const ProductPage = () => {
 
                   <div className="product-card__content">
                     <h3 className="product-name">{product.name}</h3>
-                    
+
                     {/* Cắt ngắn mô tả cho gọn giao diện */}
                     <p className="product-desc">
-                       {product.description && product.description.length > 60 
-                          ? product.description.substring(0, 60) + '...' 
-                          : product.description}
+                      {product.description && product.description.length > 60
+                        ? product.description.substring(0, 60) + '...'
+                        : product.description}
                     </p>
-                    
+
                     <div className="product-price">{formatCurrency(displayPrice)}</div>
-                    
-                    <button 
+
+                    <button
                       className="add-to-cart-btn btn--primary"
                       disabled={isOutOfStock}
                       style={{ opacity: isOutOfStock ? 0.5 : 1, cursor: isOutOfStock ? 'not-allowed' : 'pointer' }}
+
+                      onClick={(e) => {
+                        e.preventDefault(); // Ngăn chặn Link bao ngoài (nếu có) nhảy trang
+                        handleAddToCart(product);
+                      }}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

@@ -1,6 +1,6 @@
 // import React from 'react';
 import { useState, useEffect } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import './Navbar.scss';
 import Logo from '../../assets/images/Aura.png';
 
@@ -9,17 +9,34 @@ import Avatar from "../../assets/images/avatar.png";
 // const Avatar_URL = "https://i.pravatar.cc/150?img=3";
 
 const Navbar = () => {
-  // State để lưu trạng thái đăng nhập
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState({ name: 'Khách hàng', email: 'email' }); // State lưu thông tin user
+  const navigate = useNavigate();
 
-  // Kiểm tra token khi component được load
   useEffect(() => {
-    // Lấy token từ localStorage (nơi bạn đã lưu khi login thành công)
     const token = localStorage.getItem('authToken');
-    // Nếu có token -> set isLoggedIn = true. Ngược lại = false.
-    // (Dấu !! giúp chuyển đổi giá trị truthy/falsy thành boolean true/false)
     setIsLoggedIn(!!token);
+
+    // Lấy thông tin user từ localStorage (nếu bạn đã lưu lúc login)
+    // Nếu chưa lưu object 'currentUser', bạn có thể cần sửa lại file Login một chút để lưu nó
+    const userStored = localStorage.getItem('currentUser');
+    if (userStored) {
+      const user = JSON.parse(userStored);
+      setUserInfo({
+            name: user.name || "Khách hàng",
+            email: user.email || "email"
+        });
+    }
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('currentUser'); // Xóa cả thông tin user
+    setIsLoggedIn(false);
+    alert("Bạn đã đăng xuất thành công!");
+    navigate('/login');
+  };
 
   return (
     <nav className="navbar">
@@ -65,22 +82,46 @@ const Navbar = () => {
                 </svg>
               </Link>
 
-              {/* Avatar người dùng */}
-              <Link to="/profile" className="navbar__avatar">
-                <img src={Avatar} alt="User Avatar" />
-              </Link>
-            </div>
+              <div className="user-dropdown-wrapper">
+                {/* Avatar trigger */}
+                <div className="navbar__avatar">
+                  <img src={Avatar} alt="User" />
+                </div>
 
+                {/* Nội dung Menu */}
+                <div className="dropdown-menu">
+                  {/* Header: Tên và Email */}
+                  <div className="dropdown-header">
+                    <p className="user-name">{userInfo.name}</p>
+                    <p className="user-email">{userInfo.email}</p>
+                  </div>
+
+                  <div className="dropdown-divider"></div>
+
+                  {/* Các Link: Profile, Setting */}
+                  <Link to="/profile" className="dropdown-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Xem profile
+                  </Link>
+
+                  <Link to="/settings" className="dropdown-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    Cài đặt
+                  </Link>
+
+                  <div className="dropdown-divider"></div>
+
+                  {/* Nút Đăng xuất */}
+                  <button onClick={handleLogout} className="dropdown-item logout-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Đăng xuất
+                  </button>
+                </div>
+              </div>
+              {/* ------------------------------------------- */}
+            </div>
           ) : (
-            // --- GIAO DIỆN KHI CHƯA ĐĂNG NHẬP ---
-            <Link
-              to="/login"
-              className="btn btn--primary"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Đăng nhập
-            </Link>
+            <Link to="/login" className="btn btn--primary" target="_blank" rel="noopener noreferrer">Đăng nhập</Link>
           )}
 
         </div>

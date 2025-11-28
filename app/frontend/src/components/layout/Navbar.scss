@@ -72,7 +72,7 @@
 .navbar__search {
   position: relative;
   background: $bg-primary;
-  
+
   input {
     border: none;
     border-bottom: 1px solid $color-border;
@@ -101,74 +101,193 @@
 }
 
 .navbar__user-area {
-    display: flex;
-    align-items: center;
-    gap: 1.2rem; // Khoảng cách giữa giỏ hàng và avatar
+  display: flex;
+  align-items: center;
+  gap: 1.2rem; // Khoảng cách giữa giỏ hàng và avatar
 }
 
 // Icon giỏ hàng
 .cart-icon {
-    width: 35px;  // Kích thước vòng tròn
-    height: 35px;
-    border-radius: 50%;
-    background-color: $color-primary; 
-    color: #fff; 
+  width: 35px; // Kích thước vòng tròn
+  height: 35px;
+  border-radius: 50%;
+  background-color: $color-primary;
+  color: #fff;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
-    &:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  svg {
+    width: 15px;
+    height: auto;
+  }
+
+  // (Tùy chọn) Style cho số lượng trên giỏ hàng
+  // .cart-badge {
+  //     position: absolute;
+  //     top: -8px;
+  //     right: -8px;
+  //     background-color: #d49058;
+  //     color: white;
+  //     font-size: 0.7rem;
+  //     font-weight: bold;
+  //     width: 18px;
+  //     height: 18px;
+  //     display: flex;
+  //     justify-content: center;
+  //     align-items: center;
+  //     border-radius: 50%;
+  // }
+}
+
+
+// Wrapper bao quanh Avatar để làm mốc hover
+.user-dropdown-wrapper {
+  position: relative;
+  padding-bottom: 10px; // Vùng an toàn để chuột không bị rớt khi di chuyển xuống menu
+  margin-bottom: -10px;
+
+  // Khi hover vào wrapper này thì hiện menu con
+  &:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+}
+
+// Avatar
+.navbar__avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &:hover {
+    border-color: #d49058;
+  }
+}
+
+// --- MENU DROPDOWN STYLE ---
+.dropdown-menu {
+  position: absolute;
+  top: 100%; // Nằm ngay dưới avatar
+  right: 0; // Căn phải
+  width: 260px; // Độ rộng menu
+  background-color: #fff;
+  border-radius: 12px; // Bo góc mềm mại
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); // Đổ bóng đẹp
+  padding: 0.5rem 0;
+  z-index: 1000;
+
+  // Hiệu ứng ẩn hiện
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+
+  // Mũi tên nhọn chỉ lên trên (nếu muốn)
+  &::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: 15px;
+    width: 12px;
+    height: 12px;
+    background-color: #fff;
+    transform: rotate(45deg);
+    box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.04);
+  }
+}
+
+// Phần thông tin User ở đầu menu
+.dropdown-header {
+  padding: 1rem 1.5rem;
+
+  .user-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 4px 0;
+  }
+
+  .user-email {
+    font-size: 0.9rem;
+    color: #888;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; // Cắt bớt nếu email quá dài
+  }
+}
+
+// Đường kẻ ngang
+.dropdown-divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 0.2rem 0;
+}
+
+// Các mục Menu (Item)
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px; // Khoảng cách giữa icon và chữ
+  padding: 0.8rem 1.5rem;
+  color: #444;
+  text-decoration: none;
+  font-size: 0.95rem;
+  // transition: background 0.2s;
+  width: 100%;
+  background: none;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+
+  // Style cho icon
+  svg {
+    color: #666;
+    transition: color 0.2s;
+  }
+
+  &:hover {
+    background-color: #f9f9f9;
+    color: #d49058; // Chữ chuyển màu cam
 
     svg {
-        width: 15px;
-        height: auto;
+      color: #d49058;
     }
 
-    // (Tùy chọn) Style cho số lượng trên giỏ hàng
-    // .cart-badge {
-    //     position: absolute;
-    //     top: -8px;
-    //     right: -8px;
-    //     background-color: #d49058;
-    //     color: white;
-    //     font-size: 0.7rem;
-    //     font-weight: bold;
-    //     width: 18px;
-    //     height: 18px;
-    //     display: flex;
-    //     justify-content: center;
-    //     align-items: center;
-    //     border-radius: 50%;
-    // }
+    // Icon cũng chuyển cam
+  }
 }
 
-// Avatar người dùng
-.navbar__avatar {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    overflow: hidden; // Ẩn phần thừa
-    transition: all 0.3s ease;
-    cursor: pointer;
+// Nút Đăng xuất riêng biệt
+.logout-btn {
+  &:hover {
+    background-color: #fff5f5;
+    color: #e74c3c;
 
-    img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; // Đảm bảo ảnh phủ kín khung tròn
+    svg {
+      color: #e74c3c;
     }
-
-    &:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
+  }
 }
-
-
-

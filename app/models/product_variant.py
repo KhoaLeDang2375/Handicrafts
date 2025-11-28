@@ -27,7 +27,7 @@ class ProductVariant:
     # ----------------------------
     def save(self):
         query = """
-        INSERT INTO ProductVariant (product_id, color, size, price, amount)
+        INSERT INTO productVariant (product_id, color, size, price, amount)
         VALUES (%s, %s, %s, %s, %s)
         """
         return db.execute_query(query, (
@@ -45,7 +45,7 @@ class ProductVariant:
     def get_by_id(variant_id):
         query = """
         SELECT v.*, p.name AS product_name 
-        FROM ProductVariant v
+        FROM productVariant v
         JOIN Products p ON v.product_id = p.id
         WHERE v.id = %s
         """
@@ -55,14 +55,14 @@ class ProductVariant:
     def get_by_product(product_id, variant_id=None, get_one=False):
         if get_one and variant_id is not None:
             query = """
-            SELECT * FROM ProductVariant
+            SELECT * FROM productVariant
             WHERE product_id = %s AND id = %s
             LIMIT 1
             """
             return db.fetch_one(query, (product_id, variant_id))
         else:
             query = """
-            SELECT * FROM ProductVariant
+            SELECT * FROM productVariant
             WHERE product_id = %s
             ORDER BY id ASC
             """
@@ -100,7 +100,7 @@ class ProductVariant:
             return None  # Không có gì để cập nhật
 
         set_clause = ", ".join(fields)
-        query = f"UPDATE ProductVariant SET {set_clause} WHERE id = %s"
+        query = f"UPDATE productVariant SET {set_clause} WHERE id = %s"
         values.append(variant_id)
 
         return db.execute_query(query, tuple(values))
@@ -117,7 +117,7 @@ class ProductVariant:
             raise ValueError("Số lượng thay đổi không hợp lệ.")
 
         query = """
-        UPDATE ProductVariant
+        UPDATE productVariant
         SET amount = GREATEST(amount + %s, 0)  -- tránh âm kho
         WHERE id = %s
         """
@@ -128,5 +128,5 @@ class ProductVariant:
     # ----------------------------
     @staticmethod
     def delete(variant_id):
-        query = "DELETE FROM ProductVariant WHERE id = %s"
+        query = "DELETE FROM productVariant WHERE id = %s"
         return db.execute_query(query, (variant_id,))

@@ -8,6 +8,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# origins = [
+#     "http://localhost:5173",    # Frontend của bạn (React/Vite)
+#     "http://127.0.0.1:5173",    # Đôi khi máy dùng IP này
+# ]
+
 # CORS middleware configuration
 app.add_middleware(
     CORSMiddleware,

@@ -8,7 +8,7 @@ const ProductTabs = ({ product, currentVariant }) => {
   const staticInfo = {
     origin: "Bát Tràng, Hồ Chí Minh",
     tech: "Công nghệ cao",
-    story: "Mỗi chiếc bình gốm đều là một tác phẩm nghệ thuật độc đáo, được tạo nên từ bàn tay tài hoa của nghệ nhân. Họa tiết hoa sen được vẽ tay tỉ mỉ, mang ý nghĩa thanh cao, thuần khiết trong văn hóa phương Đông. Sản phẩm không chỉ là vật dụng trang trí mà còn là sự kết tinh của nghề truyền thống Bát Tràng hàng trăm năm tuổi."
+    story: "Mỗi sản phẩm đều là một tác phẩm nghệ thuật độc đáo, được tạo nên từ bàn tay tài hoa của nghệ nhân. Họa tiết được vẽ tay tỉ mỉ, mang ý nghĩa thanh cao, thuần khiết trong văn hóa phương Đông. Sản phẩm không chỉ là vật dụng trang trí mà còn là sự kết tinh của nghề truyền thống Bát Tràng hàng trăm năm tuổi."
   };
 
   // Hàm render sao

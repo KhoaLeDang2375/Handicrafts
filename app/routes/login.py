@@ -53,6 +53,13 @@ async def login_for_access_token(login_request: LoginRequest):
             "sub": str(user.get('id')),   # Convert id to string
             "role": login_request.role,
             "name": user.get('name')  # nếu cần
-}
+        }
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer",
+        "user_info": {
+            "name": user.get('name'),   # Tên thật trong DB
+            "email": user.get('email')  # Email thật trong DB
+        }
+    }
