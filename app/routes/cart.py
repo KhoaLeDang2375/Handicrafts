@@ -156,7 +156,8 @@
 #     except Exception as e:
 #         raise HTTPException(status_code=500, detail="Failed to update cart item") from e
 
-from fastapi import APIRouter, HTTPException, Query, Path
+# Thêm Header vào dòng import
+from fastapi import APIRouter, HTTPException, Query, Path, Header
 from typing import List, Optional
 from app.schemas import *
 from app.models.product_variant import ProductVariant
@@ -169,23 +170,33 @@ router = APIRouter(
     tags=["my-cart"]
 )
 
-# --- 1. GET CART ---
+# # --- 1. GET CART ---
 @router.get("/", response_model=CartResponse)
-async def get_my_cart(access_token: str = Query(..., description="JWT Token")):
+async def get_my_cart(
+    # Thay Query(...) bằng Header(...) và đổi tên biến thành authorization
+    authorization: str = Header(..., description="JWT Token dạng 'Bearer <token>'")
+):
     try:
-        payload = verify_access_token(access_token)
+        # Frontend gửi lên là "Bearer eyJhbGci...", ta cần cắt bỏ chữ "Bearer "
+        if not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Invalid Token Format")
+        
+        token = authorization.split(" ")[1] # Lấy phần chuỗi phía sau
+        
+        # Giải mã token
+        payload = verify_access_token(token)
         customer_id = payload.get("sub")
+        
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid Token")
 
-    # Lấy danh sách items từ DB
-    items_raw = Cart.get_user_cart(customer_id) # Trả về list dict đã JOIN với product/variant
+    # ... (Phần logic lấy dữ liệu từ DB giữ nguyên không đổi) ...
+    items_raw = Cart.get_user_cart(customer_id)
 
     items = []
     total_cart_amount = 0
 
     for item in items_raw:
-        # Tính toán giá trị từng dòng
         line_total = item["quantity"] * item["price"]
         total_cart_amount += line_total
 
@@ -195,7 +206,8 @@ async def get_my_cart(access_token: str = Query(..., description="JWT Token")):
             "product_id": item.get("product_id"),
             "productvariant_id": item["productvariant_id"],
             "product_quantity": item["quantity"],
-            "total_price": line_total, # Tính toán động, không lấy từ DB
+            "total_price": line_total,
+            "stock_quantity": item["amount"],
             "color": item.get("color"),
             "size": item.get("size"),
             "price": item.get("price"),
@@ -262,22 +274,34 @@ async def add_item_to_cart(cart_item: CartItemAdd):
         print(f"DEBUG ERROR - SQL: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Database Error: {str(e)}")
 
-# --- 3. REMOVE ITEM ---
+# --- 3. REMOVE ITEM (Nhận Token từ Header) ---
 @router.delete("/remove-item/{variant_id}", response_model=CartItemDeleteResponse)
 async def remove_item_from_cart(
-    variant_id: int = Path(...),
-    access_token: str = Query(...)
+    variant_id: int = Path(..., description="ID biến thể cần xóa"),
+    # SỬA DÒNG NÀY: Dùng Header thay vì Query
+    authorization: str = Header(..., description="JWT Token dạng 'Bearer <token>'")
 ):
     try:
-        payload = verify_access_token(access_token)
+        # Xử lý chuỗi "Bearer <token>"
+        if not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Invalid Token Format")
+        
+        token = authorization.split(" ")[1]
+        
+        # Giải mã token
+        payload = verify_access_token(token)
         customer_id = payload.get("sub")
+        if not customer_id:
+             raise HTTPException(status_code=401, detail="Invalid Token Payload")
+
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid Token")
 
-    # Xóa thẳng tay dựa trên user_id và variant_id
+    # Gọi Model để xóa
     deleted = Cart.remove_item(customer_id, variant_id)
     
     if not deleted:
+        # Nếu hàm trả về False/0 nghĩa là không tìm thấy item để xóa
         raise HTTPException(status_code=404, detail="Item not found in cart")
 
     return CartItemDeleteResponse(

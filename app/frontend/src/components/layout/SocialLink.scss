@@ -42,27 +42,45 @@
 
 .SocialLink__socials {
   display: flex;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: 2rem;
+  align-items: center;
+  margin-top: 20px;
 }
 
-.SocialLink-icon {
+.social-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  
+  background-color: #f4e9df; 
+  color: $color-primary; 
+  text-decoration: none;
+  
+  /* Căn giữa icon trong hình tròn */
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px; // Kích thước hình tròn
-  height: 44px;
-  border-radius: 50%;
-  background-color: #F8F1E9; // Màu kem đậm hơn
-  color: $text-dark;
-  text-decoration: none;
-  font-weight: 700;
+  
   transition: all 0.3s ease;
+  font-size: 18px;
+}
 
-  &:hover {
-    background-color: $color-primary; // Màu cam
-    color: #fff;
-  }
+/* Facebook (icon đầu tiên) */
+.social-icon:nth-child(1):hover {
+  background-color: #1877F2;
+  color: white;
+}
+
+/* Instagram (icon thứ 2) */
+.social-icon:nth-child(2):hover {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);
+  color: white;
+}
+
+/* Youtube (icon thứ 3) */
+.social-icon:nth-child(3):hover {
+  background-color: #FF0000;
+  color: white;
 }
 
 

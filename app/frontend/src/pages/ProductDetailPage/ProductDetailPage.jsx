@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { apiCall } from '../../services/api';
+import { FiPackage, FiShield, FiAward } from "react-icons/fi";
 import './ProductDetailPage.scss';
 import ProductTabs from './ProductTabs';
 
@@ -7,10 +9,11 @@ import artisan from '../../assets/images/Aura.png';
 
 // 1. CẤU HÌNH CƠ BẢN
 const BASE_URL = 'http://127.0.0.1:8000';
-const DISCOUNT_RATE = 0.2; // Giảm giá mặc định 20% (Bạn có thể sửa số này)
+const DISCOUNT_RATE = 0.2; // Giảm giá mặc định 20% 
 
 const ProductDetailPage = () => {
   const { id } = useParams(); // Lấy ID từ URL (ví dụ: /san-pham/1)
+  const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -99,6 +102,67 @@ const ProductDetailPage = () => {
   if (loading) return <div className="loading-screen">Đang tải chi tiết sản phẩm...</div>;
   if (error) return <div className="error-screen">Lỗi: {error}</div>;
   if (!product) return null;
+
+  // --- HÀM THÊM VÀO GIỎ  ---
+  const handleAddToCart = async () => {
+    // 1. Kiểm tra đăng nhập
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      alert("Vui lòng đăng nhập để mua hàng!");
+      return;
+    }
+
+    // 2. Kiểm tra xem đã chọn Biến thể (Màu/Size) chưa?
+    if (!currentVariant) {
+      alert("Vui lòng chọn Màu sắc và Kích thước!");
+      return;
+    }
+
+    try {
+      // 3. Gọi API (Dùng apiCall đã viết sẵn)
+      const response = await apiCall('/my-cart/add-item', {
+        method: 'POST',
+        body: JSON.stringify({
+          // QUAN TRỌNG: Lấy ID và Số lượng từ State của trang này
+          productvariant_id: currentVariant.id,
+          product_quantity: quantity,
+          access_token: token
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
+      } else {
+        alert(`Lỗi: ${data.detail || 'Không thể thêm vào giỏ'}`);
+      }
+
+    } catch (error) {
+      console.error("Lỗi thêm giỏ hàng:", error);
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (!currentVariant) {
+      alert("Vui lòng chọn phân loại hàng!");
+      return;
+    }
+
+    // Tạo object sản phẩm để gửi sang trang thanh toán
+    const productToCheckout = {
+      product_id: product.id,
+      variant_id: currentVariant.id,
+      name: product.name,
+      color: currentVariant.color,
+      size: currentVariant.size,
+      price: currentVariant.price, // Giá gốc hoặc giá giảm tùy logic
+      quantity: quantity
+    };
+
+    // Chuyển trang và mang theo cục dữ liệu này
+    navigate('/thanh-toan', { state: { productToBuy: productToCheckout } });
+  };
 
   return (
     <div className="product-detail-page">
@@ -214,6 +278,7 @@ const ProductDetailPage = () => {
             <button
               className="btn btn-add-cart"
               disabled={!currentVariant || currentVariant.amount === 0}
+              onClick={handleAddToCart}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
               Thêm vào giỏ hàng
@@ -221,7 +286,8 @@ const ProductDetailPage = () => {
 
             <button
               className="btn btn-buy-now"
-              disabled={!currentVariant || currentVariant.amount === 0}
+              onClick={handleBuyNow}
+            // disabled={!currentVariant || currentVariant.amount === 0}
             >
               Mua ngay
             </button>
@@ -229,16 +295,25 @@ const ProductDetailPage = () => {
 
           {/* CHÍNH SÁCH */}
           <div className="policy-grid">
+
             <div className="policy-item">
-              <div className="icon-box">icon</div>
+              <div className="icon-box">
+                <FiPackage size={28} />
+              </div>
               <span>Miễn phí vận chuyển</span>
             </div>
+
             <div className="policy-item">
-              <div className="icon-box">icon</div>
+              <div className="icon-box">
+                <FiShield size={28} />
+              </div>
               <span>Bảo hành 12 tháng</span>
             </div>
+
             <div className="policy-item">
-              <div className="icon-box">icon</div>
+              <div className="icon-box">
+                <FiAward size={28} />
+              </div>
               <span>100% thủ công</span>
             </div>
           </div>

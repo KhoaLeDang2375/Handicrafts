@@ -1,7 +1,7 @@
 // src/components/layout/SocialLink.jsx
 
 import './SocialLink.scss';
-// Import logo của bạn (cùng file logo với Navbar)
+import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 import Logo from '../../assets/images/Aura.png';
 
 const SocialLink = () => {
@@ -18,10 +18,15 @@ const SocialLink = () => {
           </a>
 
           <div className="SocialLink__socials">
-            {/* Bạn sẽ thay <span> bằng icon của mình */}
-            <a href="#" className="social-icon"><span>F</span></a>
-            <a href="#" className="social-icon"><span>I</span></a>
-            <a href="#" className="social-icon"><span>Y</span></a>
+            <a href="#" className="social-icon">
+              <FaFacebookF />
+            </a>
+            <a href="#" className="social-icon">
+              <FaInstagram />
+            </a>
+            <a href="#" className="social-icon">
+              <FaYoutube />
+            </a>
           </div>
         </div>
       </div>

@@ -168,6 +168,7 @@ class Cart:
                 pv.color, 
                 pv.size,
                 p.id as product_id,
+                pv.amount,
                 p.name as product_name
             FROM cart c
             JOIN productVariant pv ON c.productvariant_id = pv.id

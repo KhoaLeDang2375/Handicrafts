@@ -207,6 +207,7 @@ class CartItemResponse(CartItemBase):
     size: Optional[int] = None
     price: Optional[float] = None
     product_name: Optional[str] = None
+    stock_quantity: int
 # Pydantic schemas for Order Checkout
 class OrderCheckout(BaseModel):
     access_token: str

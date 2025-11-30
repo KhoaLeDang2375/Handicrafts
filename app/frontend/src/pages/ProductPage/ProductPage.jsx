@@ -40,7 +40,7 @@ const ProductPage = () => {
         const data = await response.json();
         console.log('Data từ backend:', data);
 
-        // FIX 1: Lấy đúng mảng items từ JSON structure của bạn
+        // Lấy đúng mảng items từ JSON structure của bạn
         const productList = data.items || [];
 
         setProducts(productList);
@@ -125,7 +125,7 @@ const ProductPage = () => {
         body: JSON.stringify({
           productvariant_id: firstVariant.id,
           product_quantity: 1,
-          access_token: localStorage.getItem('authToken') // Gửi trong body cho backend cũ
+          access_token: localStorage.getItem('authToken') // Gửi trong body cho backend 
         })
       });
 
@@ -165,7 +165,7 @@ const ProductPage = () => {
           <div className="error">Lỗi: {error} (Hãy kiểm tra lại backend)</div>
         ) : (
           <div className="product-grid">
-            {/* FIX 2: Xử lý trường hợp không có sản phẩm nào */}
+            {/* Xử lý trường hợp không có sản phẩm nào */}
             {filteredProducts.length === 0 && (
               <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', color: '#666' }}>
                 Không tìm thấy sản phẩm nào trong danh mục này.
@@ -173,7 +173,7 @@ const ProductPage = () => {
             )}
 
             {filteredProducts.map((product) => {
-              // FIX 3: Logic lấy GIÁ và ẢNH an toàn
+              // Logic lấy GIÁ và ẢNH an toàn
 
               // Lấy giá từ variant đầu tiên, nếu không có set bằng 0
               const displayPrice = product.variants?.length > 0 ? product.variants[0].price : 0;

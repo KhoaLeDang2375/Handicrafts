@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { FiPackage } from "react-icons/fi";
 import { apiCall } from '../../services/api';
 import './CartPage.scss';
 
-const BASE_URL = 'http://127.0.0.1:8000';
+import Logo from '../../assets/images/Aura.png';
 
 const CartPage = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -44,6 +45,15 @@ const CartPage = () => {
     const handleUpdateQuantity = async (variantId, currentQty, change) => {
         const newQty = currentQty + change;
         if (newQty < 1) return; // Không cho giảm dưới 1
+
+        // Tìm món hàng đang sửa để lấy thông tin tồn kho
+        const currentItem = cartItems.find(item => item.productvariant_id === variantId);
+
+        // KIỂM TRA TỒN KHO 
+        if (change > 0 && currentItem && newQty > currentItem.stock_quantity) {
+            alert(`Sản phẩm này chỉ còn ${currentItem.stock_quantity} món trong kho!`);
+            return;
+        }
 
         try {
             // Cập nhật giao diện ngay lập tức (Optimistic UI) cho mượt
@@ -141,7 +151,9 @@ const CartPage = () => {
                                         />
                                     </div>
 
-                                    <img src={item.image || "https://via.placeholder.com/100"} alt={item.product_name} className="item-img" />
+                                    {/* <img src={item.image || {"https://via.placeholder.com/100"}} alt={item.product_name} */}
+
+                                    <img src={Logo} alt={item.product_name} className="item-img" />
 
                                     <div className="item-info">
                                         <h3>{item.product_name}</h3>
@@ -152,9 +164,24 @@ const CartPage = () => {
 
                                         {/* Bộ điều khiển số lượng */}
                                         <div className="quantity-control-small">
-                                            <button>-</button>
+                                            {/* Nút GIẢM: Truyền tham số -1 */}
+                                            <button
+                                                onClick={() => handleUpdateQuantity(item.productvariant_id, item.product_quantity, -1)}
+                                                disabled={item.product_quantity <= 1} // Mờ nút nếu số lượng là 1
+                                            >
+                                                -
+                                            </button>
+
                                             <span>{item.product_quantity}</span>
-                                            <button>+</button>
+
+                                            {/* Nút TĂNG: Truyền tham số +1 */}
+                                            <button
+                                                onClick={() => handleUpdateQuantity(item.productvariant_id, item.product_quantity, 1)}
+                                                disabled={item.product_quantity >= item.stock_quantity}
+                                                style={{ opacity: item.product_quantity >= item.stock_quantity ? 0.5 : 1 }}
+                                            >
+                                                +
+                                            </button>
                                         </div>
                                     </div>
 
@@ -171,7 +198,7 @@ const CartPage = () => {
 
                         {/* --- CỘT PHẢI: TỔNG KẾT --- */}
                         <div className="cart-summary">
-                            <h3>📦 Tổng đơn hàng</h3>
+                            <h3><FiPackage color="#DB9F6C" size="24px" /> Tổng đơn hàng</h3>
 
                             <div className="summary-row">
                                 <span>Tạm tính ({selectedIds.length} sản phẩm)</span>
@@ -199,6 +226,12 @@ const CartPage = () => {
                                 <p>Thanh toán an toàn</p>
                                 <p>Miễn phí đổi trả</p>
                                 <p>Giao hàng nhanh</p>
+                            </div>
+
+                            <div className="promo-box">
+                                <span className="promo-text">
+                                    Miễn phí vận chuyển cho đơn hàng từ 500.000đ
+                                </span>
                             </div>
                         </div>
                     </div>
