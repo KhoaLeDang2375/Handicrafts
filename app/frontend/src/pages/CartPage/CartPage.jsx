@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FiPackage } from "react-icons/fi";
 import { apiCall } from '../../services/api';
 import './CartPage.scss';
@@ -11,6 +11,7 @@ const CartPage = () => {
     // State lưu các ID của sản phẩm ĐƯỢC CHỌN (checkbox)
     const [selectedIds, setSelectedIds] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     // Hàm format tiền
     const formatCurrency = (amount) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
@@ -41,7 +42,7 @@ const CartPage = () => {
         }
     };
 
-    // 3. Xử lý Checkbox "Chọn tất cả"
+    // 3. Xử lý Checkbox 
     const handleUpdateQuantity = async (variantId, currentQty, change) => {
         const newQty = currentQty + change;
         if (newQty < 1) return; // Không cho giảm dưới 1
@@ -105,6 +106,25 @@ const CartPage = () => {
     const shippingFee = subTotal > 500000 ? 0 : 30000;
     // Logic: Nếu không có sản phẩm nào được chọn (length === 0) thì Tổng tiền = 0, Ngược lại thì cộng bình thường
     const finalTotal = selectedItemsList.length === 0 ? 0 : subTotal + shippingFee;
+
+    const handleCheckout = () => {
+        // Lọc ra các sản phẩm có ID nằm trong danh sách selectedIds
+        const itemsToCheckout = cartItems.filter(item => selectedIds.includes(item.productvariant_id));
+
+        if (itemsToCheckout.length === 0) {
+            alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
+            return;
+        }
+
+        // Chuyển sang trang thanh toán và gửi kèm danh sách
+        navigate('/thanh-toan', { 
+            state: { 
+                checkoutItems: itemsToCheckout, // Gửi danh sách
+                fromCart: true // Đánh dấu là đến từ giỏ hàng
+            } 
+        });
+    };
+
     return (
         <div className="cart-page">
 
@@ -217,7 +237,7 @@ const CartPage = () => {
                                 <span className="total-price">{formatCurrency(finalTotal)}</span>
                             </div>
 
-                            <button className="btn-checkout">Thanh toán</button>
+                            <button className="btn-checkout" onClick={handleCheckout}>Thanh toán</button>
                             <Link to="/san-pham" className="btn-continue">
                                 Tiếp tục mua sắm
                             </Link>

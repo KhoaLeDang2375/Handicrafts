@@ -133,6 +133,8 @@ class LoginRequest(BaseModel):
 class UserInfo(BaseModel):
     name: str
     email: str
+    phone: Optional[str] = None
+    address: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str

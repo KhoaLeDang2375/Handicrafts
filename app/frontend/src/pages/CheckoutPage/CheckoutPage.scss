@@ -59,12 +59,13 @@
     }
 }
 
-.form-group {
+.text-group {
+    margin-top: 1rem;
     margin-bottom: 1rem;
 
     label {
         display: block;
-        margin-bottom: 0.3rem;
+        margin: 0.3rem;
         font-weight: 500;
         font-size: 0.9rem;
     }
@@ -144,9 +145,37 @@
         color: #777;
     }
 
+    .method-price-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .original-fee {
+        font-size: 0.8rem;
+        color: #999;
+        text-decoration: line-through; // Gạch ngang giá cũ
+    }
+
     .method-price {
-        font-weight: 600;
+        font-weight: 600; 
         color: #333;
+        
+        // Nếu là miễn phí thì màu xanh lá
+        &.free {
+            color: #2ecc71; 
+        }
+    }
+}
+
+.default-address-card {
+    background-color: #fff9f5; // Nền cam rất nhạt
+    border: 1px dashed #d49058; // Viền nét đứt
+    padding: 1rem;
+    border-radius: 8px;
+    
+    p {
+        margin: 0.3rem 0;
     }
 }
 

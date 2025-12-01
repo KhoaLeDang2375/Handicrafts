@@ -60,6 +60,8 @@ async def login_for_access_token(login_request: LoginRequest):
         "token_type": "bearer",
         "user_info": {
             "name": user.get('name'),   # Tên thật trong DB
-            "email": user.get('email')  # Email thật trong DB
+            "email": user.get('email'),  # Email thật trong DB
+            "phone": user.get('phone'),     # Lấy cột 'phone' từ DB
+            "address": user.get('address')
         }
     }
