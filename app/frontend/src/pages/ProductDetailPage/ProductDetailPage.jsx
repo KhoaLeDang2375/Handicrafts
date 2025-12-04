@@ -47,8 +47,8 @@ const ProductDetailPage = () => {
 
         // Tự động chọn biến thể đầu tiên nếu có
         if (data.variants && data.variants.length > 0) {
-          setSelectedColor(data.variants[0].color);
-          setSelectedSize(data.variants[0].size);
+          setSelectedColor(data.variants[0].color || "");
+          setSelectedSize(data.variants[0].size || "");
         }
 
       } catch (err) {

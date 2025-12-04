@@ -211,45 +211,46 @@ class CartItemResponse(CartItemBase):
     product_name: Optional[str] = None
     stock_quantity: int
 # Pydantic schemas for Order Checkout
-class OrderCheckout(BaseModel):
-    access_token: str
-    cart_items: List[CartItemBase]
-    payment_method: str = "COD"
-    shipment : str = "GHTK"
-class OrderCheckoutOne(BaseModel):
-    access_token: str
-    item: CartItemBase
-    payment_method: str = "COD"
-    shipment : str = "GHTK"
-class OrderStatusUpdateRequest(BaseModel):
-    access_token: str
-    new_status: str = 'Waiting for delivery'
-class OrderStatusUpdateResponse(BaseModel):
-    order_id: int
-    new_status: str
-    message: str = "Order status updated successfully"
-# Chúng ta lấy user_id từ access token
-class OrderCheckoutResponse(BaseModel):
-    message: str
-    order_id: int
-# Pydantic schemas for Order Check
-class OrderDetailResponse(BaseModel):
-    id: int
-    order_id: int
-    productvariant_id: int
-    product_name: Optional[str] = None
-    color: Optional[str] = None
-    size: Optional[int] = None
-    quantity: int
-    price: float
-class OrderCheckRequest(BaseModel):
-    access_token: str
-    status: str = None
-class OrderCheckResponse(BaseModel):
-    order_id: int
-    items: list[OrderDetailResponse]
-    price: float
-    status: str = None
+# class OrderCheckout(BaseModel):
+#     access_token: str
+#     cart_items: List[CartItemBase]
+#     payment_method: str = "COD"
+#     shipment : str = "GHTK"
+#     total_amount: float # Tổng tiền đơn hàng 
+# class OrderCheckoutOne(BaseModel):
+#     access_token: str
+#     item: CartItemBase
+#     payment_method: str = "COD" 
+#     shipment : str = "GHTK"
+# class OrderStatusUpdateRequest(BaseModel):
+#     access_token: str
+#     new_status: str = 'Waiting for delivery'
+# class OrderStatusUpdateResponse(BaseModel):
+#     order_id: int
+#     new_status: str
+#     message: str = "Order status updated successfully"
+# # Chúng ta lấy user_id từ access token
+# class OrderCheckoutResponse(BaseModel):
+#     message: str
+#     order_id: int
+# # Pydantic schemas for Order Check
+# class OrderDetailResponse(BaseModel):
+#     id: int
+#     order_id: int
+#     productvariant_id: int
+#     product_name: Optional[str] = None
+#     color: Optional[str] = None
+#     size: Optional[int] = None
+#     quantity: int
+#     price: float
+# class OrderCheckRequest(BaseModel):
+#     access_token: str
+#     status: str = None
+# class OrderCheckResponse(BaseModel):
+#     order_id: int
+#     items: list[OrderDetailResponse]
+#     price: float
+#     status: str = None
 # Pydantic schemas for Cart Response
 class CartResponse(BaseModel):
     customer_id: int
@@ -301,3 +302,87 @@ class UserUpdateProfileRequest(BaseModel):
 class UserProfileUpdateResponse(BaseModel):
     msg: str = "Updated Successfully!"
     updated_fields: list[str] # Danh sách các trường đã được update'
+
+
+
+
+
+
+
+
+
+
+# ==========================================
+# 5. ORDER (THANH TOÁN) - CẬP NHẬT MỚI
+# ==========================================
+
+# --- Schema phụ để nhận thông tin từ form Frontend ---
+class CustomerInfoRequest(BaseModel):
+    name: str
+    phone: str
+    email: str
+    address: str
+    note: Optional[str] = None
+
+# --- Schema phụ để nhận từng món hàng khi đặt hàng ---
+class OrderItemRequest(BaseModel):
+    productvariant_id: int
+    product_quantity: int
+
+# --- Schema cho Checkout từ Giỏ hàng ---
+class OrderCheckout(BaseModel):
+    access_token: str
+    cart_items: List[OrderItemRequest] # Danh sách món hàng
+    customer_info: CustomerInfoRequest # Thông tin người nhận
+    
+    payment_method: str = "COD"
+    shipment: str = "GHTK"
+    total_amount: float # Tổng tiền đơn hàng
+
+# --- Schema cho Mua Ngay (1 món) ---
+class OrderCheckoutOne(BaseModel):
+    access_token: str
+    item: OrderItemRequest # Chỉ 1 món hàng
+    customer_info: CustomerInfoRequest # Thông tin người nhận
+    
+    payment_method: str = "COD"
+    shipment: str = "GHTK"
+    total_amount: float
+
+# --- Response sau khi đặt hàng ---
+class OrderCheckoutResponse(BaseModel):
+    message: str
+    order_id: int
+
+# --- Schema Update trạng thái đơn hàng (Employee) ---
+class OrderStatusUpdateRequest(BaseModel):
+    access_token: str
+    new_status: str = 'Waiting for delivery'
+
+class OrderStatusUpdateResponse(BaseModel):
+    order_id: int
+    new_status: str
+    message: str = "Order status updated successfully"
+
+# --- Schema Xem đơn hàng (History) ---
+class OrderDetailResponse(BaseModel):
+    id: int
+    order_id: int
+    productvariant_id: int
+    product_name: Optional[str] = None
+    color: Optional[str] = None
+    size: Optional[int] = None
+    quantity: int
+    price: float
+
+class OrderCheckRequest(BaseModel):
+    # Dùng khi client gửi request body (Lưu ý: GET request nên dùng Query param thay vì body)
+    access_token: str
+    status: Optional[str] = None
+
+class OrderCheckResponse(BaseModel):
+    order_id: int
+    items: List[OrderDetailResponse]
+    total_amount: float # Đổi tên price -> total_amount cho đồng nhất
+    status: Optional[str] = None
+    created_at: Optional[datetime] = None

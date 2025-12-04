@@ -3,16 +3,16 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { apiCall } from '../../services/api';
 import './CheckoutPage.scss';
 
-import { FiArrowLeft, FiMapPin, FiTruck, FiCreditCard, FiDollarSign,FiLock } from 'react-icons/fi';
+import { FiArrowLeft, FiMapPin, FiTruck, FiCreditCard, FiDollarSign, FiLock } from 'react-icons/fi';
 import Logo from '../../assets/images/Aura.png';
 
-const SHIPPING_RATES = { 'GHTK': 30000,'GNN': 45000 };
+const SHIPPING_RATES = { 'GHTK': 30000, 'GNN': 45000 };
 
 const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(null);
-  
+
   // 1. Lấy dữ liệu từ state (Hỗ trợ cả 2 trường hợp)
   const { productToBuy, checkoutItems } = location.state || {};
 
@@ -35,30 +35,18 @@ const CheckoutPage = () => {
     }
   }, [productToBuy, checkoutItems, navigate]);
 
-  // State cho Form thông tin
-  const [formData, setFormData] = useState({
-    fullName: '',
-    phone: '',
-    email: '',
-    address: '',
-    city: '',
-    district: '',
-    ward: '',
-    note: ''
-  });
 
-  // Tự động điền thông tin nếu đã đăng nhập (Lấy từ localStorage)
+  // Load thông tin User từ LocalStorage khi vào trang
   useEffect(() => {
     const userStored = localStorage.getItem('currentUser');
+    
     if (userStored) {
-      const user = JSON.parse(userStored);
-      setFormData(prev => ({
-        ...prev,
-        fullName: user.name || '',
-        email: user.email || '',
-        phone: user.phone || '', 
-        address: user.address || ''
-      }));
+      // Lưu thẳng vào state currentUser để hiển thị lên giao diện
+      setCurrentUser(JSON.parse(userStored)); 
+    } else {
+      // Nếu chưa đăng nhập thì đuổi về trang login
+      alert("Vui lòng đăng nhập để thanh toán!");
+        navigate('/login');
     }
   }, []);
 
@@ -67,19 +55,14 @@ const CheckoutPage = () => {
 
   // --- 3. TÍNH TOÁN TỔNG TIỀN (Dựa trên mảng orderItems) ---
   const subTotal = orderItems.reduce((sum, item) => {
-      // Giá * Số lượng
-      return sum + (item.price * (item.product_quantity || item.quantity));
+    // Giá * Số lượng
+    return sum + (item.price * (item.product_quantity || item.quantity));
   }, 0);
 
   const isFreeShip = subTotal >= 500000;
   const baseShippingFee = SHIPPING_RATES[shippingMethod] || 0;
   const shippingFee = isFreeShip ? 0 : baseShippingFee;
   const total = subTotal + shippingFee;
-
-
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   // --- 4. Gửi dữ liệu đặt hàng ---
   useEffect(() => {
@@ -89,86 +72,115 @@ const CheckoutPage = () => {
     }
   }, []);
 
+  // --- HÀM ĐẶT HÀNG MỚI ---
   const handlePlaceOrder = async () => {
-    // Validate: Kiểm tra thông tin bắt buộc
-    if (!formData.fullName || !formData.phone || !formData.address) {
-        alert("Vui lòng điền đầy đủ thông tin giao hàng (Tên, SĐT, Địa chỉ)!");
-        return;
-    }
-
     const token = localStorage.getItem('authToken');
     if (!token) {
-        alert("Bạn cần đăng nhập để đặt hàng.");
+        alert("Vui lòng đăng nhập lại.");
         return;
     }
 
-    // Chuẩn bị Payload 
-    const orderPayload = {
-        access_token: token,
-        cart_items: orderItems.map(item => ({
-            productvariant_id: item.variant_id || item.productvariant_id,
-            product_quantity: item.product_quantity || item.quantity
-        })),
-        shipping_method: shippingMethod,
-        payment_method: paymentMethod,
-        total_amount: total,
-        
-        // Chỉ gửi mỗi ghi chú (nếu bạn muốn giữ ô ghi chú)
-        customer_info: {
-            note: formData.note 
-        }
+    // 1. Validate thông tin User
+    if (!currentUser || !currentUser.address || !currentUser.phone) {
+      alert("Hồ sơ thiếu Địa chỉ hoặc SĐT. Vui lòng cập nhật trước!");
+      // navigate('/profile'); 
+      return;
+    }
+
+    // 2. Xác định: Đây là "Mua ngay" hay "Thanh toán giỏ hàng"?
+    // (Dựa vào state fromCart truyền từ trang trước)
+    const isBuyNow = !location.state?.fromCart; 
+
+    // 3. Chuẩn bị dữ liệu CHUNG (Cả 2 trường hợp đều cần)
+    const commonPayload = {
+      access_token: token,
+      customer_info: {
+        name: currentUser.name || currentUser.fullname,
+        phone: currentUser.phone,
+        email: currentUser.email,
+        address: currentUser.address
+      },
+      shipment: shippingMethod,
+      payment_method: paymentMethod,
+      total_amount: total
     };
 
-    console.log("Dữ liệu gửi đi:", orderPayload);
+    let payload = {};
+    let endpoint = "";
 
-    // Gọi API
+    // 4. Cấu hình Payload và Endpoint riêng biệt
+    if (isBuyNow) {
+        // --- TRƯỜNG HỢP MUA NGAY ---
+        endpoint = "/orders/buy-now";
+        
+        // Backend 'OrderCheckoutOne' yêu cầu field 'item' là 1 object đơn lẻ
+        payload = {
+            ...commonPayload,
+            item: {
+                productvariant_id: orderItems[0].variant_id || orderItems[0].productvariant_id,
+                product_quantity: orderItems[0].product_quantity || orderItems[0].quantity
+            }
+        };
+    } else {
+        // --- TRƯỜNG HỢP GIỎ HÀNG ---
+        endpoint = "/orders/checkout";
+        
+        // Backend 'OrderCheckout' yêu cầu field 'cart_items' là 1 mảng
+        payload = {
+            ...commonPayload,
+            cart_items: orderItems.map(item => ({
+                productvariant_id: item.variant_id || item.productvariant_id,
+                product_quantity: item.product_quantity || item.quantity
+            }))
+        };
+    }
+
+    console.log(`Đang gọi ${endpoint} với dữ liệu:`, payload);
+
     try {
-        // Sử dụng endpoint '/orders/checkout' (Dành cho cả mua ngay và mua từ giỏ)
-        const response = await apiCall('/orders/checkout', {
-            method: 'POST',
-            body: JSON.stringify(orderPayload)
-        });
+      // 5. Gọi API (Endpoint động)
+      const response = await apiCall(endpoint, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      
+      const data = await response.json();
 
-        const data = await response.json();
-
-        if (response.ok) {
-            alert("🎉 Đặt hàng thành công! Mã đơn hàng: " + data.order_id);
-            // Chuyển hướng đến trang thông báo thành công hoặc trang lịch sử đơn hàng
-            // navigate(`/order-success/${data.order_id}`);
-            navigate('/san-pham'); // Tạm thời về trang chủ
-        } else {
-            alert(`Lỗi đặt hàng: ${data.detail || 'Vui lòng thử lại'}`);
-        }
-
+      if (response.ok) {
+        alert(`Đặt hàng thành công! Mã đơn: #${data.order_id}`);
+        navigate('/'); // Hoặc chuyển sang trang lịch sử đơn hàng
+      } else {
+        alert(`Lỗi: ${data.detail || 'Đặt hàng thất bại'}`);
+      }
     } catch (error) {
-        console.error("Lỗi kết nối:", error);
-        alert("Có lỗi xảy ra khi kết nối đến server.");
+      console.error("Lỗi connection:", error);
+      alert("Không thể kết nối đến server.");
     }
   };
 
   if (orderItems.length === 0) return null;
 
-  const backLink = location.state?.fromCart 
-      ? "/cart" 
-      : `/san-pham/${orderItems[0].product_id}`;
+  const backLink = location.state?.fromCart
+    ? "/cart"
+    : `/san-pham/${orderItems[0].product_id}`;
 
   return (
     <div className="checkout-page">
-      
+
       <div className="checkout-container">
         <div className="checkout-header">
-            <Link to={backLink} className="back-link">
-                <FiArrowLeft size={18} style={{ marginRight: '5px', verticalAlign: 'middle' }} /> 
-                {location.state?.fromCart ? "Quay lại giỏ hàng" : "Quay lại sản phẩm"}
-            </Link>
-            <h1>Thanh toán</h1>
+          <Link to={backLink} className="back-link">
+            <FiArrowLeft size={18} style={{ marginRight: '5px', verticalAlign: 'middle' }} />
+            {location.state?.fromCart ? "Quay lại giỏ hàng" : "Quay lại sản phẩm"}
+          </Link>
+          <h1>Thanh toán</h1>
         </div>
 
         <div className="checkout-layout">
-          
+
           {/* --- CỘT TRÁI: THÔNG TIN --- */}
           <div className="checkout-left">
-            
+
             {/* 1. Thông tin giao hàng */}
             <div className="checkout-section">
               <h3>
@@ -177,24 +189,20 @@ const CheckoutPage = () => {
               </h3>
 
               {currentUser ? (
-                  <div className="default-address-card">
-                      <p className="name"><strong>{currentUser.name}</strong></p>
-                      <p className="phone">Số điện thoại: {currentUser.phone || "Chưa có SĐT"}</p>
-                      <p className="address">Địa chỉ: {currentUser.address || "Chưa cập nhật địa chỉ"}</p>
-                      <p className="email">Email: {currentUser.email}</p>
-                      
-                      <Link to="/profile" style={{fontSize: '0.9rem', color: '#d49058', marginTop: '0.5rem', display: 'inline-block'}}>
-                          Thay đổi thông tin
-                      </Link>
-                  </div>
+                <div className="default-address-card">
+                  <p className="name"><strong>{currentUser.name}</strong></p>
+                  <p className="phone">Số điện thoại: {currentUser.phone || "Chưa có SĐT"}</p>
+                  <p className="address">Địa chỉ: {currentUser.address || "Chưa cập nhật địa chỉ"}</p>
+                  <p className="email">Email: {currentUser.email}</p>
+
+                  <Link to="/profile" style={{ fontSize: '0.9rem', color: '#d49058', marginTop: '0.5rem', display: 'inline-block' }}>
+                    Thay đổi thông tin
+                  </Link>
+                </div>
               ) : (
-                  <p>Vui lòng đăng nhập để tải địa chỉ.</p>
+                <p>Vui lòng đăng nhập để tải địa chỉ.</p>
               )}
-              
-              <div className="text-group">
-                <label>Ghi chú (tùy chọn)</label>
-                <textarea name="note" rows="2" value={formData.note} onChange={handleInputChange} placeholder="Ghi chú về đơn hàng..."></textarea>
-              </div>
+
             </div>
 
             {/* 2. Phương thức vận chuyển */}
@@ -214,7 +222,7 @@ const CheckoutPage = () => {
                   <div className="method-price-group">
                     {isFreeShip && <span className="original-fee">30.000₫</span>}
                     <span className={`method-price ${isFreeShip ? 'free' : ''}`}>
-                        {isFreeShip ? 'Miễn phí' : '30.000₫'}
+                      {isFreeShip ? 'Miễn phí' : '30.000₫'}
                     </span>
                   </div>
                 </label>
@@ -225,11 +233,11 @@ const CheckoutPage = () => {
                     <span className="method-name">Giao Hàng Nhanh (GNN)</span>
                     <span className="method-desc">Giao trong 1-2 ngày</span>
                   </div>
-                  
+
                   <div className="method-price-group">
                     {isFreeShip && <span className="original-fee">45.000₫</span>}
                     <span className={`method-price ${isFreeShip ? 'free' : ''}`}>
-                        {isFreeShip ? 'Miễn phí' : '45.000₫'}
+                      {isFreeShip ? 'Miễn phí' : '45.000₫'}
                     </span>
                   </div>
                 </label>
@@ -258,7 +266,7 @@ const CheckoutPage = () => {
                     <span className="method-name">Ví MoMo</span>
                     <span className="method-desc">Thanh toán qua ví điện tử</span>
                   </div>
-                  <span className="icon" style={{color: '#d82d8b', fontWeight: 'bold'}}>MOMO</span>
+                  <span className="icon" style={{ color: '#d82d8b', fontWeight: 'bold' }}>MOMO</span>
                 </label>
               </div>
             </div>
@@ -269,25 +277,25 @@ const CheckoutPage = () => {
           <div className="checkout-right">
             <div className="order-summary-box">
               <h3>Đơn hàng của bạn ({orderItems.length} sản phẩm)</h3>
-              
+
               <div className="order-items">
                 {/* DÙNG VÒNG LẶP ĐỂ HIỂN THỊ DANH SÁCH */}
                 {orderItems.map((item, index) => (
-                    <div key={index} className="order-item">
-                        <div className="item-image">
-                            {/* Xử lý ảnh: item.image (cart) hoặc item.image (buy now) */}
-                            <img src={item.image || Logo} alt={item.product_name} />
-                            <span className="item-qty">{item.product_quantity || item.quantity}</span>
-                        </div>
-                        <div className="item-details">
-                            {/* Xử lý tên: item.product_name (cart) hoặc item.name (buy now) */}
-                            <h4>{item.product_name || item.name}</h4>
-                            <p>{item.color} {item.size ? `/ ${item.size}` : ''}</p>
-                        </div>
-                        <div className="item-price">
-                            {(item.price * (item.product_quantity || item.quantity)).toLocaleString('vi-VN')}₫
-                        </div>
+                  <div key={index} className="order-item">
+                    <div className="item-image">
+                      {/* Xử lý ảnh: item.image (cart) hoặc item.image (buy now) */}
+                      <img src={item.image || Logo} alt={item.product_name} />
+                      <span className="item-qty">{item.product_quantity || item.quantity}</span>
                     </div>
+                    <div className="item-details">
+                      {/* Xử lý tên: item.product_name (cart) hoặc item.name (buy now) */}
+                      <h4>{item.product_name || item.name}</h4>
+                      <p>{item.color} {item.size ? `/ ${item.size}` : ''}</p>
+                    </div>
+                    <div className="item-price">
+                      {(item.price * (item.product_quantity || item.quantity)).toLocaleString('vi-VN')}₫
+                    </div>
+                  </div>
                 ))}
               </div>
 
@@ -297,7 +305,7 @@ const CheckoutPage = () => {
               </div>
               <div className="summary-row">
                 <span>Phí vận chuyển ({shippingMethod})</span>
-                {isFreeShip ? <span style={{color: '#2ecc71'}}>Miễn phí</span> : <span>{baseShippingFee.toLocaleString('vi-VN')}₫</span>}
+                {isFreeShip ? <span style={{ color: '#2ecc71' }}>Miễn phí</span> : <span>{baseShippingFee.toLocaleString('vi-VN')}₫</span>}
               </div>
               <div className="summary-divider"></div>
               <div className="summary-total">
@@ -306,7 +314,7 @@ const CheckoutPage = () => {
               </div>
 
               <button className="btn-place-order" onClick={handlePlaceOrder}>Đặt hàng</button>
-              
+
               <div className="security-note">
                 <FiLock size={16} style={{ marginRight: '5px' }} />
                 Thông tin thanh toán được bảo mật an toàn
@@ -316,7 +324,7 @@ const CheckoutPage = () => {
 
         </div>
       </div>
-     
+
     </div>
   );
 };
