@@ -57,13 +57,13 @@ from datetime import datetime
 
 class Order:
     # 1. Cập nhật __init__ để nhận thêm shipping_name, phone, address
-    def __init__(self, customer_id, amount, status, shipping_name, shipping_phone, shipping_address, id=None, employee_id=None):
+    def __init__(self, customer_id, amount, status, shipping_name, shipping_phone, shipping_address, id=None, employee_id=None, date=None):
         self.id = id
         self.customer_id = customer_id
         self.employee_id = employee_id
         self.amount = amount
         self.status = status
-        self.created_at = datetime.now()
+        self.date = datetime.now()
         
         # Các trường mới thêm
         self.shipping_name = shipping_name
@@ -76,8 +76,8 @@ class Order:
         # Đảm bảo bảng 'orders' trong MySQL đã có đủ cột (shipping_name...)
         sql = """
             INSERT INTO orders 
-            (customer_id, amount, status, shipping_name, shipping_phone, shipping_address) 
-            VALUES (%s, %s, %s, %s, %s, %s)
+            (customer_id, amount, status, shipping_name, shipping_phone, shipping_address, date) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
         params = (
             self.customer_id, 
@@ -86,6 +86,7 @@ class Order:
             self.shipping_name, 
             self.shipping_phone, 
             self.shipping_address, 
+            self.date
         )
         
         # Thực thi và lấy ID vừa tạo

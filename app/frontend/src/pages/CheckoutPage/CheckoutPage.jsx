@@ -11,7 +11,19 @@ const SHIPPING_RATES = { 'GHTK': 30000, 'GNN': 45000 };
 const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState();
+
+  // Lấy dữ liệu từ form
+  const [shippingForm, setShippingForm] = useState({
+    name: '',
+    phone: '',
+    address: ''
+  });
+  const [isCustomShipping, setIsCustomShipping] = useState(false);
+  const handleShippingChange = (e) => {
+    const { name, value } = e.target;
+    setShippingForm(prev => ({ ...prev, [name]: value }));
+  };
 
   // 1. Lấy dữ liệu từ state (Hỗ trợ cả 2 trường hợp)
   const { productToBuy, checkoutItems } = location.state || {};
@@ -39,14 +51,14 @@ const CheckoutPage = () => {
   // Load thông tin User từ LocalStorage khi vào trang
   useEffect(() => {
     const userStored = localStorage.getItem('currentUser');
-    
+
     if (userStored) {
       // Lưu thẳng vào state currentUser để hiển thị lên giao diện
-      setCurrentUser(JSON.parse(userStored)); 
+      setCurrentUser(JSON.parse(userStored));
     } else {
       // Nếu chưa đăng nhập thì đuổi về trang login
       alert("Vui lòng đăng nhập để thanh toán!");
-        navigate('/login');
+      navigate('/login');
     }
   }, []);
 
@@ -72,33 +84,40 @@ const CheckoutPage = () => {
     }
   }, []);
 
-  // --- HÀM ĐẶT HÀNG MỚI ---
+  // --- HÀM ĐẶT HÀNG ---
   const handlePlaceOrder = async () => {
     const token = localStorage.getItem('authToken');
     if (!token) {
-        alert("Vui lòng đăng nhập lại.");
-        return;
-    }
-
-    // 1. Validate thông tin User
-    if (!currentUser || !currentUser.address || !currentUser.phone) {
-      alert("Hồ sơ thiếu Địa chỉ hoặc SĐT. Vui lòng cập nhật trước!");
-      // navigate('/profile'); 
+      alert("Vui lòng đăng nhập lại.");
       return;
     }
 
-    // 2. Xác định: Đây là "Mua ngay" hay "Thanh toán giỏ hàng"?
-    // (Dựa vào state fromCart truyền từ trang trước)
-    const isBuyNow = !location.state?.fromCart; 
+    // 1. Xác định dữ liệu giao hàng cuối cùng
+    const finalShippingData = {
+      name: isCustomShipping ? shippingForm.name : currentUser.name,
+      phone: isCustomShipping ? shippingForm.phone : currentUser.phone,
+      address: isCustomShipping ? shippingForm.address : currentUser.address,
+      email: currentUser.email
+    };
 
-    // 3. Chuẩn bị dữ liệu CHUNG (Cả 2 trường hợp đều cần)
+    // 2. Validate thông tin User
+    if (!finalShippingData.name || !finalShippingData.phone || !finalShippingData.address) {
+      alert("Vui lòng điền đầy đủ thông tin giao hàng!");
+      return;
+    }
+
+    // 3. Xác định: Đây là "Mua ngay" hay "Thanh toán giỏ hàng"?
+    // (Dựa vào state fromCart truyền từ trang trước)
+    const isBuyNow = !location.state?.fromCart;
+
+    // 4. Chuẩn bị dữ liệu CHUNG (Cả 2 trường hợp đều cần)
     const commonPayload = {
       access_token: token,
       customer_info: {
-        name: currentUser.name || currentUser.fullname,
-        phone: currentUser.phone,
-        email: currentUser.email,
-        address: currentUser.address
+        name: finalShippingData.name,     // Lấy tên người nhận thực tế
+        phone: finalShippingData.phone,   // Lấy SĐT người nhận thực tế
+        email: finalShippingData.email,
+        address: finalShippingData.address // Lấy địa chỉ giao hàng thực tế
       },
       shipment: shippingMethod,
       payment_method: paymentMethod,
@@ -108,42 +127,42 @@ const CheckoutPage = () => {
     let payload = {};
     let endpoint = "";
 
-    // 4. Cấu hình Payload và Endpoint riêng biệt
+    // 5. Cấu hình Payload và Endpoint riêng biệt
     if (isBuyNow) {
-        // --- TRƯỜNG HỢP MUA NGAY ---
-        endpoint = "/orders/buy-now";
-        
-        // Backend 'OrderCheckoutOne' yêu cầu field 'item' là 1 object đơn lẻ
-        payload = {
-            ...commonPayload,
-            item: {
-                productvariant_id: orderItems[0].variant_id || orderItems[0].productvariant_id,
-                product_quantity: orderItems[0].product_quantity || orderItems[0].quantity
-            }
-        };
+      // --- TRƯỜNG HỢP MUA NGAY ---
+      endpoint = "/orders/buy-now";
+
+      // Backend 'OrderCheckoutOne' yêu cầu field 'item' là 1 object đơn lẻ
+      payload = {
+        ...commonPayload,
+        item: {
+          productvariant_id: orderItems[0].variant_id || orderItems[0].productvariant_id,
+          product_quantity: orderItems[0].product_quantity || orderItems[0].quantity
+        }
+      };
     } else {
-        // --- TRƯỜNG HỢP GIỎ HÀNG ---
-        endpoint = "/orders/checkout";
-        
-        // Backend 'OrderCheckout' yêu cầu field 'cart_items' là 1 mảng
-        payload = {
-            ...commonPayload,
-            cart_items: orderItems.map(item => ({
-                productvariant_id: item.variant_id || item.productvariant_id,
-                product_quantity: item.product_quantity || item.quantity
-            }))
-        };
+      // --- TRƯỜNG HỢP GIỎ HÀNG ---
+      endpoint = "/orders/checkout";
+
+      // Backend 'OrderCheckout' yêu cầu field 'cart_items' là 1 mảng
+      payload = {
+        ...commonPayload,
+        cart_items: orderItems.map(item => ({
+          productvariant_id: item.variant_id || item.productvariant_id,
+          product_quantity: item.product_quantity || item.quantity
+        }))
+      };
     }
 
     console.log(`Đang gọi ${endpoint} với dữ liệu:`, payload);
 
     try {
-      // 5. Gọi API (Endpoint động)
+      // 6. Gọi API (Endpoint động)
       const response = await apiCall(endpoint, {
         method: 'POST',
         body: JSON.stringify(payload)
       });
-      
+
       const data = await response.json();
 
       if (response.ok) {
@@ -189,16 +208,76 @@ const CheckoutPage = () => {
               </h3>
 
               {currentUser ? (
-                <div className="default-address-card">
-                  <p className="name"><strong>{currentUser.name}</strong></p>
-                  <p className="phone">Số điện thoại: {currentUser.phone || "Chưa có SĐT"}</p>
-                  <p className="address">Địa chỉ: {currentUser.address || "Chưa cập nhật địa chỉ"}</p>
-                  <p className="email">Email: {currentUser.email}</p>
+                <>
+                  {/* Checkbox để chọn chế độ */}
+                  <div style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={isCustomShipping}
+                        onChange={(e) => setIsCustomShipping(e.target.checked)}
+                        style={{ marginRight: '8px', accentColor: '#d49058' }}
+                      />
+                      <strong>Giao hàng đến địa chỉ khác?</strong>
+                    </label>
+                  </div>
 
-                  <Link to="/profile" style={{ fontSize: '0.9rem', color: '#d49058', marginTop: '0.5rem', display: 'inline-block' }}>
-                    Thay đổi thông tin
-                  </Link>
-                </div>
+                  {/* LOGIC HIỂN THỊ: Nếu KHÔNG tích chọn -> Hiện thông tin mặc định */}
+                  {!isCustomShipping ? (
+                    <div className="default-address-card">
+                      <p className="name"><strong>{currentUser.name}</strong></p>
+                      <p className="phone">Số điện thoại: {currentUser.phone || "Chưa có SĐT"}</p>
+                      <p className="address">Địa chỉ: {currentUser.address || "Chưa cập nhật địa chỉ"}</p>
+                      <p className="email">Email: {currentUser.email}</p>
+
+                      <Link to="/profile" style={{ fontSize: '0.9rem', color: '#d49058', marginTop: '0.5rem', display: 'inline-block' }}>
+                        Thay đổi thông tin gốc
+                      </Link>
+                    </div>
+                  ) : (
+                    /* Nếu CÓ tích chọn -> Hiện Form nhập liệu */
+                    <div className="custom-shipping-form" style={{ marginTop: '10px' }}>
+                      <div style={{ marginBottom: '10px' }}>
+                        <label>Tên người nhận:</label>
+                        <input
+                          type="text"
+                          name="name"
+                          value={shippingForm.name}
+                          onChange={handleShippingChange}
+                          placeholder="Nhập tên người nhận"
+                          className="form-control"
+                          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+                        />
+                      </div>
+
+                      <div style={{ marginBottom: '10px' }}>
+                        <label>Số điện thoại:</label>
+                        <input
+                          type="text"
+                          name="phone"
+                          value={shippingForm.phone}
+                          onChange={handleShippingChange}
+                          placeholder="Nhập số điện thoại"
+                          className="form-control"
+                          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+                        />
+                      </div>
+
+                      <div style={{ marginBottom: '10px' }}>
+                        <label>Địa chỉ nhận hàng:</label>
+                        <textarea
+                          name="address"
+                          value={shippingForm.address}
+                          onChange={handleShippingChange}
+                          placeholder="Số nhà, tên đường, phường/xã..."
+                          className="form-control"
+                          rows="3"
+                          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </>
               ) : (
                 <p>Vui lòng đăng nhập để tải địa chỉ.</p>
               )}

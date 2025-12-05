@@ -280,6 +280,7 @@ async def buy_now(order_data: OrderCheckoutOne):
             customer_id=customer_id, 
             amount=order_data.total_amount, 
             status="processing",
+            date=datetime.now(),
             
             # Lấy thông tin từ frontend gửi lên
             shipping_name=order_data.customer_info.name,
@@ -308,7 +309,8 @@ async def buy_now(order_data: OrderCheckoutOne):
         payment = Payment(
             order_id=new_order_id,
             payment_method=order_data.payment_method,
-            status="pending"
+            status="pending",
+            payment_date=datetime.now()
         )
         payment.save()
 
@@ -350,6 +352,7 @@ async def checkout(order_data: OrderCheckout):
             customer_id=customer_id, 
             amount=order_data.total_amount, # Lấy luôn tổng tiền từ Frontend gửi lên (hoặc tính lại)
             status="processing",
+            date=datetime.now(),
 
             shipping_name=order_data.customer_info.name,
             shipping_phone=order_data.customer_info.phone,
@@ -378,7 +381,8 @@ async def checkout(order_data: OrderCheckout):
         payment = Payment(
             order_id=new_order_id, 
             payment_method=order_data.payment_method,
-            status="pending"
+            status="pending",
+            payment_date=datetime.now()
         )
         payment.save()
 
