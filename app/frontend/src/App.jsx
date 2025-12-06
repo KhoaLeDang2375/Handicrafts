@@ -11,6 +11,7 @@ import AuthPage from './pages/AuthPage/AuthPage';
 import ProductDetailPage from './pages/ProductDetailPage/ProductDetailPage';
 import CartPage from './pages/CartPage/CartPage';
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage';
+import ProfilePage from './pages/ProfilePage/ProfilePage'; 
 
 function App() {
   const location = useLocation();
@@ -36,6 +37,8 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
 
           <Route path="/thanh-toan" element={<CheckoutPage />} />
+
+          <Route path="/my-profile" element={<ProfilePage />} />
 
         </Routes>
       </main>

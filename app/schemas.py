@@ -284,12 +284,20 @@ class CartItemDeleteResponse(BaseModel):
 # Model base chứa các trường chung
 class UserRequest(BaseModel):
     access_token: str
+
+class OrderHistoryItem(BaseModel):
+    order_id: int     
+    status: str
+    date: datetime
+    total_products: int
+    total_amount: float
 class UserProfileResponse(BaseModel):
     email: EmailStr
     full_name: Optional[str] = None
     address :  Optional[str] = None
     avatar_url: Optional[str] = None
     phone_number: Optional[str] = None
+    orders: List[OrderHistoryItem] = []
     # Cấu hình này giúp Pydantic đọc dữ liệu từ ORM (SQLAlchemy/SQLModel)
     class Config:
         from_attributes = True
@@ -313,7 +321,7 @@ class UserProfileUpdateResponse(BaseModel):
 
 
 # ==========================================
-# 5. ORDER (THANH TOÁN) - CẬP NHẬT MỚI
+# 5. ORDER (THANH TOÁN) 
 # ==========================================
 
 # --- Schema phụ để nhận thông tin từ form Frontend ---
@@ -383,6 +391,7 @@ class OrderCheckRequest(BaseModel):
 class OrderCheckResponse(BaseModel):
     order_id: int
     items: List[OrderDetailResponse]
-    total_amount: float # Đổi tên price -> total_amount cho đồng nhất
+    total_amount: float 
     status: Optional[str] = None
     created_at: Optional[datetime] = None
+    total_products: int

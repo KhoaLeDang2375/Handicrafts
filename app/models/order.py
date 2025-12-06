@@ -56,7 +56,7 @@ from app.database import db
 from datetime import datetime
 
 class Order:
-    # 1. Cập nhật __init__ để nhận thêm shipping_name, phone, address
+    # Nhận thêm shipping_name, phone, address
     def __init__(self, customer_id, amount, status, shipping_name, shipping_phone, shipping_address, id=None, employee_id=None, date=None):
         self.id = id
         self.customer_id = customer_id
@@ -70,10 +70,7 @@ class Order:
         self.shipping_phone = shipping_phone
         self.shipping_address = shipping_address
         
-
-    # 2. Cập nhật hàm save để INSERT vào database
     def save(self):
-        # Đảm bảo bảng 'orders' trong MySQL đã có đủ cột (shipping_name...)
         sql = """
             INSERT INTO orders 
             (customer_id, amount, status, shipping_name, shipping_phone, shipping_address, date) 
@@ -94,7 +91,6 @@ class Order:
         self.id = new_id
         return new_id
 
-    # 3. Các hàm hỗ trợ khác (Giữ nguyên hoặc cập nhật nếu cần)
     @staticmethod
     def get_by_id(order_id):
         sql = "SELECT * FROM orders WHERE id = %s"
@@ -118,3 +114,42 @@ class Order:
     def get_by_customer_id(user_id):
          sql = "SELECT * FROM orders WHERE user_id = %s ORDER BY date DESC"
          return db.fetch_all(sql, (user_id,))
+    
+    @staticmethod
+    def get_orders_by_customer(customer_id, status=None):
+        sql = """
+            SELECT 
+                o.id, 
+                o.status, 
+                o.date, 
+                o.amount, 
+                COALESCE(SUM(od.product_quantity), 0) as total_products
+            FROM orders o
+            LEFT JOIN orderdetail od ON o.id = od.order_id
+            WHERE o.customer_id = %s
+        """
+        params = [customer_id]
+
+        # Xử lý logic cộng chuỗi SQL (Dynamic SQL)
+        if status:
+            sql += " AND o.status = %s"
+            params.append(status)
+
+        sql += " GROUP BY o.id, o.status, o.date, o.amount ORDER BY o.date DESC"
+
+        # db.fetch_all sẽ trả về list các tuple [(id, status, ...), (...)]
+        rows = db.fetch_all(sql, tuple(params))
+        
+        # Map dữ liệu từ Tuple sang Dictionary
+        result = []
+        if rows:
+            for row in rows:
+                result.append({
+                    "order_id": row['id'],            
+                    "status": row['status'],           
+                    "date": row['date'],         
+                    "total_amount": row['amount'],     
+                    "total_products": int(row['total_products']) 
+                })
+                
+        return result

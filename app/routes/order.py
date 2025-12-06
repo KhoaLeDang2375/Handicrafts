@@ -415,28 +415,23 @@ async def checkout(order_data: OrderCheckout):
 
 # --- ENDPOINT XEM ĐƠN HÀNG (Sửa lại thành GET chuẩn) ---
 @router.get("/my-orders", response_model=List[OrderCheckResponse])
-def get_my_orders(
-    access_token: str = Query(...), 
-    status: Optional[str] = Query(None)
+async def get_my_orders(
+    access_token: str = Query(..., description="Access Token"), 
+    status: Optional[str] = Query(None, description="Trạng thái đơn hàng")
 ):
+    # Xác thực 
     try:
         payload = verify_access_token(access_token)
         customer_id = payload.get("sub")
+        role = payload.get("role")
+        
+        # Chỉ cho phép Customer xem lịch sử của mình
+        if not customer_id or role != 'customer':
+            raise HTTPException(status_code=401, detail="Unauthorized")
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    orders = Order.get_user_orders(customer_id)
+    # Gọi Model (Business Logic)
+    orders = Order.get_orders_by_customer(customer_id, status)
     
-    if status:
-        orders = [o for o in orders if o['status'] == status]
-
-    # Convert dữ liệu DB sang Schema Response
-    response = []
-    for order in orders:
-        response.append(OrderCheckResponse(
-            order_id=order['id'],
-            # ... map các trường khác ...
-            status=order['status'],
-            total_amount=order['amount']
-        ))
-    return response
+    return orders

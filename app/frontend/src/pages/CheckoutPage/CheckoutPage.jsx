@@ -200,7 +200,7 @@ const CheckoutPage = () => {
           {/* --- CỘT TRÁI: THÔNG TIN --- */}
           <div className="checkout-left">
 
-            {/* 1. Thông tin giao hàng */}
+            {/* Thông tin giao hàng */}
             <div className="checkout-section">
               <h3>
                 <FiMapPin style={{ marginRight: '8px', color: '#d49058' }} />
@@ -284,7 +284,7 @@ const CheckoutPage = () => {
 
             </div>
 
-            {/* 2. Phương thức vận chuyển */}
+            {/* Phương thức vận chuyển */}
             <div className="checkout-section">
               <h3>
                 <FiTruck style={{ marginRight: '8px', color: '#d49058' }} />
@@ -323,7 +323,7 @@ const CheckoutPage = () => {
               </div>
             </div>
 
-            {/* 3. Phương thức thanh toán */}
+            {/* Phương thức thanh toán */}
             <div className="checkout-section">
               <h3>
                 <FiCreditCard style={{ marginRight: '8px', color: '#d49058' }} />
