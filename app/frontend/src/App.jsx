@@ -12,6 +12,7 @@ import ProductDetailPage from './pages/ProductDetailPage/ProductDetailPage';
 import CartPage from './pages/CartPage/CartPage';
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage';
 import ProfilePage from './pages/ProfilePage/ProfilePage'; 
+import AboutPage from './pages/AboutPage/AboutPage';
 
 function App() {
   const location = useLocation();
@@ -33,6 +34,8 @@ function App() {
           <Route path="/login" element={<AuthPage />} />
 
           <Route path="/san-pham/:id" element={<ProductDetailPage />} />
+
+          <Route path="/ve-chung-toi" element={<AboutPage />} />
 
           <Route path="/cart" element={<CartPage />} />
 
