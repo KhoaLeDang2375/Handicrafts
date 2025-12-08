@@ -17,7 +17,7 @@ class ContactForm:
         return db.execute_query(query, (
             self.employee_id,
             self.customer_id,
-            self.content,
+            self.content, 
             self.create_time,
             self.contact_type
         ))

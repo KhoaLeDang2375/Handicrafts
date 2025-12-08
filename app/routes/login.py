@@ -10,7 +10,7 @@ router = APIRouter(
 )
 @router.post("/", response_model=Token)
 async def login_for_access_token(login_request: LoginRequest):
-    """
+    """ 
     Xác thực người dùng (Customer hoặc Employee) và trả về JWT.
     """
     user = None

@@ -321,7 +321,7 @@ class UserProfileUpdateResponse(BaseModel):
 
 
 # ==========================================
-# 5. ORDER (THANH TOÁN) 
+# ORDER (THANH TOÁN) 
 # ==========================================
 
 # --- Schema phụ để nhận thông tin từ form Frontend ---
@@ -395,3 +395,17 @@ class OrderCheckResponse(BaseModel):
     status: Optional[str] = None
     created_at: Optional[datetime] = None
     total_products: int
+
+
+# ==========================================
+# CONTACTFORM (Liên hệ)
+# ==========================================
+class ContactCreateRequest(BaseModel):
+    content: str
+
+# Response: Dữ liệu trả về 
+class ContactResponse(BaseModel):
+    id: int
+    content: str
+    create_time: datetime
+    sender_name: Optional[str] = None

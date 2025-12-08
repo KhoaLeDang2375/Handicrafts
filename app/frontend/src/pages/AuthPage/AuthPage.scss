@@ -430,3 +430,45 @@
     }
   }
 }
+
+
+.role-selection-group {
+  margin: 15px 0 20px 0; // Căn lề trên dưới
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: $text-dark;
+    font-weight: 500;
+  }
+
+  .role-options {
+    display: flex;
+    gap: 15px; 
+
+    .role-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid $color-primary;
+      border-radius: 10px;
+      background-color: #fff;
+      color: $color-primary;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: rgba($color-primary, 0.1); 
+      }
+
+      // Trạng thái Active
+      &.active {
+        background-color: $color-primary;
+        color: #fff;
+        box-shadow: 0 4px 6px rgba($color-primary, 0.2);
+        transform: translateY(-1px);
+      }
+    }
+  }
+}

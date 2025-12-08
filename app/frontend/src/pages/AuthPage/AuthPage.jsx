@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AuthPage.scss';
 
@@ -15,6 +15,7 @@ const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [role, setRole] = useState('customer');
 
   // State lưu dữ liệu form
   const [formData, setFormData] = useState({
@@ -97,9 +98,9 @@ const AuthPage = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: formData.username, // Người dùng nhập Email hoặc Username vào đây
+          username: formData.username,
           password: formData.password,
-          role: "customer" // Bắt buộc phải có để Backend phân loại
+          role: role
         })
       });
 
@@ -110,19 +111,22 @@ const AuthPage = () => {
       }
 
       // 2. Lưu Token vào LocalStorage
-      // (Lưu ý: Token nằm trong data.access_token)
+      // (Token nằm trong data.access_token)
       localStorage.setItem('authToken', data.access_token);
-      localStorage.setItem('userRole', 'customer');
+      localStorage.setItem('userRole', role);
 
       if (data.user_info) {
-          localStorage.setItem('currentUser', JSON.stringify(data.user_info));
+        localStorage.setItem('currentUser', JSON.stringify(data.user_info));
       }
 
-      alert("Đăng nhập thành công!");
+      alert("Đăng nhập thành công với vai trò: ${role === 'customer' ? 'Khách hàng' : 'Nhân viên'}");
 
       // 3. Chuyển hướng 
-      // window.close(); // Nếu muốn đóng tab
-      navigate('/');   
+      if (role === 'employee') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
 
     } catch (error) {
       alert(error.message);
@@ -233,6 +237,30 @@ const AuthPage = () => {
                     required
                   />
                 </div>
+
+                {/* --- PHẦN CHỌN ROLE --- */}
+                {isLogin && (
+                  <div className="role-selection-group">
+                    <label>Bạn là:</label>
+                    <div className="role-options">
+                      <button
+                        type="button" // Quan trọng: type="button" để không submit form
+                        className={`role-btn ${role === 'customer' ? 'active' : ''}`}
+                        onClick={() => setRole('customer')}
+                      >
+                        Khách hàng
+                      </button>
+
+                      <button
+                        type="button"
+                        className={`role-btn ${role === 'employee' ? 'active' : ''}`}
+                        onClick={() => setRole('employee')}
+                      >
+                        Nhân viên
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* CHECKBOX GHI NHỚ TÔI (Chỉ hiện khi Login) --- */}
                 {isLogin && (

@@ -37,15 +37,15 @@ const SocialLink = () => {
       <div className="SocialLink__container">
         {/* 3. Phần Bottom (Links) */}
         <div className="SocialLink__bottom">
-          <a href="#" className="SocialLink-link">
+          <a href="/san-pham" className="SocialLink-link">
             <span>Sản phẩm</span>
             <span>&gt;</span>
           </a>
-          <a href="#" className="SocialLink-link">
+          <a href="/ve-chung-toi" className="SocialLink-link">
             <span>Về chúng tôi</span>
             <span>&gt;</span>
           </a>
-          <a href="#" className="SocialLink-link">
+          <a href="/lien-he" className="SocialLink-link">
             <span>Liên hệ</span>
             <span>&gt;</span>
           </a>
