@@ -12,14 +12,19 @@ import Avatar from "../../assets/images/avatar.png";
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState({ name: 'Khách hàng', email: 'email' }); // State lưu thông tin user
+  // State lưu role
+  const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     setIsLoggedIn(!!token);
 
-    // Lấy thông tin user từ localStorage (nếu bạn đã lưu lúc login)
-    // Nếu chưa lưu object 'currentUser', bạn có thể cần sửa lại file Login một chút để lưu nó
+    // Lấy Role từ localStorage
+    const role = localStorage.getItem('userRole');
+    setUserRole(role);
+
+    // Lấy thông tin user từ localStorage 
     const userStored = localStorage.getItem('currentUser');
     if (userStored) {
       const user = JSON.parse(userStored);
@@ -51,12 +56,25 @@ const Navbar = () => {
           </div>
         </div>
 
+        {/* Logic điều hướng dựa trên Role */}
         <ul className="navbar__links">
-          <li><NavLink to="/">TRANG CHỦ</NavLink></li>
-          <li><NavLink to="/san-pham">SẢN PHẨM</NavLink></li>
-          <li><NavLink to="/ve-chung-toi">VỀ CHÚNG TÔI</NavLink></li>
-          <li><NavLink to="/blog">BLOG</NavLink></li>
-          <li><NavLink to="/lien-he">LIÊN HỆ</NavLink></li>
+          {userRole === 'employee' ? (
+            // --- MENU DÀNH CHO NHÂN VIÊN ---
+            <>
+              <li><NavLink to="/dashboard">DASHBOARD</NavLink></li>
+              <li><NavLink to="/customers">DANH SÁCH KHÁCH HÀNG</NavLink></li>
+              {/* Bạn có thể thêm các menu quản lý khác ở đây */}
+            </>
+          ) : (
+            // --- MENU DÀNH CHO KHÁCH HÀNG (Mặc định) ---
+            <>
+              <li><NavLink to="/">TRANG CHỦ</NavLink></li>
+              <li><NavLink to="/san-pham">SẢN PHẨM</NavLink></li>
+              <li><NavLink to="/ve-chung-toi">VỀ CHÚNG TÔI</NavLink></li>
+              <li><NavLink to="/blog">BLOG</NavLink></li>
+              <li><NavLink to="/lien-he">LIÊN HỆ</NavLink></li>
+            </>
+          )}
         </ul>
 
         <div className="navbar__actions">
@@ -72,14 +90,16 @@ const Navbar = () => {
             // --- GIAO DIỆN KHI ĐÃ ĐĂNG NHẬP ---
             <div className="navbar__user-area">
 
-              {/* Icon Giỏ hàng */}
-              <Link to="/cart" className="navbar__action-icon cart-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="9" cy="21" r="1"></circle>
-                  <circle cx="20" cy="21" r="1"></circle>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                </svg>
-              </Link>
+              {/* Ẩn giỏ hàng nếu là Employee */}
+              {userRole !== 'employee' && (
+                <Link to="/cart" className="navbar__action-icon cart-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                  </svg>
+                </Link>
+              )}
 
               <div className="user-dropdown-wrapper">
                 <div className="navbar__avatar">
@@ -92,6 +112,9 @@ const Navbar = () => {
                   <div className="dropdown-header">
                     <p className="user-name">{userInfo.name}</p>
                     <p className="user-email">{userInfo.email}</p>
+                    <p style={{fontSize: '0.9rem', color: '#00c4cc'}}>
+                        {userRole === 'employee' ? 'Nhân viên' : 'Khách hàng'}
+                    </p>
                   </div>
 
                   <div className="dropdown-divider"></div>

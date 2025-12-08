@@ -459,14 +459,17 @@
       transition: all 0.3s ease;
 
       &:hover {
-        background-color: rgba($color-primary, 0.1); 
+        background-color: rgba(#00c4cc, 0.1); 
+        border: 1px solid #00c4cc;
+        color: #fff;
       }
 
       // Trạng thái Active
       &.active {
-        background-color: $color-primary;
+        background-color: #00c4cc;
         color: #fff;
-        box-shadow: 0 4px 6px rgba($color-primary, 0.2);
+        box-shadow: 0 4px 6px rgba(#00c4cc, 0.2);
+        border: 1px solid #00c4cc;
         transform: translateY(-1px);
       }
     }

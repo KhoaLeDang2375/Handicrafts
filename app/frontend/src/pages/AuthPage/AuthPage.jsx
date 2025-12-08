@@ -119,11 +119,11 @@ const AuthPage = () => {
         localStorage.setItem('currentUser', JSON.stringify(data.user_info));
       }
 
-      alert("Đăng nhập thành công với vai trò: ${role === 'customer' ? 'Khách hàng' : 'Nhân viên'}");
+      alert(`Đăng nhập thành công với vai trò: ${role === 'customer' ? 'Khách hàng' : 'Nhân viên'}`);
 
       // 3. Chuyển hướng 
       if (role === 'employee') {
-        navigate('/admin/dashboard');
+        navigate('/dashboard');
       } else {
         navigate('/');
       }
@@ -244,7 +244,7 @@ const AuthPage = () => {
                     <label>Bạn là:</label>
                     <div className="role-options">
                       <button
-                        type="button" // Quan trọng: type="button" để không submit form
+                        type="button" // type="button" để không submit form
                         className={`role-btn ${role === 'customer' ? 'active' : ''}`}
                         onClick={() => setRole('customer')}
                       >
