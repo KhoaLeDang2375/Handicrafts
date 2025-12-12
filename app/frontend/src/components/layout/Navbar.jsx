@@ -29,9 +29,9 @@ const Navbar = () => {
     if (userStored) {
       const user = JSON.parse(userStored);
       setUserInfo({
-            name: user.name || "Khách hàng",
-            email: user.email || "email"
-        });
+        name: user.name || "Khách hàng",
+        email: user.email || "email"
+      });
     }
   }, []);
 
@@ -61,6 +61,8 @@ const Navbar = () => {
           {userRole === 'employee' ? (
             // --- MENU DÀNH CHO NHÂN VIÊN ---
             <>
+              <li><NavLink to="/admin/blogs">BLOG NHÂN VIÊN</NavLink></li>
+              <li><NavLink to="/blog">BLOG CÔNG KHAI</NavLink></li>
               <li><NavLink to="/dashboard">DASHBOARD</NavLink></li>
               <li><NavLink to="/customers">DANH SÁCH KHÁCH HÀNG</NavLink></li>
               {/* Bạn có thể thêm các menu quản lý khác ở đây */}
@@ -112,8 +114,8 @@ const Navbar = () => {
                   <div className="dropdown-header">
                     <p className="user-name">{userInfo.name}</p>
                     <p className="user-email">{userInfo.email}</p>
-                    <p style={{fontSize: '0.9rem', color: '#00c4cc'}}>
-                        {userRole === 'employee' ? 'Nhân viên' : 'Khách hàng'}
+                    <p style={{ fontSize: '0.9rem', color: '#00c4cc' }}>
+                      {userRole === 'employee' ? 'Nhân viên' : 'Khách hàng'}
                     </p>
                   </div>
 

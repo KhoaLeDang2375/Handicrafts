@@ -2,9 +2,9 @@ import { useState } from 'react';
 import './ProductTabs.scss';
 
 const ProductTabs = ({ product, currentVariant }) => {
-  const [activeTab, setActiveTab] = useState('details'); // 'details' hoặc 'reviews'
+  const [activeTab, setActiveTab] = useState('details'); 
 
-  // Dữ liệu tĩnh theo yêu cầu của bạn
+  // Dữ liệu tĩnh 
   const staticInfo = {
     origin: "Bát Tràng, Hồ Chí Minh",
     tech: "Công nghệ cao",

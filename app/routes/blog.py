@@ -52,11 +52,21 @@ async def create_blog(
         payload = verify_access_token(access_token)
         if payload['role'] != 'employee':
             raise HTTPException(status_code=403, detail="Only employees can create blogs")
-        author_id = payload['user_id']
-        new_blog = Blog(author_id=author_id, content=blog.content)
+        author_id = int(payload['sub'])
+        author_name = payload.get('name')
+
+        new_blog = Blog(
+            author_id=author_id, 
+            title=blog.title, 
+            content=blog.content,
+            author_name=author_name
+        )
         blog_id = new_blog.save()
         created_blog = Blog.get_by_id(blog_id)
         return created_blog
+    except Exception as e:
+        print(f"Lỗi tạo blog: {e}") 
+        raise HTTPException(status_code=500, detail=str(e))
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid access token")
     except Exception as e:
@@ -75,8 +85,7 @@ async def update_blog(
         existing_blog = Blog.get_by_id(blog_id)
         if not existing_blog:
             raise HTTPException(status_code=404, detail="Blog not found")
-        blog_model = Blog(author_id=existing_blog['Author_id'], content=blog.content)
-        blog_model.update_content(blog_id, blog.content)
+        Blog.update_content(blog_id, blog.title, blog.content)
         updated_blog = Blog.get_by_id(blog_id)
         return updated_blog
     except JWTError:

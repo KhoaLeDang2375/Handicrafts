@@ -123,7 +123,7 @@ const AuthPage = () => {
 
       // 3. Chuyển hướng 
       if (role === 'employee') {
-        navigate('/dashboard');
+        navigate('/admin/blogs');
       } else {
         navigate('/');
       }

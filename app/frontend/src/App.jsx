@@ -14,6 +14,9 @@ import CheckoutPage from './pages/CheckoutPage/CheckoutPage';
 import ProfilePage from './pages/ProfilePage/ProfilePage'; 
 import AboutPage from './pages/AboutPage/AboutPage';
 import ContactPage from './pages/ContactPage/ContactPage';
+import BlogPage from './pages/Blog/BlogPage';
+
+import AdminBlogManager from './pages/Admin/AdminBlogManager';
 
 function App() {
   const location = useLocation();
@@ -45,6 +48,10 @@ function App() {
           <Route path="/my-profile" element={<ProfilePage />} />
 
           <Route path="/lien-he" element={<ContactPage />} />
+
+          <Route path="/blog" element={<BlogPage />} />
+
+          <Route path="/admin/blogs" element={<AdminBlogManager />} />
 
         </Routes>
       </main>
