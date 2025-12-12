@@ -1,4 +1,5 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
+import "./App.scss";
 
 // 1. Import các component layout
 import Navbar from './components/layout/Navbar';
@@ -15,6 +16,7 @@ import ProfilePage from './pages/ProfilePage/ProfilePage';
 import AboutPage from './pages/AboutPage/AboutPage';
 import ContactPage from './pages/ContactPage/ContactPage';
 import BlogPage from './pages/Blog/BlogPage';
+import BlogDetailPage from './pages/Blog/BlogDetailPage';
 
 import AdminBlogManager from './pages/Admin/AdminBlogManager';
 
@@ -24,11 +26,11 @@ function App() {
   const isLoginPage = location.pathname === '/login';
 
   return (
-    <div className="App">
+    <div className="app-layout">
       {/* Chỉ hiện Navbar nếu KHÔNG PHẢI trang login */}
       {!isLoginPage && <Navbar />}
 
-      <main>
+      <main className="app-content">
         <Routes>
           
           <Route path="/" element={<HomePage />} />
@@ -50,6 +52,8 @@ function App() {
           <Route path="/lien-he" element={<ContactPage />} />
 
           <Route path="/blog" element={<BlogPage />} />
+
+          <Route path="/blog/:id" element={<BlogDetailPage />} />
 
           <Route path="/admin/blogs" element={<AdminBlogManager />} />
 

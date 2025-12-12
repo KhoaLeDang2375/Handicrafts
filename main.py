@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routes import (products_router, signup_router,login_router,reviews_router,blogs_router,orders_router,cart_router,
                         user_profile_router)
 from app.routes import contact
+from fastapi.staticfiles import StaticFiles
+import os
 app = FastAPI(
     title="Handicraft API",
     description="API for handicraft e-commerce website",
@@ -33,6 +35,13 @@ app.include_router(orders_router)
 app.include_router(cart_router)
 app.include_router(user_profile_router)
 app.include_router(contact.router)
+
+UPLOAD_DIR = "app/static/images"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# Mount thư mục static
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

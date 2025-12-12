@@ -2,27 +2,29 @@ from app.database import db
 from datetime import datetime
 
 class Blog:
-    def __init__(self, author_id: int, content: str, title, author_name: str = None):
+    def __init__(self, author_id: int, content: str, title, author_name: str = None, image_url: str = None):
         self.author_id = author_id
         self.content = content
         self.title = title
         self.author_name = author_name
-        self.create_time = datetime.utcnow()  
+        self.create_time = datetime.utcnow()
+        self.image_url = image_url  
 
     def save(self):
         """
         Lưu một bài viết mới vào cơ sở dữ liệu.
         """
         query = """
-        INSERT INTO Blog (author_id, content, title, create_time, author_name)
-        VALUES (%s, %s, %s, %s, %s)
+        INSERT INTO Blog (author_id, content, title, create_time, author_name, image_url)
+        VALUES (%s, %s, %s, %s, %s, %s)
         """
         return db.execute_query(query, (
             self.author_id,
             self.content,
             self.title,
             self.create_time,
-            self.author_name
+            self.author_name,
+            self.image_url
         ))
 
     # -------------------------------
@@ -38,9 +40,10 @@ class Blog:
             b.id,
             b.author_id,
             e.name AS author_name,
-            b.title,   -- <--- QUAN TRỌNG: Đã thêm title
+            b.title,   
             b.content,
-            b.create_time
+            b.create_time,
+            b.image_url
         FROM Blog b
         JOIN Employee e ON b.author_id = e.id
         WHERE b.id = %s
@@ -59,7 +62,8 @@ class Blog:
             e.name AS author_name,
             b.title,
             b.content,
-            b.create_time
+            b.create_time,
+            b.image_url
         FROM Blog b
         JOIN Employee e ON b.author_id = e.id
         ORDER BY b.create_time DESC
@@ -77,9 +81,10 @@ class Blog:
             b.id,
             b.author_id,
             e.name AS author_name,
-            b.title,   -- <--- QUAN TRỌNG: Đã thêm title
+            b.title,   
             b.content,
-            b.create_time
+            b.create_time,
+            b.image_url
         FROM Blog b
         JOIN Employee e ON b.author_id = e.id
         WHERE b.author_id = %s
@@ -89,17 +94,16 @@ class Blog:
         return db.fetch_all(query, (author_id, limit, skip))
 
     @staticmethod
-    def update_content(blog_id: int, title: str, content: str):
+    def update_content(blog_id: int, title: str, content: str, image_url: str = None):
         """
         Cập nhật tiêu đề và nội dung bài viết.
         """
-        # --- SỬA LOGIC UPDATE: Nhận cả title và content ---
         query = """
         UPDATE Blog
-        SET title = %s, content = %s
+        SET title = %s, content = %s, image_url = %s
         WHERE id = %s
         """
-        return db.execute_query(query, (title, content, blog_id))
+        return db.execute_query(query, (title, content, image_url, blog_id))
 
     @staticmethod
     def delete(blog_id: int):

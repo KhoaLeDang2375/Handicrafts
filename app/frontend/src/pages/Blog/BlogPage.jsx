@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import { getBlogs } from '../../services/blogApi';
-import './BlogPage.scss'; 
+import { FiUser, FiCalendar } from 'react-icons/fi';
+import './BlogPage.scss';
 
 const BlogPage = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // Hook điều hướng
 
   useEffect(() => {
     loadBlogs();
@@ -21,32 +24,45 @@ const BlogPage = () => {
     }
   };
 
-  if (loading) return <div className="blog-container">Đang tải bài viết...</div>;
+  console.log("Kết quả Blog", blogs);
+  // Hàm xử lý khi click vào box
+  const handleCardClick = (id) => {
+    navigate(`/blog/${id}`);
+  };
+
+  if (loading) return <div className="blog-container">Đang tải...</div>;
 
   return (
     <div className="blog-container">
       <div className="blog-header">
-        <h1>Góc Chia Sẻ & Tin Tức</h1>
-        <p>Những câu chuyện thú vị từ Aura Craft</p>
+        <h1>Góc Chia Sẻ</h1>
+        <p>Kiến thức và câu chuyện từ Aura Craft</p>
       </div>
 
       <div className="blog-grid">
-        {blogs.length > 0 ? (
-          blogs.map((blog) => (
-            <div key={blog.id} className="blog-card">
-              {/* Giả sử backend trả về field 'created_at' hoặc 'id' */}
-              <div className="blog-content">
-                <p>{blog.content}</p>
+        {blogs.map((blog) => (
+          <div 
+            key={blog.id} 
+            className="blog-card clickable" 
+            onClick={() => handleCardClick(blog.id)}
+          >
+            <div className="blog-content">
+              {/* Tiêu đề */}
+              <h3 className="blog-title">{blog.title || "Không có tiêu đề"}</h3>
+              
+              {/* Meta info: Tác giả - Ngày */}
+              <div className="blog-meta">
+                <span><FiUser /> {blog.author_name}</span>
+                <span><FiCalendar /> {blog.create_time ? new Date(blog.create_time).toLocaleDateString('vi-VN') : ''}</span>
               </div>
-              <div className="blog-footer">
-                <span>Tác giả ID: {blog.Author_id}</span>
-                {/* Bạn có thể format ngày tháng ở đây */}
-              </div>
+
+              {/* Nội dung giới hạn 3 dòng */}
+              <p className="blog-desc">
+                {blog.content}
+              </p>
             </div>
-          ))
-        ) : (
-          <p>Chưa có bài viết nào.</p>
-        )}
+          </div>
+        ))}
       </div>
     </div>
   );

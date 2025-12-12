@@ -1,0 +1,12 @@
+.app-layout {
+  display: flex;
+  flex-direction: column; // Xếp dọc: Nav -> Content -> Footer
+  min-height: 100vh;      // Chiều cao tối thiểu = 100% màn hình thiết bị
+}
+
+// Đẩy nội dung giãn ra
+.app-content {
+  flex: 1; // Chiếm toàn bộ khoảng trống còn dư
+
+  // padding-top: 80px; 
+}

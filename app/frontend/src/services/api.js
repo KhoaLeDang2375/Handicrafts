@@ -1,69 +1,77 @@
+
 const BASE_URL = 'http://127.0.0.1:8000'; 
 
 export const apiCall = async (endpoint, options = {}) => {
-  // 1. Lấy token từ LocalStorage
   const token = localStorage.getItem('authToken');
   
-  // 2. Chuẩn bị Header
-  const headers = {
-    'Content-Type': 'application/json',
-    ...options.headers,
-  };
+  // 1. Sao chép options.headers (nếu có)
+  const headers = { ...options.headers };
+
+  // 2. LOGIC xử lý Content-Type
+  // Nếu body là FormData -> không set Content-Type (để trình duyệt tự set)
+  // Nếu body không phải FormData -> Set là application/json
+  if (!(options.body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+  }
+
+  // Thêm Token
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
 
   const fullURL = `${BASE_URL}${endpoint}`;
 
-  console.log(`%c Đang gọi API: ${fullURL}`, 'color: blue; font-weight: bold;');
-  console.log("Dữ liệu gửi đi (Body):", options.body);
+  console.log(`%c Gọi API: ${fullURL}`, 'color: blue');
 
   try {
     const response = await fetch(fullURL, {
       ...options,
-      headers,
+      headers, // Header đã được xử lý chuẩn
     });
 
-    console.log(`%c Kết quả từ Server: ${response.status}`, 'color: green; font-weight: bold;');
-
-    // 3. Xử lý Token hết hạn (Lỗi 401)
+    // Xử lý 401 (Hết hạn token)
     if (response.status === 401) {
-      console.warn("Token hết hạn! Đang đăng xuất...");
-      
-      // Xóa SẠCH toàn bộ thông tin user
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userRole');
-      localStorage.removeItem('currentUser'); 
-      
+      console.warn("Token 401. Đăng xuất...");
+      localStorage.clear(); 
       window.location.href = '/login';
-      
-      // Ném lỗi để dừng luồng xử lý hiện tại
-      throw new Error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+      throw new Error('Phiên đăng nhập hết hạn.');
     }
 
-    // 4. Tự động đọc dữ liệu JSON
+    // Parse JSON
     const data = await response.json().catch(() => ({}));
 
-    // 5. Xử lý các lỗi khác (400, 403, 404, 500...)
+    // Xử lý lỗi 
     if (!response.ok) {
+      let errorMessage = `Lỗi ${response.status}: ${response.statusText}`;
 
-      const errorMessage = data.detail || data.message || `Lỗi ${response.status}: ${response.statusText}`;
-
-      // --- BẮT LỖI TOKEN HẾT HẠN KHI SERVER TRẢ VỀ 500 ---
-      if (errorMessage.includes("Signature has expired")) {
-          console.warn("Phát hiện Token hết hạn (qua thông báo lỗi). Đang đăng xuất...");
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('userRole');
-          localStorage.removeItem('currentUser');
-          window.location.href = '/login';
-          throw new Error('Phiên đăng nhập hết hạn.');
+      // Xử lý chi tiết lỗi từ FastAPI (tránh bị [object Object])
+      if (data.detail) {
+        if (typeof data.detail === 'string') {
+          // Trường hợp lỗi đơn giản: "Token expired"
+          errorMessage = data.detail;
+        } else if (Array.isArray(data.detail)) {
+          // Trường hợp lỗi Validation (422): data.detail là mảng
+          // Ví dụ: "title: field required"
+          errorMessage = data.detail
+            .map(err => `${err.loc[1]}: ${err.msg}`)
+            .join(', ');
+        }
       }
+
+      // Check lỗi chữ ký hết hạn (trường hợp server trả về 500)
+      if (errorMessage.includes("Signature has expired")) {
+        localStorage.clear();
+        window.location.href = '/login';
+        throw new Error('Phiên đăng nhập hết hạn.');
+      }
+
       throw new Error(errorMessage);
     }
 
-    // 6. Trả về DỮ LIỆU 
     return data;
 
   } catch (error) {
-
-    console.error(`%c Lỗi API:`, 'color: red; font-weight: bold;', error.message);
+    console.error(`%c Lỗi API:`, 'color: red', error.message);
     throw error;
   }
 };

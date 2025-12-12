@@ -9,13 +9,14 @@ class Product:
     MAX_ARTISAN_DESC_LEN = 2000
     MAX_LIMIT = 100  # tránh client gửi limit quá lớn gây DoS
 
-    def __init__(self, name, description, category_id, status, artisan_description):
+    def __init__(self, name, description, category_id, status, artisan_description, image_url=None):
         # --- Làm sạch & kiểm soát dữ liệu đầu vào ---
         self.name = self._sanitize_text(name, self.MAX_NAME_LEN)
         self.description = self._sanitize_html(description, self.MAX_DESC_LEN)
         self.category_id = int(category_id)
         self.status = int(status)
         self.artisan_description = self._sanitize_html(artisan_description, self.MAX_ARTISAN_DESC_LEN)
+        self.image_url = image_url
 
     # --- Hàm làm sạch dữ liệu ---
     @staticmethod
@@ -35,15 +36,16 @@ class Product:
     # --- Lưu vào DB ---
     def save(self):
         query = """
-        INSERT INTO Products (name, description, category_id, status, artisan_description)
-        VALUES (%s, %s, %s, %s, %s)
+        INSERT INTO Products (name, description, category_id, status, artisan_description, image_url)
+        VALUES (%s, %s, %s, %s, %s, %s)
         """
         return db.execute_query(query, (
             self.name,
             self.description,
             self.category_id,
             self.status,
-            self.artisan_description
+            self.artisan_description,
+            self.image_url
         ))
 
     # --- Lấy danh sách sản phẩm ---
@@ -60,6 +62,7 @@ class Product:
             p.category_id,
             p.status,
             p.artisan_description,
+            p.image_url,
             c.name AS category_name,
             c.id AS category_id
         FROM Products p
@@ -87,6 +90,7 @@ class Product:
             p.category_id AS product_category_id,
             p.status,
             p.artisan_description,
+            p.image_url,
             c.name AS category_name,
             c.id AS category_id,
             JSON_OBJECT(
@@ -113,6 +117,7 @@ class Product:
             p.category_id,
             p.status,
             p.artisan_description,
+            p.image_url,
             c.name AS category_name,
             c.id AS category_id
         FROM Products p
@@ -161,9 +166,6 @@ class Product:
 
         return db.execute_query(query, tuple(values))
 
-    # ------------------------------
-    #   🔴 DELETE
-    # ------------------------------
     @staticmethod
     def delete(product_id):
         """Xóa sản phẩm theo ID."""

@@ -3,12 +3,26 @@ import { getBlogs, createBlog, updateBlog, deleteBlog } from '../../services/blo
 import { FiEdit2, FiTrash2, FiPlus, FiSave, FiX } from 'react-icons/fi';
 import './AdminBlogManager.scss';
 
+const API_BASE = 'http://127.0.0.1:8000';
+
 const AdminBlogManager = () => {
-    // --- 1. KHAI BÁO STATE (Phải nằm đầu tiên) ---
+    // --- 1. KHAI BÁO STATE  ---
     const [blogs, setBlogs] = useState([]);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [editingId, setEditingId] = useState(null);
+
+    const [image, setImage] = useState(null); // State lưu file ảnh
+    const [preview, setPreview] = useState(null); // Xem trước ảnh
+    const [oldImage, setOldImage] = useState(null);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImage(file);
+            setPreview(URL.createObjectURL(file)); // Tạo link xem trước
+        }
+    };
 
     const token = localStorage.getItem('authToken');
 
@@ -20,6 +34,7 @@ const AdminBlogManager = () => {
     const fetchData = async () => {
         try {
             const data = await getBlogs();
+            console.log("Dữ liệu tải về từ server:", data);
             setBlogs(data);
         } catch (error) {
             console.error(error);
@@ -36,20 +51,20 @@ const AdminBlogManager = () => {
 
         try {
             if (editingId) {
-                // Cập nhật bài viết (Gửi cả ID, Title, Content, Token)
-                await updateBlog(editingId, title, content, token);
+                await updateBlog(editingId, title, content, image, token);
                 alert("Cập nhật thành công!");
                 setEditingId(null);
             } else {
-                // Tạo bài viết mới (Gửi Title, Content, Token)
-                await createBlog(title, content, token);
+                await createBlog(title, content, image, token);
                 alert("Đăng bài thành công!");
             }
 
             // Reset form sau khi thành công
             setTitle('');
             setContent('');
-            fetchData(); // Load lại danh sách
+            setImage(null);
+            setPreview(null);
+            window.location.reload();
         } catch (error) {
             // In lỗi ra console để debug nếu có
             console.error("Submit Error:", error);
@@ -62,6 +77,11 @@ const AdminBlogManager = () => {
         setEditingId(blog.id);
         setTitle(blog.title || ''); // Đổ dữ liệu cũ vào ô input
         setContent(blog.content || '');
+
+        setOldImage(blog.image_url); // Lưu đường dẫn ảnh cũ
+        console.log("Ảnh cũ",blog.image_url);
+        setPreview(null); // Reset preview (vì chưa chọn ảnh mới)
+
         // Cuộn lên đầu trang
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -81,6 +101,9 @@ const AdminBlogManager = () => {
         setEditingId(null);
         setTitle('');
         setContent('');
+        setOldImage(null); // Reset ảnh cũ
+        setPreview(null);
+        setImage(null);
     };
 
     return (
@@ -91,6 +114,44 @@ const AdminBlogManager = () => {
             <div className="blog-form-card">
                 <h3>{editingId ? 'Chỉnh sửa bài viết' : 'Tạo bài viết mới'}</h3>
                 <form onSubmit={handleSubmit}>
+
+                    {/* Input Ảnh */}
+                    <div className="form-group">
+                        <label>Hình ảnh minh họa:</label>
+                        <input type="file" onChange={handleImageChange} accept="image/*" style={{ paddingLeft: '10px' }} />
+
+                        <div style={{ marginTop: '10px' }}>
+                            {preview ? (
+                                // Trường hợp 1: vừa chọn file mới -> Hiện Preview
+                                <div>
+                                    <p style={{ fontSize: '1rem', color: '#666', marginBottom: '5px' }}>Ảnh mới</p>
+                                    <img
+                                        src={preview}
+                                        alt="New Preview"
+                                        style={{ width: '150px', height: 'auto', borderRadius: '4px', objectFit: 'cover' }}
+                                    />
+                                </div>
+                            ) : (
+                                // Trường hợp 2: Chưa chọn file mới -> Hiện ảnh cũ (nếu có)
+                                oldImage && (
+                                    <div>
+                                        <p style={{ fontSize: '1rem', color: '#666', marginBottom: '5px' }}>Ảnh hiện tại:</p>
+                                        <img
+                                            src={`${API_BASE}${oldImage}`}
+                                            alt="Current Blog"
+                                            style={{ width: '150px', height: 'auto', borderRadius: '4px', objectFit: 'cover', border: '1px solid #ddd' }}
+
+                                            // Xử lý trường hợp ảnh lỗi (ví dụ file bị xóa trên server)
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.style.display = 'none'; 
+                                            }}
+                                        />
+                                    </div>
+                                )
+                            )}
+                        </div>
+                    </div>
 
                     <div className="form-group">
                         <label>Tiêu đề:</label>

@@ -4,10 +4,11 @@ import CategoryNav from './CategoryNav';
 import './ProductPage.scss';
 import CustomerReviews from './CustomerReviews';
 
-import { apiCall } from '../../services/api';
+import { getAllProducts } from '../../services/productApi';
+import { addToCart } from '../../services/cartApi';
 
 // 1. KHAI BÁO URL BACKEND
-const BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE = 'http://127.0.0.1:8000';
 
 const ProductPage = () => {
   // Danh sách sản phẩm gốc từ backend
@@ -33,19 +34,21 @@ const ProductPage = () => {
   useEffect(() => {
     const fetchProductsAndCategories = async () => {
       setIsLoading(true);
-      try {
-        const response = await fetch(`${BASE_URL}/products`);
-        if (!response.ok) throw new Error('Không kết nối được Backend');
+      // Reset lỗi cũ trước khi gọi mới
+      setError(null);
 
-        const data = await response.json();
+      try {
+        // Hàm này trả về thẳng dữ liệu (data)
+        const data = await getAllProducts();
+
         console.log('Data từ backend:', data);
 
-        // Lấy đúng mảng items từ JSON structure của bạn
+        // --- LOGIC XỬ LÝ DỮ LIỆU ---
         const productList = data.items || [];
 
         setProducts(productList);
 
-        // Tạo danh mục độc nhất từ category_name
+        // Tạo danh mục từ dữ liệu
         const categorySet = new Set(productList.map((p) => p.category_name));
         const normalizedCategories = Array.from(categorySet).map((cat, index) => ({
           id: index + 1,
@@ -53,13 +56,11 @@ const ProductPage = () => {
           value: cat,
         }));
 
-        // Thêm "Tất cả sản phẩm" vào đầu
         setCategories([{ id: 'all', label: 'Tất cả sản phẩm', value: 'all' }, ...normalizedCategories]);
-
-        // Khởi tạo danh sách hiển thị
         setFilteredProducts(productList);
 
       } catch (err) {
+        // apiCall đã ném ra Error với message chuẩn
         setError(err.message);
       } finally {
         setIsLoading(false);
@@ -119,26 +120,10 @@ const ProductPage = () => {
 
     // 3. Gọi API
     try {
-      // Thay fetch bằng apiCall
-      const response = await apiCall('/my-cart/add-item', {
-        method: 'POST',
-        body: JSON.stringify({
-          productvariant_id: firstVariant.id,
-          product_quantity: 1,
-          access_token: localStorage.getItem('authToken') // Gửi trong body cho backend 
-        })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Đã thêm vào giỏ hàng thành công!");
-      } else {
-        alert(`Lỗi: ${data.detail || 'Không thể thêm vào giỏ'}`);
-      }
+      await addToCart(firstVariant.id, 1, token);
+      alert("Thêm sản phẩm thành công!");
 
     } catch (error) {
-      // Nếu token hết hạn, apiCall đã tự chuyển trang Login rồi
       console.error("Lỗi:", error);
     }
   };
@@ -178,9 +163,11 @@ const ProductPage = () => {
               // Lấy giá từ variant đầu tiên, nếu không có set bằng 0
               const displayPrice = product.variants?.length > 0 ? product.variants[0].price : 0;
 
-              // JSON chưa có 'image', dùng ảnh placeholder. 
-              // Nếu sau này backend thêm trường image_url thì sửa dòng này thành: product.image_url || ...
-              const displayImage = product.image || 'https://placehold.co/400x400?text=SanPham+Demo';
+              // Kiểm tra nếu có image_url từ backend thì ghép với API_BASE
+              // Nếu không có thì dùng ảnh placeholder
+              const displayImage = product.image_url
+                ? `${API_BASE}${product.image_url}`
+                : 'https://placehold.co/400x400?text=No+Image';
 
               // Kiểm tra trạng thái còn hàng
               const isOutOfStock = product.status && product.status.toLowerCase() === 'out of stock';

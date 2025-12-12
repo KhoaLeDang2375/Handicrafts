@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { getProductById } from '../../services/productApi';
 import { apiCall } from '../../services/api';
 import { FiPackage, FiShield, FiAward } from "react-icons/fi";
 import './ProductDetailPage.scss';
@@ -8,7 +9,7 @@ import ProductTabs from './ProductTabs';
 import artisan from '../../assets/images/Aura.png';
 
 // 1. CẤU HÌNH CƠ BẢN
-const BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE = 'http://127.0.0.1:8000';
 const DISCOUNT_RATE = 0.2; // Giảm giá mặc định 20% 
 
 const ProductDetailPage = () => {
@@ -19,7 +20,7 @@ const ProductDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // State cho biến thể & số lượng
+  // State cho biến thể và số lượng
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
@@ -32,33 +33,38 @@ const ProductDetailPage = () => {
 
   // --- GỌI API BACKEND ---
   useEffect(() => {
-    const fetchProductDetail = async () => {
-      try {
-        // API backend cần trả về chi tiết sản phẩm kèm theo danh sách variants và reviews
-        const response = await fetch(`${BASE_URL}/products/${id}`);
-        if (!response.ok) throw new Error('Không tìm thấy sản phẩm');
+    const fetchDetail = async () => {
+      setLoading(true);
+      setError(null);
 
-        const data = await response.json();
+      try {
+        // --- GỌI API RÚT GỌN ---
+        const data = await getProductById(id);
+        
         setProduct(data);
 
-        // Thiết lập ảnh mặc định (Nếu backend chưa có ảnh, dùng placeholder)
-        const defaultImg = data.image || 'https://placehold.co/600x600?text=No+Image';
-        setSelectedImage(defaultImg);
+        // --- XỬ LÝ ẢNH: Backend trả về 'image_url', cần ghép với API_BASE
+        const imageUrl = data.image_url 
+          ? `${API_BASE}${data.image_url}` 
+          : 'https://placehold.co/600x600?text=No+Image';
+          
+        setSelectedImage(imageUrl);
 
-        // Tự động chọn biến thể đầu tiên nếu có
+        // --- XỬ LÝ BIẾN THỂ ---
         if (data.variants && data.variants.length > 0) {
           setSelectedColor(data.variants[0].color || "");
           setSelectedSize(data.variants[0].size || "");
         }
 
       } catch (err) {
+        // api.js đã xử lý message lỗi chuẩn
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProductDetail();
+    if (id) fetchDetail();
   }, [id]);
 
   // --- LOGIC TÌM BIẾN THỂ (Khi người dùng chọn màu/size) ---
@@ -71,14 +77,14 @@ const ProductDetailPage = () => {
     }
   }, [selectedColor, selectedSize, product]);
 
-  // --- LOGIC TÍNH TOÁN ---
 
-  // 1. Lọc danh sách màu/size duy nhất để tạo Dropdown
+  // --- LOGIC TÍNH TOÁN ---
+  // Lọc danh sách màu/size duy nhất để tạo Dropdown
   // (Dùng Set để loại bỏ trùng lặp)
   const uniqueColors = product ? [...new Set(product.variants?.map(v => v.color))] : [];
   const uniqueSizes = product ? [...new Set(product.variants?.map(v => v.size))] : [];
 
-  // 2. Tính Rating trung bình
+  // Tính Rating trung bình
   const reviews = product?.reviews || [];
   const avgRating = reviews.length > 0
     ? reviews.reduce((acc, cur) => acc + (cur.rating || 5), 0) / reviews.length
@@ -105,41 +111,38 @@ const ProductDetailPage = () => {
 
   // --- HÀM THÊM VÀO GIỎ  ---
   const handleAddToCart = async () => {
-    // 1. Kiểm tra đăng nhập
     const token = localStorage.getItem('authToken');
     if (!token) {
       alert("Vui lòng đăng nhập để mua hàng!");
       return;
     }
 
-    // 2. Kiểm tra xem đã chọn Biến thể (Màu/Size) chưa?
     if (!currentVariant) {
       alert("Vui lòng chọn Màu sắc và Kích thước!");
       return;
     }
 
     try {
-      // 3. Gọi API (Dùng apiCall đã viết sẵn)
-      const response = await apiCall('/my-cart/add-item', {
+      // Gọi API (Dùng apiCall)
+      // apiCall trả về thẳng DATA, nếu lỗi nó sẽ nhảy xuống catch
+      const result = await apiCall('/my-cart/add-item', {
         method: 'POST',
         body: JSON.stringify({
-          // QUAN TRỌNG: Lấy ID và Số lượng từ State của trang này
           productvariant_id: currentVariant.id,
           product_quantity: quantity,
-          access_token: token
+          access_token: token 
         })
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
-      } else {
-        alert(`Lỗi: ${data.detail || 'Không thể thêm vào giỏ'}`);
-      }
+      alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
+      
+      // Console log để kiểm tra kết quả trả về 
+      console.log("Kết quả thêm giỏ:", result);
 
     } catch (error) {
+      // apiCall đã xử lý message lỗi chuẩn
       console.error("Lỗi thêm giỏ hàng:", error);
+      alert(error.message || "Có lỗi xảy ra khi thêm vào giỏ hàng");
     }
   };
 

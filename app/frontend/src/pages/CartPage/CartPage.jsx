@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiPackage } from "react-icons/fi";
-import { apiCall } from '../../services/api';
+import { getCart, updateCartItem, removeCartItem } from '../../services/cartApi';
 import './CartPage.scss';
 
 import Logo from '../../assets/images/Aura.png';
@@ -18,12 +18,15 @@ const CartPage = () => {
 
     // 1. Lấy dữ liệu từ Backend
     const fetchCart = async () => {
+        setLoading(true);
+
         try {
-            const res = await apiCall('/my-cart/');
-            const data = await res.json();
-            if (data.items) setCartItems(data.items);
+            const data = await getCart();
+            // Cập nhật State, dùng toán tử || [] để phòng trường hợp items bị null thì không lỗi khi map()
+            setCartItems(data.items || []);
+
         } catch (err) {
-            console.error(err);
+            console.error("Lỗi tải giỏ hàng:", err);
         } finally {
             setLoading(false);
         }
@@ -42,64 +45,54 @@ const CartPage = () => {
         }
     };
 
-    // 3. Xử lý Checkbox 
+    // 3. Xử lý cập nhật số lượng
     const handleUpdateQuantity = async (variantId, currentQty, change) => {
         const newQty = currentQty + change;
-        if (newQty < 1) return; // Không cho giảm dưới 1
+        if (newQty < 1) return; 
 
-        // Tìm món hàng đang sửa để lấy thông tin tồn kho
+        // Kiểm tra tồn kho
         const currentItem = cartItems.find(item => item.productvariant_id === variantId);
-
-        // KIỂM TRA TỒN KHO 
         if (change > 0 && currentItem && newQty > currentItem.stock_quantity) {
             alert(`Sản phẩm này chỉ còn ${currentItem.stock_quantity} món trong kho!`);
             return;
         }
 
         try {
-            // Cập nhật giao diện ngay lập tức (Optimistic UI) cho mượt
+            // Cập nhật giao diện trước
             setCartItems(prev => prev.map(item =>
                 item.productvariant_id === variantId
                     ? { ...item, product_quantity: newQty }
                     : item
             ));
 
-            // Gọi API cập nhật ngầm
-            await apiCall('/my-cart/update-item', {
-                method: 'PUT',
-                body: JSON.stringify({
-                    productvariant_id: variantId,
-                    product_quantity: newQty,
-                    access_token: localStorage.getItem('authToken')
-                })
-            });
+            // Gọi API qua Service
+            await updateCartItem(variantId, newQty);
+
         } catch (error) {
             console.error("Lỗi cập nhật:", error);
-            // Nếu lỗi thì load lại giỏ hàng cũ
-            fetchCart();
+            fetchCart(); // Revert lại nếu lỗi
         }
     };
 
+    // 4. Xử lý Xóa 
     const handleRemoveItem = async (variantId) => {
         if (!window.confirm("Bạn có chắc muốn xóa sản phẩm này?")) return;
 
         try {
-            // Xóa khỏi giao diện ngay
+            // Cập nhật UI trước
             setCartItems(prev => prev.filter(item => item.productvariant_id !== variantId));
-            // Bỏ chọn nếu đang chọn
             setSelectedIds(prev => prev.filter(id => id !== variantId));
 
-            // Gọi API xóa
-            await apiCall(`/my-cart/remove-item/${variantId}`, {
-                method: 'DELETE'
-            });
+            // Gọi API qua Service
+            await removeCartItem(variantId);
+            
         } catch (error) {
             console.error("Lỗi xóa:", error);
             fetchCart();
         }
     };
 
-    // 4. Tính toán TỔNG TIỀN (Chỉ tính những món được chọn)
+    // 5. Tính toán TỔNG TIỀN (Chỉ tính những món được chọn)
     const selectedItemsList = cartItems.filter(item => selectedIds.includes(item.productvariant_id));
 
     const subTotal = selectedItemsList.reduce((sum, item) => sum + (item.price * item.product_quantity), 0);
@@ -117,11 +110,11 @@ const CartPage = () => {
         }
 
         // Chuyển sang trang thanh toán và gửi kèm danh sách
-        navigate('/thanh-toan', { 
-            state: { 
+        navigate('/thanh-toan', {
+            state: {
                 checkoutItems: itemsToCheckout, // Gửi danh sách
                 fromCart: true // Đánh dấu là đến từ giỏ hàng
-            } 
+            }
         });
     };
 

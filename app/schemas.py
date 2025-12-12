@@ -38,6 +38,7 @@ class ProductResponse(BaseModel):
     artisan_description: str
     category: Optional[CategoryBase] = None
     variants: Optional[List[ProductVariantResponse]] = None
+    image_url: Optional[str] = None
 
 class ProductListItem(BaseModel):
     id: int
@@ -48,6 +49,7 @@ class ProductListItem(BaseModel):
     artisan_description: str
     category_name: Optional[str] = None
     variants: Optional[List[ProductVariantResponse]] = None
+    image_url: Optional[str] = None
 
 class PaginatedProductList(BaseModel):
     items: List[ProductListItem]
@@ -177,6 +179,8 @@ class BlogResponse(BlogBase):
     id: int
     author_id: int
     create_time: Optional[datetime] = None
+    image_url: Optional[str] = None
+    author_name: Optional[str] = None
     model_config = {
         "json_encoders": {datetime: str},
         "arbitrary_types_allowed": True,
