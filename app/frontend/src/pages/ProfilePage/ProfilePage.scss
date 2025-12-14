@@ -169,11 +169,7 @@ $spacing-std: 20px; // Khoảng cách chuẩn
                     gap: 10px;
                     color: $text-dark;
                     font-weight: 500;
-                    border: 1px solid transparent;
-
-                    &:hover {
-                        border-color: #e5e7eb;
-                    }
+                    border: 1px solid #e5e7eb;
 
                     svg {
                         color: #9ca3af;

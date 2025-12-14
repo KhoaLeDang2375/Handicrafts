@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getBlogById } from '../../services/blogApi';
-import { FiUser, FiCalendar, FiClock } from 'react-icons/fi';
+import { FiUser, FiCalendar, FiArrowLeft } from 'react-icons/fi';
 import './BlogDetailPage.scss';
 
 const API_BASE = 'http://127.0.0.1:8000';
+import bannerImg from '../../assets/images/blogs.jpg';
 
 const BlogDetail = () => {
+    const navigate = useNavigate(); // Hook điều hướng
     const { id } = useParams();
     const [blog, setBlog] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -53,71 +55,93 @@ const BlogDetail = () => {
     if (!blog) return <div className="detail-container">Không tìm thấy bài viết.</div>;
 
     return (
-        <div className="detail-container">
+        // 1. Wrapper bao ngoài chứa Banner 
+        <div className="blog-detail-wrapper">
 
-            <div className="blog-layout">
+            {/* 2. Banner*/}
+            <div
+                className="blog-banner"
+                style={{ backgroundImage: `url(${bannerImg})` }}
+            >
+                <div className="banner-content">
+                    <h1>Góc Chia Sẻ</h1>
+                    <p>Kiến thức và câu chuyện từ Aura Craft</p>
+                </div>
+            </div>
 
-                {/* CỘT TRÁI: Nội dung bài viết */}
-                <div className="left-column">
-                    <article className="blog-article">
-                        <h1 className="article-title">{blog.title}</h1>
+            {/* 3. Nội dung chính  */}
+            <div className="detail-container">
 
-                        <div className="article-meta">
-                            <span><FiUser /> {blog.author_name || "Admin"}</span>
-                            <span><FiCalendar /> {blog.create_time ? new Date(blog.create_time).toLocaleDateString('vi-VN') : ''}</span>
-                        </div>
-
-                        {blog.image_url && (
-                            <div className="article-image">
-                                <img
-                                    src={`${API_BASE}${blog.image_url}`}
-                                    alt={blog.title}
-                                    onError={(e) => { e.target.style.display = 'none' }}
-                                />
-                            </div>
-                        )}
-
-                        <div className="article-content">
-                            {blog.content.split('\n').map((line, idx) => (
-                                <p key={idx}>{line}</p>
-                            ))}
-                        </div>
-                    </article>
+                <div className="back-navigation">
+                    <button onClick={() => navigate('/blog')} className="btn-back">
+                        <FiArrowLeft /> Quay lại danh sách
+                    </button>
                 </div>
 
-                {/* CỘT PHẢI: Bình luận*/}
-                <div className="right-column">
-                    <div className="comment-box">
-                        <h3>Bình luận ({comments.length})</h3>
+                <div className="blog-layout">
 
-                        <form className="comment-form" onSubmit={handlePostComment}>
-                            <textarea
-                                placeholder="Chia sẻ ý kiến của bạn..."
-                                value={newComment}
-                                onChange={(e) => setNewComment(e.target.value)}
-                            ></textarea>
-                            <button type="submit">Gửi</button>
-                        </form>
+                    {/* CỘT TRÁI: Nội dung bài viết */}
+                    <div className="left-column">
+                        <article className="blog-article">
+                            <h1 className="article-title">{blog.title}</h1>
 
-                        <div className="comment-list">
-                            {comments.map((cmt, index) => (
-                                <div key={index} className="comment-item">
-                                    <div className="cmt-avatar">{cmt.user.charAt(0)}</div>
-                                    <div className="cmt-body">
-                                        <div className="cmt-header">
-                                            <strong>{cmt.user}</strong>
-                                            <small>{cmt.time}</small>
-                                        </div>
-                                        <p>{cmt.text}</p>
-                                    </div>
+                            <div className="article-meta">
+                                <span><FiUser /> {blog.author_name || "Admin"}</span>
+                                <span><FiCalendar /> {blog.create_time ? new Date(blog.create_time).toLocaleDateString('vi-VN') : ''}</span>
+                            </div>
+
+                            {blog.image_url && (
+                                <div className="article-image">
+                                    <img
+                                        src={`${API_BASE}${blog.image_url}`}
+                                        alt={blog.title}
+                                        onError={(e) => { e.target.style.display = 'none' }}
+                                    />
                                 </div>
-                            ))}
+                            )}
+
+                            <div className="article-content">
+                                {blog.content.split('\n').map((line, idx) => (
+                                    <p key={idx}>{line}</p>
+                                ))}
+                            </div>
+                        </article>
+                    </div>
+
+                    {/* CỘT PHẢI: Bình luận*/}
+                    <div className="right-column">
+                        <div className="comment-box">
+                            <h3>Bình luận ({comments.length})</h3>
+
+                            <form className="comment-form" onSubmit={handlePostComment}>
+                                <textarea
+                                    placeholder="Chia sẻ ý kiến của bạn..."
+                                    value={newComment}
+                                    onChange={(e) => setNewComment(e.target.value)}
+                                ></textarea>
+                                <button type="submit">Gửi</button>
+                            </form>
+
+                            <div className="comment-list">
+                                {comments.map((cmt, index) => (
+                                    <div key={index} className="comment-item">
+                                        <div className="cmt-avatar">{cmt.user.charAt(0)}</div>
+                                        <div className="cmt-body">
+                                            <div className="cmt-header">
+                                                <strong>{cmt.user}</strong>
+                                                <small>{cmt.time}</small>
+                                            </div>
+                                            <p>{cmt.text}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
+
                 </div>
 
             </div>
-
         </div>
     );
 };

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import './ContactPage.scss';
 import { FiPhone, FiMail, FiMap, FiCheck } from 'react-icons/fi';
-import { apiCall } from '../../services/api';
+import { sendContact } from '../../services/contactApi';
+import './ContactPage.scss';
 import SocialLink from '../../components/layout/SocialLink';
+
 import bannerImg from '../../assets/images/lien-he.jpg';
 
 const ContactPage = () => {
-    // State quản lý form
+   
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -17,7 +18,6 @@ const ContactPage = () => {
     // --- 1. Tự động điền thông tin từ LocalStorage ---
     useEffect(() => {
         const storedUser = localStorage.getItem('currentUser');
-
         if (storedUser) {
             try {
                 const user = JSON.parse(storedUser);
@@ -37,28 +37,26 @@ const ContactPage = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // 2. Xử lý gửi form
+    // --- 2. Xử lý gửi form  ---
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
         try {
-            const messageContent = `${formData.content}`;
-
-            const response = await apiCall('/contact/', {
-                method: 'POST',
-                body: JSON.stringify({ content: messageContent })
+            // Gọi API qua Service
+            await sendContact({
+                name: formData.name,
+                email: formData.email,
+                content: formData.content
             });
 
-            if (response.ok) {
-                alert("Gửi thành công!");
-                setFormData({ ...formData, content: '' });
-            } else {
-                alert("Lỗi gửi tin nhắn.");
-            }
+            alert("Gửi tin nhắn thành công! Chúng tôi sẽ phản hồi sớm nhất.");
+
+            setFormData(prev => ({ ...prev, content: '' }));
+
         } catch (error) {
-            console.error(error);
-            alert("Lỗi kết nối.");
+            console.error("Lỗi gửi liên hệ:", error);
+            alert(error.message || "Lỗi kết nối. Vui lòng thử lại sau.");
         } finally {
             setLoading(false);
         }
@@ -191,7 +189,7 @@ const ContactPage = () => {
                                     name="content"
                                     value={formData.content}
                                     onChange={handleChange}
-                                    rows="1" 
+                                    rows="1"
                                     required
                                 ></textarea>
                             </div>

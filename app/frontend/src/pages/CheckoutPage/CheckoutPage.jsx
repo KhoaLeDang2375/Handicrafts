@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { apiCall } from '../../services/api';
+import { checkoutCart, buyNow } from '../../services/orderApi';
 import './CheckoutPage.scss';
 
 import { FiArrowLeft, FiMapPin, FiTruck, FiCreditCard, FiDollarSign, FiLock } from 'react-icons/fi';
@@ -9,65 +9,57 @@ import Logo from '../../assets/images/Aura.png';
 const SHIPPING_RATES = { 'GHTK': 30000, 'GNN': 45000 };
 
 const CheckoutPage = () => {
+
   const location = useLocation();
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState();
+  const [currentUser, setCurrentUser] = useState(null);
 
-  // Lấy dữ liệu từ form
-  const [shippingForm, setShippingForm] = useState({
-    name: '',
-    phone: '',
-    address: ''
-  });
+  // Form giao hàng riêng (nếu chọn giao địa chỉ khác)
+  const [shippingForm, setShippingForm] = useState({ name: '', phone: '', address: '' });
   const [isCustomShipping, setIsCustomShipping] = useState(false);
+
+  const [shippingMethod, setShippingMethod] = useState('GHTK');
+  const [paymentMethod, setPaymentMethod] = useState('COD');
+  const [orderItems, setOrderItems] = useState([]);
+
+  // Lấy dữ liệu state truyền sang
+  const { productToBuy, checkoutItems } = location.state || {};
+
+  // 1. Load User & Chuẩn hóa dữ liệu ngay khi vào trang
+  useEffect(() => {
+    // --- Xử lý User ---
+    const userStored = localStorage.getItem('currentUser');
+    if (userStored) {
+      setCurrentUser(JSON.parse(userStored));
+    } else {
+      alert("Vui lòng đăng nhập để thanh toán!");
+      navigate('/login');
+      return;
+    }
+
+    // --- Xử lý Items ---
+    if (checkoutItems && checkoutItems.length > 0) {
+      // Từ Giỏ hàng
+      setOrderItems(checkoutItems);
+    } else if (productToBuy) {
+      // Mua ngay -> Chuyển thành mảng 1 phần tử
+      setOrderItems([{
+        ...productToBuy,
+        product_quantity: productToBuy.quantity,
+        product_name: productToBuy.name,
+      }]);
+    } else {
+      navigate('/'); // Không có dữ liệu thì về trang chủ
+    }
+  }, [productToBuy, checkoutItems, navigate]);
+
   const handleShippingChange = (e) => {
     const { name, value } = e.target;
     setShippingForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // 1. Lấy dữ liệu từ state (Hỗ trợ cả 2 trường hợp)
-  const { productToBuy, checkoutItems } = location.state || {};
-
-  // 2. CHUẨN HÓA DỮ LIỆU VỀ MỘT MẢNG DUY NHẤT
-  const [orderItems, setOrderItems] = useState([]);
-
-  useEffect(() => {
-    if (checkoutItems && checkoutItems.length > 0) {
-      // Trường hợp 1: Từ Giỏ hàng (đã là mảng)
-      setOrderItems(checkoutItems);
-    } else if (productToBuy) {
-      // Trường hợp 2: Mua ngay (biến thành mảng 1 phần tử)
-      setOrderItems([{
-        ...productToBuy,
-        product_quantity: productToBuy.quantity, // Mua ngay dùng field 'quantity', cart dùng 'product_quantity'
-        product_name: productToBuy.name,         // Mua ngay dùng 'name', cart dùng 'product_name'
-      }]);
-    } else {
-      navigate('/');
-    }
-  }, [productToBuy, checkoutItems, navigate]);
-
-
-  // Load thông tin User từ LocalStorage khi vào trang
-  useEffect(() => {
-    const userStored = localStorage.getItem('currentUser');
-
-    if (userStored) {
-      // Lưu thẳng vào state currentUser để hiển thị lên giao diện
-      setCurrentUser(JSON.parse(userStored));
-    } else {
-      // Nếu chưa đăng nhập thì đuổi về trang login
-      alert("Vui lòng đăng nhập để thanh toán!");
-      navigate('/login');
-    }
-  }, []);
-
-  const [shippingMethod, setShippingMethod] = useState('GHTK'); // Mặc định GHTK
-  const [paymentMethod, setPaymentMethod] = useState('COD');   // Mặc định COD
-
-  // --- 3. TÍNH TOÁN TỔNG TIỀN (Dựa trên mảng orderItems) ---
+  // 2. Tính toán tiền
   const subTotal = orderItems.reduce((sum, item) => {
-    // Giá * Số lượng
     return sum + (item.price * (item.product_quantity || item.quantity));
   }, 0);
 
@@ -76,113 +68,87 @@ const CheckoutPage = () => {
   const shippingFee = isFreeShip ? 0 : baseShippingFee;
   const total = subTotal + shippingFee;
 
-  // --- 4. Gửi dữ liệu đặt hàng ---
-  useEffect(() => {
-    const userStored = localStorage.getItem('currentUser');
-    if (userStored) {
-      setCurrentUser(JSON.parse(userStored));
-    }
-  }, []);
-
-  // --- HÀM ĐẶT HÀNG ---
+  // --- 3. XỬ LÝ ĐẶT HÀNG (ĐÃ TỐI ƯU) ---
   const handlePlaceOrder = async () => {
     const token = localStorage.getItem('authToken');
     if (!token) {
-      alert("Vui lòng đăng nhập lại.");
+      alert("Phiên đăng nhập hết hạn.");
+      navigate('/login');
       return;
     }
 
-    // 1. Xác định dữ liệu giao hàng cuối cùng
+    // Xác định thông tin giao hàng
     const finalShippingData = {
-      name: isCustomShipping ? shippingForm.name : currentUser.name,
-      phone: isCustomShipping ? shippingForm.phone : currentUser.phone,
-      address: isCustomShipping ? shippingForm.address : currentUser.address,
-      email: currentUser.email
+      name: isCustomShipping ? shippingForm.name : currentUser?.name,
+      phone: isCustomShipping ? shippingForm.phone : currentUser?.phone,
+      address: isCustomShipping ? shippingForm.address : currentUser?.address,
+      email: currentUser?.email
     };
 
-    // 2. Validate thông tin User
     if (!finalShippingData.name || !finalShippingData.phone || !finalShippingData.address) {
-      alert("Vui lòng điền đầy đủ thông tin giao hàng!");
+      alert("Vui lòng kiểm tra lại thông tin giao hàng!");
       return;
     }
 
-    // 3. Xác định: Đây là "Mua ngay" hay "Thanh toán giỏ hàng"?
-    // (Dựa vào state fromCart truyền từ trang trước)
+    // Xác định nguồn gốc đơn hàng
     const isBuyNow = !location.state?.fromCart;
 
-    // 4. Chuẩn bị dữ liệu CHUNG (Cả 2 trường hợp đều cần)
+    // Payload chung
     const commonPayload = {
-      access_token: token,
-      customer_info: {
-        name: finalShippingData.name,     // Lấy tên người nhận thực tế
-        phone: finalShippingData.phone,   // Lấy SĐT người nhận thực tế
-        email: finalShippingData.email,
-        address: finalShippingData.address // Lấy địa chỉ giao hàng thực tế
-      },
+      access_token: token, // Gửi token trong body
+      customer_info: finalShippingData,
       shipment: shippingMethod,
       payment_method: paymentMethod,
       total_amount: total
     };
 
-    let payload = {};
-    let endpoint = "";
-
-    // 5. Cấu hình Payload và Endpoint riêng biệt
-    if (isBuyNow) {
-      // --- TRƯỜNG HỢP MUA NGAY ---
-      endpoint = "/orders/buy-now";
-
-      // Backend 'OrderCheckoutOne' yêu cầu field 'item' là 1 object đơn lẻ
-      payload = {
-        ...commonPayload,
-        item: {
-          productvariant_id: orderItems[0].variant_id || orderItems[0].productvariant_id,
-          product_quantity: orderItems[0].product_quantity || orderItems[0].quantity
-        }
-      };
-    } else {
-      // --- TRƯỜNG HỢP GIỎ HÀNG ---
-      endpoint = "/orders/checkout";
-
-      // Backend 'OrderCheckout' yêu cầu field 'cart_items' là 1 mảng
-      payload = {
-        ...commonPayload,
-        cart_items: orderItems.map(item => ({
-          productvariant_id: item.variant_id || item.productvariant_id,
-          product_quantity: item.product_quantity || item.quantity
-        }))
-      };
-    }
-
-    console.log(`Đang gọi ${endpoint} với dữ liệu:`, payload);
-
     try {
-      // 6. Gọi API (Endpoint động)
-      const response = await apiCall(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
+      let data; // Biến lưu kết quả trả về
 
-      const data = await response.json();
+      if (isBuyNow) {
+        // --- API MUA NGAY ---
+        const payload = {
+          ...commonPayload,
+          item: {
+            // Lấy phần tử đầu tiên vì mua ngay chỉ có 1 món
+            productvariant_id: orderItems[0].variant_id || orderItems[0].productvariant_id,
+            product_quantity: orderItems[0].product_quantity || orderItems[0].quantity
+          }
+        };
+        // Gọi service
+        data = await buyNow(payload);
 
-      if (response.ok) {
-        alert(`Đặt hàng thành công! Mã đơn: #${data.order_id}`);
-        navigate('/'); // Hoặc chuyển sang trang lịch sử đơn hàng
       } else {
-        alert(`Lỗi: ${data.detail || 'Đặt hàng thất bại'}`);
+        // --- API THANH TOÁN GIỎ HÀNG ---
+        const payload = {
+          ...commonPayload,
+          cart_items: orderItems.map(item => ({
+            productvariant_id: item.variant_id || item.productvariant_id,
+            product_quantity: item.product_quantity || item.quantity
+          }))
+        };
+        // Gọi service
+        data = await checkoutCart(payload);
       }
+
+      alert(`Đặt hàng thành công! Mã đơn: #${data.order_id}`);
+
+      navigate('/san-pham');
+
     } catch (error) {
-      console.error("Lỗi connection:", error);
-      alert("Không thể kết nối đến server.");
+      console.error("Lỗi đặt hàng:", error);
+      // Hiển thị message lỗi chuẩn từ Backend
+      alert(error.message || "Đặt hàng thất bại. Vui lòng thử lại.");
     }
   };
 
   if (orderItems.length === 0) return null;
 
+  // Format tiền tệ
+  // const formatCurrency = (amount) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   const backLink = location.state?.fromCart
     ? "/cart"
     : `/san-pham/${orderItems[0].product_id}`;
-
   return (
     <div className="checkout-page">
 

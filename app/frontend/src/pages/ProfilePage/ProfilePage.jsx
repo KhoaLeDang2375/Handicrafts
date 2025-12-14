@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiUser, FiMail, FiPhone, FiMapPin, FiPackage, FiEdit3, FiLogOut, FiCamera } from 'react-icons/fi';
-import { apiCall } from '../../services/api';
+import { getUserProfile } from '../../services/userApi';
 import './ProfilePage.scss';
 
 import Logo from '../../assets/images/Aura.png';
 
 const ProfilePage = () => {
+    
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -15,26 +16,18 @@ const ProfilePage = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                // 1. Gọi apiCall
-                const response = await apiCall('/my-profile/', { method: 'GET' });
-
-                // 2. Xử lý kết quả từ 'fetch'
-                if (!response.ok) {
-                    throw new Error(`Lỗi tải dữ liệu: ${response.statusText}`);
-                }
-
-                // 3. Giải nén JSON
-                const data = await response.json();
+                // 1. Gọi API qua Service
+                const data = await getUserProfile();
 
                 setProfile(data);
-                setLoading(false);
+
+                // Cập nhật lại localStorage để các component luôn có dữ liệu mới nhất (ví dụ nếu user vừa đổi tên/ảnh)
+                localStorage.setItem('currentUser', JSON.stringify(data));
 
             } catch (err) {
-                console.error("Lỗi tại ProfilePage:", err);
-                // Lưu ý: Lỗi 401 đã được api.js bắt và chuyển trang, nên ở đây chỉ bắt các lỗi khác
-                if (err.message !== 'Phiên đăng nhập hết hạn') {
-                    setError("Không thể tải thông tin. Vui lòng thử lại sau.");
-                }
+                console.error("Lỗi tải profile:", err);
+                setError(err.message || "Không thể tải thông tin. Vui lòng thử lại sau.");
+            } finally {
                 setLoading(false);
             }
         };
@@ -48,25 +41,24 @@ const ProfilePage = () => {
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('vi-VN');
+        return new Date(dateString).toLocaleDateString('vi-VN');
     };
 
     const getStatusColor = (status) => {
         const s = status ? status.toLowerCase() : '';
-        if (s === 'completed' || s === 'success') return 'bg-orange-100';
-        if (s === 'pending' || s === 'processing') return 'bg-green-100';
-        if (s === 'cancelled') return 'bg-gray-100';
+        if (['completed', 'success', 'delivered'].includes(s)) return 'bg-orange-100 text-orange-800'; // Đã giao/Thành công
+        if (['pending', 'processing', 'confirmed'].includes(s)) return 'bg-green-100 text-green-800'; // Đang xử lý
+        if (s === 'cancelled') return 'bg-gray-100 text-gray-500'; // Đã hủy
         return 'bg-gray-100';
     };
 
-    if (loading) return <div className="profile-container" style={{ justifyContent: 'center' }}>Đang tải dữ liệu...</div>;
-    if (error) return <div className="profile-container" style={{ color: 'red' }}>{error}</div>;
+    if (loading) return <div className="profile-container text-center py-10">Đang tải dữ liệu...</div>;
+    if (error) return <div className="profile-container text-center py-10 text-red-500">{error}</div>;
     if (!profile) return null;
 
     return (
         <div className="profile-container">
-            
+
             <div className="profile-sidebar">
                 <div className="avatar-card">
                     <div className="avatar-circle">
@@ -76,7 +68,7 @@ const ProfilePage = () => {
                             profile.full_name ? profile.full_name.charAt(0).toUpperCase() : 'U'
                         )} */}
                         <img src={Logo} alt="Avatar" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-                       
+
                         <button className="camera-btn"><FiCamera size={14} /></button>
                     </div>
 
