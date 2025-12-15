@@ -191,8 +191,8 @@ const CheckoutPage = () => {
                   {/* LOGIC HIỂN THỊ: Nếu KHÔNG tích chọn -> Hiện thông tin mặc định */}
                   {!isCustomShipping ? (
                     <div className="default-address-card">
-                      <p className="name"><strong>{currentUser.name}</strong></p>
-                      <p className="phone">Số điện thoại: {currentUser.phone || "Chưa có SĐT"}</p>
+                      <p className="name"><strong>{currentUser.full_name}</strong></p>
+                      <p className="phone">Số điện thoại: {currentUser.phone_number || "Chưa có SĐT"}</p>
                       <p className="address">Địa chỉ: {currentUser.address || "Chưa cập nhật địa chỉ"}</p>
                       <p className="email">Email: {currentUser.email}</p>
 
