@@ -1,0 +1,115 @@
+// src/components/layout/SocialLink.scss
+
+.SocialLink {
+  padding: 4rem 0 4rem 0;
+  background-color: $bg-primary;
+}
+
+// Container chuẩn
+.SocialLink__container {
+  max-width: 1200px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+// 1. Style phần Top
+.SocialLink__top {
+  display: flex;
+  flex-direction: column;
+  align-items: center; // Căn giữa mọi thứ
+  text-align: center;
+  padding-bottom: 2rem;
+}
+
+.SocialLink__logo {
+  height: 100px;
+  width: auto;
+}
+
+.SocialLink__email-label {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.SocialLink__email-link {
+  color: $text-dark;
+  text-decoration: none;
+  font-weight: 500;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.SocialLink__socials {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.social-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  
+  background-color: #f4e9df; 
+  color: $color-primary; 
+  text-decoration: none;
+  
+  /* Căn giữa icon trong hình tròn */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  transition: all 0.3s ease;
+  font-size: 18px;
+}
+
+/* Facebook (icon đầu tiên) */
+.social-icon:nth-child(1):hover {
+  background-color: #1877F2;
+  color: white;
+}
+
+/* Instagram (icon thứ 2) */
+.social-icon:nth-child(2):hover {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);
+  color: white;
+}
+
+/* Youtube (icon thứ 3) */
+.social-icon:nth-child(3):hover {
+  background-color: #FF0000;
+  color: white;
+}
+
+
+.footer__divider {
+  width: 100%; // Rộng toàn màn hình
+  height: 1px;
+  background-color: #e9dbca; // Màu đường kẻ
+}
+
+
+// 2. Style phần Bottom
+
+.SocialLink-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 0;
+  
+  // Đường kẻ ngang
+  border-bottom: 1px solid #e9dbca;
+
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: $text-dark;
+  text-decoration: none;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: $color-primary;
+  }
+}

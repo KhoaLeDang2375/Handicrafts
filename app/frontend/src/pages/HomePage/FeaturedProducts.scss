@@ -1,0 +1,89 @@
+// src/pages/HomePage/FeaturedProducts.scss
+
+.featured-products {
+  width: 100%;
+  text-align: center;
+  padding: 5rem 0;
+  background-color: $bg-primary; // Màu nền kem nhạt
+}
+
+.featured-products__container {
+  max-width: 1440px;
+  width: 90%;
+  margin: 0 auto; 
+}
+
+.featured-products__header {
+  margin-bottom: 3rem;
+
+  .subtitle {
+    font-size: 0.9rem;
+    color: $color-text-brown; // Biến SASS
+    letter-spacing: 0.5px;
+  }
+  
+  .title {
+    font-size: 2rem;
+    color: $text-dark; // Biến SASS
+    margin-top: 1rem;
+    margin-bottom: 3.5rem;
+  }
+}
+
+// Dàn 3 cột
+.featured-products__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); // 3 cột bằng nhau
+  gap: 5rem; // Khoảng cách giữa các cột
+}
+
+.product-card {
+  cursor: pointer;
+}
+
+// Khung chứa ảnh (để overflow: hidden)
+.product-card__image-wrapper {
+  // --- HIỆU ỨNG 1 (Phần 1): Ẩn phần ảnh bị zoom ---
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  aspect-ratio: 3 / 4;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    
+    // --- HIỆU ỨNG 1 (Phần 2): Thêm transition cho mượt ---
+    transition: transform 0.4s ease-out;
+  }
+}
+
+.product-card__caption {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: $text-dark;
+  
+  // --- HIỆU ỨNG 2 (Phần 1): Thêm transition cho mượt ---
+  transition: color 0.3s ease;
+}
+
+// --- KÍCH HOẠT HIỆU ỨNG KHI HOVER CARD ---
+.product-card:hover {
+  .product-card__image-wrapper img {
+    transform: scale(1.1);
+  }
+  
+  // HIỆU ỨNG 2 (Phần 2): Đổi màu chữ
+  .product-card__caption {
+    color: $color-primary; // Màu cam/vàng
+  }
+}
+
+.featured-products__footer {
+  margin-top: 2rem;
+  
+  // Nút .btn.btn--primary sẽ tự nhận hiệu ứng hover
+  // (nếu bạn đã setup @mixin btn-hover-effect)
+}

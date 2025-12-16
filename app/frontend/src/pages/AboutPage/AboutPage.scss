@@ -1,0 +1,429 @@
+$bg-light: #f9f9f9; // Màu nền nhẹ cho phần banner content nếu cần
+
+.about-page {
+    color: $text-dark;
+}
+
+// 1. Banner Section ---
+.about-banner {
+    width: 100%;
+    height: 350px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    .banner-content {
+        position: relative;
+        z-index: 2;
+        color: $color-text;
+        max-width: 700px;
+        padding: 0 20px;
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-transform: capitalize;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.3);
+    }
+}
+
+// 2. Story Section ---
+.about-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding-top: 200px;
+
+    .story-section {
+        display: flex;
+        align-items: center;
+        gap: 5rem; // Khoảng cách giữa Text và Ảnh
+
+        // Cột trái
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 50px;
+            color: #000;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .story-text {
+            flex: 1;
+
+            p {
+                font-size: 1rem;
+                line-height: 1.8;
+                margin-bottom: 20px;
+                text-align: justify; // Căn đều 2 bên cho đẹp
+            }
+        }
+
+        // Cột phải
+        .story-image {
+            flex: 1;
+
+            img {
+                width: 100%;
+                height: auto;
+                border-radius: 12px;
+                object-fit: cover;
+            }
+        }
+    }
+}
+
+// --- Responsive (Mobile) ---
+//   @media (max-width: 768px) {
+//     .about-banner {
+//       height: 250px;
+
+//       .banner-content h1 {
+//         font-size: 1.8rem;
+//       }
+//     }
+
+//     .about-container {
+//       padding: 40px 20px;
+
+//       .story-section {
+//         flex-direction: column; // Xếp chồng lên nhau
+//         gap: 30px;
+
+//         .story-text h2 {
+//           font-size: 1.5rem;
+//           text-align: center;
+//         }
+//       }
+//     }
+//   }
+
+// ... (Code cũ của Banner và Story) ...
+
+// --- 3. Core Values Section---
+.core-values-section {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding-top: 200px;
+    text-align: center;
+}
+
+.section-header {
+    margin-bottom: 80px;
+    text-align: center;
+
+    h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #000;
+        margin-bottom: 15px;
+    }
+
+    .sub-title {
+        font-size: 1rem;
+        color: $color-text-brown;
+    }
+}
+
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); // Chia đều 4 cột
+    gap: 30px; // Khoảng cách giữa các thẻ
+
+    .value-card {
+        background-color: $color-primary;
+        padding: 40px 25px;
+        border-radius: 12px;
+        text-align: left;
+        transition: transform 0.3s ease;
+
+        // Hiệu ứng hover nhẹ
+        &:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(229, 166, 99, 0.3);
+        }
+
+        .icon-box {
+            font-size: 2rem;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            display: inline-block;
+
+            svg {
+                stroke-width: 1.5; // Làm nét icon thanh mảnh 
+            }
+        }
+
+        h3 {
+            font-family: "Montserrat", sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #333;
+        }
+    }
+}
+
+// --- Responsive cho phần này ---
+//   @media (max-width: 992px) {
+//     .values-grid {
+//       grid-template-columns: repeat(2, 1fr); // Tablet: 2 cột
+//     }
+//   }
+
+//   @media (max-width: 576px) {
+//     .values-grid {
+//       grid-template-columns: 1fr; // Mobile: 1 cột
+//     }
+
+//     .value-card {
+//       padding: 30px 20px;
+//     }
+//   }
+
+// ... (Code cũ của các phần trước) ...
+
+// --- 4. Production Process Section (MỚI THÊM) ---
+.production-process-section {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding-top: 200px;
+    text-align: center;
+}
+
+.process-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; // Căn theo cạnh trên để số thẳng hàng
+    gap: 15px;
+
+    // Style cho từng bước (1, 2, 3, 4)
+    .step-item {
+        flex: 1;
+        padding: 0 10px;
+
+        .step-number {
+            font-size: 5rem;
+            font-weight: 300;
+            color: $color-primary;
+            line-height: 1;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-family: "Montserrat", sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: $text-dark;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 0.9rem;
+            color: $text-dark;
+            line-height: 1.5;
+        }
+    }
+
+    // Style cho mũi tên ở giữa
+    .step-arrow {
+        color: $color-primary;
+        font-size: 1.5rem;
+        margin-top: 35px;
+        opacity: 0.7;
+    }
+}
+
+// --- Responsive cho phần quy trình ---
+//   @media (max-width: 768px) {
+//     .process-steps {
+//       flex-direction: column; // Xếp dọc trên mobile
+//       align-items: center;
+//       gap: 40px;
+
+//       .step-item {
+//         width: 100%;
+//         max-width: 300px; // Giới hạn chiều rộng cho đẹp
+//       }
+
+//       // Ẩn mũi tên ngang hoặc xoay dọc trên mobile
+//       .step-arrow {
+//         transform: rotate(90deg); // Xoay mũi tên chỉ xuống dưới
+//         margin-top: 0;
+//         margin-bottom: -20px; // Thu hẹp khoảng cách
+//       }
+//     }
+//   }
+
+// --- 5. Team Section ---
+.team-section {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding-top: 200px;
+
+    .section-header {
+        margin-bottom: 50px;
+    }
+}
+
+
+// Link "Xem tất cả"
+.team-action-row {
+    display: flex;
+    justify-content: flex-end; // Đẩy sang phải
+    margin-bottom: 30px;
+
+    .view-all-link {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: $text-dark;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: color 0.2s;
+
+        &:hover {
+            color: $color-primary;
+        }
+    }
+}
+
+// Grid hiển thị thẻ
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 60px;
+
+    .artisan-card {
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden; // Để ảnh không bị tràn ra khỏi bo góc
+        transition: transform 0.3s ease;
+
+        &:hover {
+            transform: translateY(-5px); // Bay lên nhẹ khi hover
+        }
+
+        .card-image {
+            width: 100%;
+            height: 300px; // Chiều cao cố định cho ảnh
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+
+        .card-info {
+            padding: 20px;
+            text-align: center;
+
+            h3 {
+                font-family: "Montserrat", sans-serif;
+                font-size: 1.1rem;
+                color: #1a1a1a;
+                margin-bottom: 8px;
+                font-weight: 600;
+            }
+
+            .role {
+                color: $color-primary;
+                font-weight: 400;
+                margin-bottom: 8px;
+                font-size: 0.95rem;
+            }
+
+            .exp {
+                color: $color-text-light;
+                font-size: 0.85rem;
+            }
+        }
+    }
+}
+
+// --- Responsive cho Team Section ---
+//   @media (max-width: 992px) {
+//     .team-grid {
+//       grid-template-columns: repeat(2, 1fr); // Tablet: 2 cột
+//     }
+//   }
+
+//   @media (max-width: 576px) {
+//     .team-grid {
+//       grid-template-columns: 1fr; // Mobile: 1 cột
+//     }
+
+//     .team-action-row {
+//       justify-content: center; // Mobile thì căn giữa link xem tất cả
+//     }
+//   }
+
+// --- 6. Product Discovery Section (CTA) ---
+.product-discovery-section {
+    padding: 150px 20px;
+    text-align: center;
+}
+
+.cta-content {
+    max-width: 800px;
+    margin: 0 auto;
+
+    h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #000;
+        margin-bottom: 20px;
+    }
+
+    p {
+        font-size: 1.1rem;
+        color: $text-dark;
+        margin-bottom: 40px;
+        line-height: 1.6;
+    }
+
+}
+
+// Responsive cho mobile
+//   @media (max-width: 576px) {
+//     padding: 60px 20px;
+
+//     .cta-content {
+//       h2 {
+//         font-size: 1.8rem;
+//       }
+
+//       .cta-button {
+//         width: 100%; // Trên điện thoại nút full chiều rộng cho dễ bấm
+//         padding: 15px 0;
+//       }
+//     }
+//   }

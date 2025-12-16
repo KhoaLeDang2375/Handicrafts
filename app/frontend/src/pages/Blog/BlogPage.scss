@@ -1,0 +1,115 @@
+// 1. Wrapper bao ngoài cùng 
+.blog-page-wrapper {
+  width: 100%;
+  min-height: 100vh;
+}
+
+// 2. Banner
+.blog-banner {
+  width: 100%;
+  height: 300px; // Chiều cao banner 
+  background-size: cover; // Ảnh phủ kín
+  background-position: center; // Căn giữa ảnh
+  background-repeat: no-repeat;
+  
+  // Dùng Flexbox để căn giữa nội dung
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  margin-bottom: 50px; // Khoảng cách với phần bài viết bên dưới
+
+  // Lớp phủ mờ 
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.3); 
+  }
+
+  .banner-content {
+    position: relative;
+    z-index: 1; // Nổi lên trên lớp phủ
+    color: #fff; // Chữ màu trắng
+    
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3); // Bóng chữ
+    }
+
+    p {
+      font-size: 1.2rem;
+      font-weight: 300;
+      opacity: 0.9;
+    }
+  }
+}
+
+// 3. Container chứa bài viết 
+.blog-container {
+  max-width: 1200px;
+  margin: 0 auto; // Căn giữa trang
+  padding: 0 20px 60px; // Padding trái phải và dưới
+
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+
+    .blog-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      overflow: hidden;
+      border: 1px solid #eee;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        border-color: #d4a768; // Viền cam khi hover
+      }
+
+      .blog-content {
+        padding: 25px;
+        
+        .blog-title {
+          font-size: 1.3rem;
+          color: #333;
+          margin-bottom: 12px;
+          line-height: 1.4;
+          font-weight: 600;
+        }
+
+        .blog-meta {
+          display: flex;
+          gap: 15px;
+          color: #999;
+          font-size: 0.85rem;
+          margin-bottom: 15px;
+          padding-bottom: 15px;
+          border-bottom: 1px solid #f0f0f0;
+          
+          span { display: flex; align-items: center; gap: 5px; }
+        }
+
+        .blog-desc {
+          color: #666;
+          line-height: 1.6;
+          font-size: 0.95rem;
+          
+          // Cắt dòng 3 dòng
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+}

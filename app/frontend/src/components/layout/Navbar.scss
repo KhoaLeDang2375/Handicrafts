@@ -1,0 +1,276 @@
+.navbar {
+  width: 100%;
+  background: $bg-primary;
+  border-bottom: 1px solid $color-border;
+  // padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background-color: $bg-primary;
+}
+
+.navbar__container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.navbar__logo,
+.navbar__actions {
+  // Đặt một chiều rộng cơ sở
+  flex-basis: 400px;
+
+  // Không cho phép co lại hoặc phình ra
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+.navbar__logo img {
+  height: 60px;
+}
+
+.navbar__links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+
+  flex-grow: 1; // lấp đầy khoảng trống ở giữa
+  justify-content: center;
+
+  a {
+    font-family: 'Roboto', sans-serif;
+    text-decoration: none;
+    color: $color-heading;
+    font-weight: 600;
+    font-size: 15px;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #DB9F6C;
+    }
+
+    &.active {
+      color: #DB9F6C;
+      font-weight: 700;
+    }
+  }
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+
+  justify-content: flex-end;
+}
+
+.navbar__search {
+  position: relative;
+  background: $bg-primary;
+
+  input {
+    border: none;
+    border-bottom: 1px solid $color-border;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    outline: none;
+    border-radius: 30px;
+
+    &:focus {
+      border-bottom-color: #3f3f3f;
+      border-radius: 0;
+      transition: border-radius 0.3s ease, border-bottom-color 0.3s ease;
+    }
+  }
+
+  .search-icon {
+    border: none;
+    background: none;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: $color-text-light;
+  }
+}
+
+.navbar__user-area {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem; // Khoảng cách giữa giỏ hàng và avatar
+}
+
+// Icon giỏ hàng
+.cart-icon {
+  width: 35px; // Kích thước vòng tròn
+  height: 35px;
+  border-radius: 50%;
+  background-color: $color-primary;
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  svg {
+    width: 15px;
+    height: auto;
+  }
+
+}
+
+
+// Wrapper bao quanh Avatar để làm mốc hover
+.user-dropdown-wrapper {
+  position: relative;
+  padding-bottom: 10px; // Vùng an toàn để chuột không bị rớt khi di chuyển xuống menu
+  margin-bottom: -10px;
+
+  // Khi hover vào wrapper này thì hiện menu con
+  &:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+}
+
+// Avatar
+.navbar__avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &:hover {
+    border-color: #d49058;
+  }
+}
+
+// --- MENU DROPDOWN STYLE ---
+.dropdown-menu {
+  position: absolute;
+  top: 100%; // Nằm ngay dưới avatar
+  right: 0; // Căn phải
+  width: 260px; // Độ rộng menu
+  background-color: #fff;
+  border-radius: 12px; // Bo góc mềm mại
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); // Đổ bóng đẹp
+  padding: 0.5rem 0;
+  z-index: 1000;
+
+  // Hiệu ứng ẩn hiện
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+
+  // Mũi tên nhọn chỉ lên trên (nếu muốn)
+  &::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: 15px;
+    width: 12px;
+    height: 12px;
+    background-color: #fff;
+    transform: rotate(45deg);
+    box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.04);
+  }
+}
+
+// Phần thông tin User ở đầu menu
+.dropdown-header {
+  padding: 1rem 1.5rem;
+
+  .user-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 4px 0;
+  }
+
+  .user-email {
+    font-size: 0.9rem;
+    color: #888;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; // Cắt bớt nếu email quá dài
+  }
+}
+
+// Đường kẻ ngang
+.dropdown-divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 0.2rem 0;
+}
+
+// Các mục Menu (Item)
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px; // Khoảng cách giữa icon và chữ
+  padding: 0.8rem 1.5rem;
+  color: #444;
+  text-decoration: none;
+  font-size: 0.95rem;
+  // transition: background 0.2s;
+  width: 100%;
+  background: none;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+
+  // Style cho icon
+  svg {
+    color: #666;
+    transition: color 0.2s;
+  }
+
+  &:hover {
+    background-color: #f9f9f9;
+    color: #d49058; // Chữ chuyển màu cam
+
+    svg {
+      color: #d49058;
+    }
+
+    // Icon cũng chuyển cam
+  }
+}
+
+// Nút Đăng xuất riêng biệt
+.logout-btn {
+  &:hover {
+    background-color: #fff5f5;
+    color: #e74c3c;
+
+    svg {
+      color: #e74c3c;
+    }
+  }
+}

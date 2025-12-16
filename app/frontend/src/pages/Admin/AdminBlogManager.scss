@@ -1,0 +1,117 @@
+.admin-blog-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+h2 {
+    color: $color-primary;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+h3 {
+    margin-bottom: 30px;
+}
+
+.blog-form-card {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        font-family: inherit;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: bold;
+        }
+
+        .btn-save.create {
+            background: $color-primary;
+            color: white;
+        }
+
+        .btn-save.update {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #ccc;
+            color: #333;
+        }
+    }
+
+    .title-input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 15px; // Cách textarea ra một chút
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 600;
+
+        &:focus {
+            outline: none;
+            border-color: $color-primary; // Màu cam khi focus
+        }
+    }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+
+    th,
+    td {
+        padding: 12px;
+        border: 1px solid #eee;
+        text-align: left;
+    }
+
+    th {
+        background: #f4f4f4;
+    }
+
+    .action-cell {
+        display: flex;
+        gap: 10px;
+
+        .btn-icon {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+
+            &.edit {
+                background: #2196f3;
+            }
+
+            &.delete {
+                background: #f44336;
+            }
+        }
+    }
+}

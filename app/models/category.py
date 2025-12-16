@@ -18,3 +18,17 @@ class Category:
     def get_all():
         query = """SELECT * FROM categories"""
         return db.fetch_all(query)
+    # Update category
+    @staticmethod
+    def update_category(id, name):
+        query = """
+        UPDATE categories
+        SET name = %s
+        WHERE id = %s
+        """
+        return db.execute_query(query, (name, id))
+    # Delete category
+    @staticmethod
+    def delete_category(id):
+        query = """DELETE FROM categories WHERE id = %s"""
+        return db.execute_query(query, (id,))

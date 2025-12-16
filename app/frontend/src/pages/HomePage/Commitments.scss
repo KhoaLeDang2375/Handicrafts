@@ -1,0 +1,65 @@
+// src/pages/HomePage/Commitments.scss
+
+.commitments {
+  padding: 10rem 5rem 5rem 5rem;
+  background-color: $bg-primary; 
+}
+
+// Container chuẩn
+.commitments__container {
+  max-width: 1440px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+// 1. Style phần Header
+.commitments__header {
+  text-align: center;
+  margin-bottom: 7rem;
+
+  .title {
+    margin-bottom: 1rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    color: $color-text-brown;
+    max-width: 650px; // Giới hạn chiều rộng
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+}
+
+// 2. Style Lưới 3 Cột
+.commitments__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); // Tạo 3 cột bằng nhau
+  gap: 2rem; 
+}
+
+.commitment-item {
+  // Mỗi cột sẽ có padding riêng
+  padding: 0 2.5rem; 
+  text-align: center;
+
+  // --- THÊM ĐƯỜNG KẺ ---
+  // Chọn item KHÔNG PHẢI là con đầu tiên (tức là cột 2 và 3)
+  &:not(:first-child) {
+    // Thêm đường kẻ bên trái
+    border-left: 1px solid #777777; // Màu xám nhạt
+  }
+}
+
+.commitment-item__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  // Font Poppins sẽ tự động được áp dụng nếu bạn đã setup trong _typography.scss
+}
+
+.commitment-item__description {
+  font-size: 1rem;
+  color: $color-text-light;
+  line-height: 1.7;
+  // Font Montserrat sẽ tự động được áp dụng
+}

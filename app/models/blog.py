@@ -2,55 +2,125 @@ from app.database import db
 from datetime import datetime
 
 class Blog:
-    def __init__(self, author_id, content):
+    def __init__(self, author_id: int, content: str, title, author_name: str = None, image_url: str = None):
         self.author_id = author_id
         self.content = content
-        self.create_time = datetime.now()
+        self.title = title
+        self.author_name = author_name
+        self.create_time = datetime.utcnow()
+        self.image_url = image_url  
 
     def save(self):
+        """
+        Lưu một bài viết mới vào cơ sở dữ liệu.
+        """
         query = """
-        INSERT INTO Blog (Author_id, Content, create_time)
-        VALUES (%s, %s, %s)
+        INSERT INTO Blog (author_id, content, title, create_time, author_name, image_url)
+        VALUES (%s, %s, %s, %s, %s, %s)
         """
         return db.execute_query(query, (
             self.author_id,
             self.content,
-            self.create_time
+            self.title,
+            self.create_time,
+            self.author_name,
+            self.image_url
         ))
 
+    # -------------------------------
+    # STATIC METHODS
+    # -------------------------------
     @staticmethod
-    def get_by_id(blog_id):
+    def get_by_id(blog_id: int):
+        """
+        Lấy chi tiết một bài viết theo ID.
+        """
         query = """
-        SELECT b.*, e.name as author_name
+        SELECT 
+            b.id,
+            b.author_id,
+            e.name AS author_name,
+            b.title,   
+            b.content,
+            b.create_time,
+            b.image_url
         FROM Blog b
-        JOIN Employee e ON b.Author_id = e.id
+        JOIN Employee e ON b.author_id = e.id
         WHERE b.id = %s
         """
         return db.fetch_one(query, (blog_id,))
 
     @staticmethod
-    def get_all():
-        query = """
-        SELECT b.*, e.name as author_name
-        FROM Blog b
-        JOIN Employee e ON b.Author_id = e.id
-        ORDER BY b.create_time DESC
+    def get_all(skip: int = 0, limit: int = 10):
         """
-        return db.fetch_all(query)
+        Lấy danh sách blog (phân trang).
+        """
+        query = """
+        SELECT 
+            b.id,
+            b.author_id,
+            e.name AS author_name,
+            b.title,
+            b.content,
+            b.create_time,
+            b.image_url
+        FROM Blog b
+        JOIN Employee e ON b.author_id = e.id
+        ORDER BY b.create_time DESC
+        LIMIT %s OFFSET %s
+        """
+        return db.fetch_all(query, (limit, skip))
 
     @staticmethod
-    def get_by_author(author_id):
-        query = """
-        SELECT * FROM Blog 
-        WHERE Author_id = %s
-        ORDER BY create_time DESC
+    def get_by_author(author_id: int, skip: int = 0, limit: int = 10):
         """
-        return db.fetch_all(query, (author_id,))
-
-    def update_content(self, blog_id, content):
+        Lấy danh sách bài viết của một tác giả (phân trang).
+        """
         query = """
-        UPDATE Blog 
-        SET Content = %s 
+        SELECT 
+            b.id,
+            b.author_id,
+            e.name AS author_name,
+            b.title,   
+            b.content,
+            b.create_time,
+            b.image_url
+        FROM Blog b
+        JOIN Employee e ON b.author_id = e.id
+        WHERE b.author_id = %s
+        ORDER BY b.create_time DESC
+        LIMIT %s OFFSET %s
+        """
+        return db.fetch_all(query, (author_id, limit, skip))
+
+    @staticmethod
+    def update_content(blog_id: int, title: str, content: str, image_url: str = None):
+        """
+        Cập nhật tiêu đề và nội dung bài viết.
+        """
+        query = """
+        UPDATE Blog
+        SET title = %s, content = %s, image_url = %s
         WHERE id = %s
         """
-        return db.execute_query(query, (content, blog_id))
+        return db.execute_query(query, (title, content, image_url, blog_id))
+
+    @staticmethod
+    def delete(blog_id: int):
+        """
+        Xóa bài viết khỏi cơ sở dữ liệu.
+        """
+        query = "DELETE FROM Blog WHERE id = %s"
+        return db.execute_query(query, (blog_id,))
+
+    @staticmethod
+    def count_all():
+        query = "SELECT COUNT(*) AS total FROM Blog"
+        result = db.fetch_one(query)
+        return result["total"] if result else 0
+
+    @staticmethod
+    def count_by_author(author_id: int):
+        query = "SELECT COUNT(*) AS total FROM Blog WHERE author_id = %s"
+        result = db.fetch_one(query, (author_id,))
+        return result["total"] if result else 0

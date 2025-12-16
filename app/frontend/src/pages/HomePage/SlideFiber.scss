@@ -1,0 +1,28 @@
+// src/pages/HomePage/SlideFiber.scss
+$navbar-height: 100px; // Dùng lại biến chiều cao
+
+.hero-slide--fiber {
+  display: grid;
+  grid-template-columns: 45% 55%; 
+  height: calc(100vh - $navbar-height);
+  align-items: center;
+
+  .hero-slide__content {
+    background: #00c4cc; // Màu xanh ngọc
+    color: #fff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem 6rem;
+  }
+
+  .hero-slide__image-container {
+    height: 100%;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+}
